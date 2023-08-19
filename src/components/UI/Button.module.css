@@ -1,0 +1,19 @@
+.action {
+  margin-top: 1.5rem;
+}
+
+.action button {
+  font: inherit;
+  cursor: pointer;
+  padding: 0.5rem 1.5rem;
+  border-radius: 4px;
+  column-gap: 10px;
+  background-color: #58ab35;
+  color: white;
+  border: 1px solid #4d9c2c;
+}
+
+.action button:hover {
+  background-color: #448d25;
+  border-color: #4ca525;
+}
