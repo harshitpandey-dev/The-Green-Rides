@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../../contexts/authContext";
-import ProfileForm from "../../components/Profile/ProfileForm";
+import UpdatePassword from "../../components/Profile/UpdatePassword";
 import classes from "./UserProfile.module.css";
 
 const UserProfile = () => {
@@ -23,7 +23,7 @@ const UserProfile = () => {
         <h3>Roll No : {currentUser?.rollNo}</h3>
       )}
 
-      {showChange && <ProfileForm userid={currentUser.userid} />}
+      {showChange && <UpdatePassword currentUser={currentUser} />}
 
       <div className={classes.action}>
         <button onClick={showChangeHandler}>

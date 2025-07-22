@@ -41,3 +41,25 @@ export async function loginUser(props) {
 export async function deleteUser(props) {
   throw new Error("Delete student API not implemented in backend");
 }
+
+export async function changePassword(props) {
+  const response = await fetch(
+    `${process.env.REACT_APP_API_ENDPOINT}/auth/change-password`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        email: props?.email,
+        oldPassword: props?.oldPassword,
+        newPassword: props?.newPassword,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    throw new Error(data.message || "Could not change password.");
+  }
+  return data;
+}
