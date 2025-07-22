@@ -1,9 +1,9 @@
-import { useContext, useRef, useState } from 'react';
-import classes from './AddStudentForm.module.css';
-import useHttp from '../hooks/use-http';
-import { deleteStudent } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
-import AuthContext from '../../store/auth-context';
+import { useContext, useRef, useState } from "react";
+import classes from "./AddStudentForm.module.css";
+import useHttp from "../hooks/use-http";
+import { deleteUser } from "../../services/auth.service";
+import LoadingSpinner from "../UI/LoadingSpinner";
+import AuthContext from "../../store/auth-context";
 
 const DeleteGuard = () => {
   const authCtx = useContext(AuthContext);
@@ -15,7 +15,7 @@ const DeleteGuard = () => {
     status,
     // data: student,
     error,
-  } = useHttp(deleteStudent, false);
+  } = useHttp(deleteUser, false);
 
   const submitionHandler = (event) => {
     event.preventDefault();
@@ -28,7 +28,7 @@ const DeleteGuard = () => {
     });
 
     if (!error) {
-      alert('Guard Deleted');
+      alert("Guard Deleted");
     }
 
     // console.log({
@@ -37,7 +37,7 @@ const DeleteGuard = () => {
     setIsLoading(false);
   };
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />

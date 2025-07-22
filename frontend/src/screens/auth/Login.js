@@ -1,11 +1,11 @@
 import { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-
 import AuthContext from "../../store/auth-context";
-import classes from "./AuthForm.module.css";
+import classes from "./login.module.css";
+import { loginUser } from "../../services/auth.service";
 
-const AuthForm = () => {
+const LoginScreen = () => {
   const history = useHistory();
 
   const [isVerified, setIsVerified] = useState(false);
@@ -19,45 +19,29 @@ const AuthForm = () => {
 
   function onChange(value) {
     setIsVerified(true);
-    // console.log('Captcha value:', value);
   }
-
-  // const verifyCallback = () => {
-  //   setIsVerified(true);
-  // };
-  // const load = () => {
-  //   setIsVerified(false);
-  // };
 
   const toggleShowPassword = () => {
     if (showPassword) setShowPassword(false);
     if (!showPassword) setShowPassword(true);
   };
 
-  const submitionHandler = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (isVerified) {
+    if (!isVerified) {
       const enteredEmail = emailInputRef.current.value;
       const enteredPassword = passwordInputRef.current.value;
 
       setIsLoading(true);
 
-      let url;
-      url = "http://localhost:5000/api/auth/login"; //login send req url
-
-      fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          email: enteredEmail,
-          password: enteredPassword,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      await loginUser({
+        email: enteredEmail,
+        password: enteredPassword,
       })
         .then((res) => {
           setIsLoading(false);
+          console.log(res);
           if (res.ok) {
             return res.json();
           } else {
@@ -72,7 +56,7 @@ const AuthForm = () => {
           }
         })
         .then((data) => {
-          const experationTime = new Date(new Date().getTime() + +36000000);
+          const expirationTime = new Date(new Date().getTime() + +36000000);
           authCtx.login(
             data,
             enteredPassword,
@@ -80,7 +64,7 @@ const AuthForm = () => {
             data._id,
             data.role,
             data.cycleid,
-            experationTime.toISOString()
+            expirationTime.toISOString()
           );
           history.replace("/");
         })
@@ -99,7 +83,7 @@ const AuthForm = () => {
   return (
     <section className={classes.auth}>
       <h1>Login</h1>
-      <form onSubmit={submitionHandler}>
+      <form onSubmit={handleSubmit}>
         <div className={classes.control}>
           <label htmlFor="email">Your Email</label>
           <input type="userName" id="userName" required ref={emailInputRef} />
@@ -114,18 +98,12 @@ const AuthForm = () => {
           />
         </div>
         <input type="checkbox" onClick={toggleShowPassword} /> Show Password
-        <div>
-          {/* <Recaptcha
-            sitekey="6LfOzVQjAAAAACIJVTM3w4iuAePfdEloNCQvRhj-"
-            render="explicit"
-            verifyCallback={verifyCallback}
-            onloadCallback={load}
-          /> */}
+        {/* <div>
           <ReCAPTCHA
             sitekey="6LcU0VQjAAAAAHdKzj2Ub7RAbfQCf6QXbgOif9Le"
             onChange={onChange}
           />
-        </div>
+        </div> */}
         <div className={classes.actions}>
           {!isLoading && <button>Login</button>}
           {isLoading && <p>Sending Request....</p>}
@@ -138,4 +116,4 @@ const AuthForm = () => {
   );
 };
 
-export default AuthForm;
+export default LoginScreen;

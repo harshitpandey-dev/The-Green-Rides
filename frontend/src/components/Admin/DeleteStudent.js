@@ -1,17 +1,17 @@
-import { useContext, useRef, useState } from 'react';
-import AuthContext from '../../store/auth-context';
-import useHttp from '../hooks/use-http';
-import { deleteStudent } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
+import { useContext, useRef, useState } from "react";
+import AuthContext from "../../store/auth-context";
+import useHttp from "../hooks/use-http";
+import { deleteUser } from "../../services/auth.service";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
-import classes from './AddStudentForm.module.css';
+import classes from "./AddStudentForm.module.css";
 
 const DeleteStudent = () => {
   const authCtx = useContext(AuthContext);
   const emailRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
-  const { sendRequest, status, error } = useHttp(deleteStudent, false);
+  const { sendRequest, status, error } = useHttp(deleteUser, false);
 
   const submitionHandler = (event) => {
     event.preventDefault();
@@ -24,7 +24,7 @@ const DeleteStudent = () => {
     });
 
     if (!error) {
-      alert('Student Deleted');
+      alert("Student Deleted");
     }
 
     // console.log({
@@ -39,7 +39,7 @@ const DeleteStudent = () => {
       </div>
     );
   }
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />

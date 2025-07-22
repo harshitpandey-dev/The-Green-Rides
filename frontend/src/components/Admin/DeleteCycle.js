@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { useContext, useState } from "react";
 
-import Scanner from '../QrScaner/Scanner';
-import useHttp from '../hooks/use-http';
-import { deleteCycle } from '../lib/api';
-import classes from './AddStudentForm.module.css';
-import AuthContext from '../../store/auth-context';
-import LoadingSpinner from '../UI/LoadingSpinner';
+import Scanner from "../QrScaner/Scanner";
+import useHttp from "../hooks/use-http";
+import { deleteCycle } from "../../services/cycle.service";
+import classes from "./AddStudentForm.module.css";
+import AuthContext from "../../store/auth-context";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
 const DeleteCycle = () => {
   const authCtx = useContext(AuthContext);
@@ -25,13 +25,13 @@ const DeleteCycle = () => {
     setIsLoading(true);
     sendRequest({ cycleid: id, token: authCtx.token });
     if (!error) {
-      alert('Cycle Deleted');
+      alert("Cycle Deleted");
     }
     // console.log(id);
     setIsLoading(false);
   };
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />
