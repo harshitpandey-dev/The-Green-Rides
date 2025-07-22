@@ -29,7 +29,7 @@ const LoginScreen = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!isVerified) {
+    if (isVerified) {
       const enteredEmail = emailInputRef.current.value;
       const enteredPassword = passwordInputRef.current.value;
 
@@ -98,12 +98,10 @@ const LoginScreen = () => {
           />
         </div>
         <input type="checkbox" onClick={toggleShowPassword} /> Show Password
-        {/* <div>
-          <ReCAPTCHA
-            sitekey="6LcU0VQjAAAAAHdKzj2Ub7RAbfQCf6QXbgOif9Le"
-            onChange={onChange}
-          />
-        </div> */}
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY || ""}
+          onChange={onChange}
+        />
         <div className={classes.actions}>
           {!isLoading && <button>Login</button>}
           {isLoading && <p>Sending Request....</p>}
