@@ -1,16 +1,16 @@
 import { useContext, useRef, useState } from "react";
-import AuthContext from "../../store/auth-context";
+import AuthContext from "../../contexts/authContext";
 
 import useHttp from "../hooks/use-http";
 import { registerUser } from "../../services/auth.service";
-import LoadingSpinner from "../UI/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 import classes from "./AddStudentForm.module.css";
 
 const AddStudentForm = () => {
   const authCtx = useContext(AuthContext);
   const nameRef = useRef();
-  // const rollnoRef = useRef();
+  // const rollNoRef = useRef();
   // const branchRef = useRef();
   const emailRef = useRef();
   const passwordRef = useRef();
@@ -50,8 +50,8 @@ const AddStudentForm = () => {
     sendRequest({
       student: {
         name: nameRef.current.value,
-        // rollno: rollnoRef.current.value,
-        rollno: "",
+        // rollNo: rollNoRef.current.value,
+        rollNo: "",
         branch: "",
         // branch: branchRef.current.value,
         role: "student",
@@ -65,7 +65,7 @@ const AddStudentForm = () => {
     }
     // console.log({
     //   name: nameRef.current.value,
-    //   rollno: rollnoRef.current.value,
+    //   rollNo: rollNoRef.current.value,
     //   branch: branchRef.current.value,
     //   email: emailRef.current.value,
     //   role: 'student',
@@ -83,8 +83,8 @@ const AddStudentForm = () => {
           <input type="Name" id="Name" required ref={nameRef} />
         </div>
         {/* <div className={classes.control}>
-          <label htmlFor="rollno">Student Roll Number</label>
-          <input type="rollno" id="rollno" required ref={rollnoRef} />
+          <label htmlFor="rollNo">Student Roll Number</label>
+          <input type="rollNo" id="rollNo" required ref={rollNoRef} />
         </div>
         <div className={classes.control}>
           <label htmlFor="branch">Student Branch</label>

@@ -4,8 +4,8 @@ import Scanner from "../QrScaner/Scanner";
 import classes from "./AddStudentForm.module.css";
 import useHttp from "../hooks/use-http";
 import { addCycle } from "../../services/cycle.service";
-import LoadingSpinner from "../UI/LoadingSpinner";
-import AuthContext from "../../store/auth-context";
+import LoadingSpinner from "../common/LoadingSpinner";
+import AuthContext from "../../contexts/authContext";
 
 const AddCycle = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,16 +25,13 @@ const AddCycle = () => {
     event.preventDefault();
     setIsLoading(true);
     sendRequest({
-      cycle: { cycleid: id, status: "", stdid: "" },
+      cycle: { cycleId: id, status: "", stdid: "" },
       token: authCtx.token,
     });
     if (!error) {
       alert("Cycle Added");
     }
-    // console.log({
-    //   cycle: { cycleid: id, status: '', stdid: '' },
-    //   token: authCtx.token,
-    // });
+
     setIsLoading(false);
   };
 

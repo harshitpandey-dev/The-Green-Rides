@@ -1,7 +1,7 @@
-import { Fragment } from 'react';
+import { Fragment } from "react";
 
-import CycleItem from './CycleItem';
-import classes from './CycleList.module.css';
+import CycleItem from "./CycleItem";
+import classes from "./CycleList.module.css";
 
 const CycleList = (props) => {
   // console.log(props);
@@ -19,9 +19,9 @@ const CycleList = (props) => {
       <ul className={classes.list}>
         {props.cycles.map((cycle) => (
           <CycleItem
-            key={cycle.cycleid}
+            key={cycle.cycleId}
             stdid={cycle.stdid}
-            id={cycle.cycleid}
+            id={cycle.cycleId}
             status={cycle.status}
             stdname={cycle.stdname}
           />

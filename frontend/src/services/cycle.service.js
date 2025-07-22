@@ -5,7 +5,7 @@ export async function rentCycle(props) {
   // Create rental
   let response = await fetch(`${url}/rentals`, {
     method: "POST",
-    body: JSON.stringify({ cycleId: props.cycleid }),
+    body: JSON.stringify({ cycleId: props.cycleId }),
     headers: {
       "Content-Type": "application/json",
       Authorization: "Bearer " + props.token,
@@ -37,7 +37,7 @@ export async function addCycle(props) {
 
 // DELETE CYCLE
 export async function deleteCycle(props) {
-  let response = await fetch(`${url}/cycles/${props.cycleid}`, {
+  let response = await fetch(`${url}/cycles/${props.cycleId}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",

@@ -1,26 +1,26 @@
-import { useContext, useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import AuthContext from '../../store/auth-context';
+import { useContext, useEffect, useState } from "react";
+import { NavLink } from "react-router-dom";
+import AuthContext from "../../contexts/authContext";
 
-import logo from '../../resources/gogreen.png';
-import classes from './MainNavigation.module.css';
+import logo from "../../resources/gogreen.png";
+import classes from "./MainNavigation.module.css";
 
-const MainNavigation = () => {
+const Navbar = () => {
   const authCtx = useContext(AuthContext);
 
   const [one, setOne] = useState(false);
   const [two, setTwo] = useState(false);
 
   useEffect(() => {
-    if (authCtx.role === 'student') {
+    if (authCtx.role === "student") {
       setOne(false);
       setTwo(false);
     }
-    if (authCtx.role === 'guard') {
+    if (authCtx.role === "guard") {
       setOne(true);
       setTwo(false);
     }
-    if (authCtx.role === 'admin') {
+    if (authCtx.role === "admin") {
       setTwo(true);
       setOne(false);
     }
@@ -47,7 +47,7 @@ const MainNavigation = () => {
           {authCtx.isLoggedIn && !two && (
             <li>
               <NavLink to="/rent" activeClassName={classes.active}>
-                {one ? 'Return' : 'Rent'}
+                {one ? "Return" : "Rent"}
               </NavLink>
             </li>
           )}
@@ -93,4 +93,4 @@ const MainNavigation = () => {
   );
 };
 
-export default MainNavigation;
+export default Navbar;
