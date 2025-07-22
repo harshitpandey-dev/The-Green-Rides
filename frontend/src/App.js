@@ -1,22 +1,22 @@
-import React, { useContext, Suspense, useState, useEffect } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import React, { useContext, Suspense, useState, useEffect } from "react";
+import { Route, Switch, Redirect } from "react-router-dom";
 // import NotFound from './pages/NotFound';
 // import ProfilePage from './pages/ProfilePage';
 // import AuthPage from './/pages/AuthPage';
 // import Rent from './pages/Rent';
-import Signup from './pages/Signup';
+import Signup from "./pages/Signup";
 
-import Layout from './components/layout/Layout';
-import LoadingSpinner from './components/UI/LoadingSpinner';
-import AdminPage from './pages/AdminPage';
-import Cycles from './pages/Cycles';
-import AuthContext from './store/auth-context';
+import Layout from "./components/layout/Layout";
+import LoadingSpinner from "./components/UI/LoadingSpinner";
+import AdminPage from "./pages/AdminPage";
+import Cycles from "./pages/Cycles";
+import AuthContext from "./store/auth-context";
 
 function App() {
-  const NotFound = React.lazy(() => import('./pages/NotFound'));
-  const ProfilePage = React.lazy(() => import('./pages/ProfilePage'));
-  const AuthPage = React.lazy(() => import('./pages/AuthPage'));
-  const Rent = React.lazy(() => import('./pages/Rent'));
+  const NotFound = React.lazy(() => import("./pages/NotFound"));
+  const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
+  const AuthPage = React.lazy(() => import("./pages/AuthPage"));
+  const Rent = React.lazy(() => import("./pages/Rent"));
   // const Signup = React.lazy(() => import('./pages/Signup'));
 
   const authCtx = useContext(AuthContext);
@@ -28,14 +28,14 @@ function App() {
   useEffect(() => {
     if (loggedIn) {
       setIsLoading(true);
-      fetch('https://cycle-api.azurewebsites.net/users/login', {
-        method: 'POST',
+      fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
         body: JSON.stringify({
           email: authCtx.email,
           password: authCtx.password,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       })
         .then((res) => {
@@ -45,7 +45,7 @@ function App() {
           } else {
             authCtx.logout();
             return res.json().then((data) => {
-              let errorMessage = 'Authentication Failed';
+              let errorMessage = "Authentication Failed";
               if (data && data.error && data.error.message) {
                 setIsLoading(false);
                 errorMessage = data.error.message;
@@ -73,7 +73,7 @@ function App() {
   }, [loggedIn]);
 
   useEffect(() => {
-    if (authCtx.role === 'admin') {
+    if (authCtx.role === "admin") {
       setIsAdmin(true);
     } else {
       setIsAdmin(false);

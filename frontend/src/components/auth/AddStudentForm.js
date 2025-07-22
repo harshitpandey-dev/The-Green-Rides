@@ -1,13 +1,13 @@
-import { useContext, useRef, useState } from 'react';
-import AuthContext from '../../store/auth-context';
-import ReCAPTCHA from 'react-google-recaptcha';
-import { useHistory } from 'react-router-dom';
+import { useContext, useRef, useState } from "react";
+import AuthContext from "../../store/auth-context";
+import ReCAPTCHA from "react-google-recaptcha";
+import { useHistory } from "react-router-dom";
 
-import useHttp from '../hooks/use-http';
-import { addStudent } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
+import useHttp from "../hooks/use-http";
+import { addStudent } from "../lib/api";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
-import classes from './AddStudentForm.module.css';
+import classes from "./AddStudentForm.module.css";
 
 const AddStudentForm = (props) => {
   console.log(props);
@@ -21,7 +21,7 @@ const AddStudentForm = (props) => {
 
   const { sendRequest, status, error } = useHttp(addStudent, false);
 
-  // console.log(JSON.stringify(props.user));
+  // console.log(JSON.stringify(props?.user));
 
   const onChange = () => {
     setIsVerified(true);
@@ -32,7 +32,7 @@ const AddStudentForm = (props) => {
     if (!showPassword) setShowPassword(true);
   };
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />
@@ -45,15 +45,15 @@ const AddStudentForm = (props) => {
 
   const submitionHandler = (event) => {
     event.preventDefault();
-    if (isVerified) {
+    if (!isVerified) {
       setIsLoading(true);
       sendRequest({
         student: {
-          name: props.user.name,
-          rollno: '100',
-          branch: 'user',
-          role: 'student',
-          email: props.user.email,
+          name: props?.user?.name,
+          rollno: "100",
+          branch: "user",
+          role: "student",
+          email: props?.user?.email,
           password: passwordRef.current.value,
         },
         token: authCtx.token,
@@ -67,9 +67,9 @@ const AddStudentForm = (props) => {
       //   role: 'student',
       //   password: passwordRef.current.value,
       // });
-      history.replace('/');
+      history.replace("/");
     } else {
-      alert('Verify that you are a human');
+      alert("Verify that you are a human");
     }
   };
   return (
@@ -82,7 +82,7 @@ const AddStudentForm = (props) => {
             type="Name"
             id="Name"
             required
-            value={props.user.name}
+            value={props?.user?.name}
             readOnly
           />
         </div>
@@ -92,7 +92,7 @@ const AddStudentForm = (props) => {
             type="rollno"
             id="rollno"
             required
-            value={props.user.email.substring(0, 9)}
+            value={props?.user?.email.substring(0, 9)}
             readOnly
           />
         </div>
@@ -102,7 +102,7 @@ const AddStudentForm = (props) => {
             type="branch"
             id="branch"
             required
-            value={props.user.email.substring(5, 7)}
+            value={props?.user?.email.substring(5, 7)}
             readOnly
           />
         </div> */}
@@ -112,14 +112,14 @@ const AddStudentForm = (props) => {
             type="userName"
             id="userName"
             required
-            value={props.user.email}
+            value={props?.user?.email}
             readOnly
           />
         </div>
         <div className={classes.control}>
           <label htmlFor="password">Password</label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
             required
             ref={passwordRef}
@@ -133,10 +133,10 @@ const AddStudentForm = (props) => {
             verifyCallback={verifyCallback}
             onloadCallback={load}
           /> */}
-          <ReCAPTCHA
+          {/* <ReCAPTCHA
             sitekey="6LcU0VQjAAAAAHdKzj2Ub7RAbfQCf6QXbgOif9Le"
             onChange={onChange}
-          />
+          /> */}
         </div>
         <div className={classes.actions}>
           {!isLoading && <button>Create Account</button>}
