@@ -1,13 +1,14 @@
-const url = "http://localhost:5000/api";
-
 export async function registerUser(props) {
-  let response = await fetch(`${url}/auth/register`, {
-    method: "POST",
-    body: JSON.stringify(props.student),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  let response = await fetch(
+    `${process.env.REACT_APP_API_ENDPOINT}/auth/register`,
+    {
+      method: "POST",
+      body: JSON.stringify(props.user),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   let data = await response.json();
   if (!response.ok) {
     throw new Error(data.message || "Could not Add Student.");
@@ -16,16 +17,19 @@ export async function registerUser(props) {
 }
 
 export async function loginUser(props) {
-  const response = await fetch(`${url}/auth/login`, {
-    method: "POST",
-    body: JSON.stringify({
-      email: props.email,
-      password: props.password,
-    }),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    `${process.env.REACT_APP_API_ENDPOINT}/auth/login`,
+    {
+      method: "POST",
+      body: JSON.stringify({
+        email: props.email,
+        password: props.password,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   const data = await response.json();
   if (!response.ok) {
     throw new Error(data.message || "Could not login.");

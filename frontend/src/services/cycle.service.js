@@ -1,4 +1,4 @@
-const url = "http://localhost:5000/api";
+const url = process.env.REACT_APP_API_ENDPOINT;
 
 // RENT CYCLE (now handled as a rental)
 export async function rentCycle(props) {

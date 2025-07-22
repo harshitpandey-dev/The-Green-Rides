@@ -10,7 +10,6 @@ import LoadingSpinner from "../UI/LoadingSpinner";
 import classes from "./AddStudentForm.module.css";
 
 const AddStudentForm = (props) => {
-  console.log(props);
   const authCtx = useContext(AuthContext);
   const passwordRef = useRef();
   const history = useHistory();
@@ -20,8 +19,6 @@ const AddStudentForm = (props) => {
   const [isVerified, setIsVerified] = useState(false);
 
   const { sendRequest, status, error } = useHttp(registerUser, false);
-
-  // console.log(JSON.stringify(props?.user));
 
   const onChange = () => {
     setIsVerified(true);
@@ -48,11 +45,11 @@ const AddStudentForm = (props) => {
     if (isVerified) {
       setIsLoading(true);
       sendRequest({
-        student: {
+        user: {
           name: props?.user?.name,
-          rollno: "100",
-          branch: "user",
-          role: "student",
+          rollNo: "0",
+          branch: "default",
+          role: "user",
           email: props?.user?.email,
           password: passwordRef.current.value,
         },
@@ -98,12 +95,10 @@ const AddStudentForm = (props) => {
           />
         </div>
         <input type="checkbox" onClick={toggleShowPassword} /> Show Password
-        <div>
-          <ReCAPTCHA
-            sitekey="6LcU0VQjAAAAAHdKzj2Ub7RAbfQCf6QXbgOif9Le"
-            onChange={onChange}
-          />
-        </div>
+        <ReCAPTCHA
+          sitekey={process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY || ""}
+          onChange={onChange}
+        />
         <div className={classes.actions}>
           {!isLoading && <button>Create Account</button>}
           {isLoading && <p>Sending Request....</p>}

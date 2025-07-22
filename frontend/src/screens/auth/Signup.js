@@ -25,11 +25,7 @@ const Signup = () => {
         </div>
       )}
 
-      {initialSignup && user && (
-        <div>
-          <AddStudentForm user={user} />
-        </div>
-      )}
+      {initialSignup && user && <AddStudentForm user={user} />}
     </div>
   );
 };
