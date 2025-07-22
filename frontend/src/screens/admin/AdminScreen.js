@@ -6,7 +6,7 @@ import AddStudentForm from "../../components/Admin/AddStudentForm";
 import DeleteCycle from "../../components/Admin/DeleteCycle";
 import DeleteGuard from "../../components/Admin/DeleteGuard";
 import DeleteStudent from "../../components/Admin/DeleteStudent";
-import Form from "../../components/Admin/Form";
+import Button from "../../components/common/Button";
 
 import classes from "./admin.module.css";
 
@@ -97,16 +97,22 @@ const AdminScreen = () => {
         {addcy && <AddCycle />}
         {delcy && <DeleteCycle />}
 
-        {
-          <Form
-            printadds={adds}
-            printdels={dels}
-            printaddg={addg}
-            printdelg={delg}
-            printaddc={addc}
-            printdelc={delc}
-          />
-        }
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(2, 1fr)",
+            gap: "1rem",
+            maxWidth: "600px",
+            margin: "2rem auto",
+          }}
+        >
+          <Button click={adds}>Add User</Button>
+          <Button click={dels}>Delete User</Button>
+          <Button click={addg}>Add Guard</Button>
+          <Button click={delg}>Delete Guard</Button>
+          <Button click={addc}>Add Cycle</Button>
+          <Button click={delc}>Delete Cycle</Button>
+        </div>
       </div>
     </div>
   );

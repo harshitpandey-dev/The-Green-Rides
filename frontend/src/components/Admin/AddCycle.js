@@ -1,18 +1,18 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import Scanner from "../QrScaner/Scanner";
 import classes from "./AddStudentForm.module.css";
 import useHttp from "../../hooks/useHttp";
 import { addCycle } from "../../services/cycle.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { AuthContext } from "../../contexts/authContext";
+import { useUser } from "../../contexts/authContext";
 
 const AddCycle = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [id, setId] = useState(null);
 
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
 
   const { sendRequest, status, error } = useHttp(addCycle, false);
 
@@ -21,7 +21,7 @@ const AddCycle = () => {
     setScanComplete(true);
   };
 
-  const submitionHandler = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
     sendRequest({
@@ -49,7 +49,7 @@ const AddCycle = () => {
   return (
     <section className={classes.auth}>
       <h1>Add Cycle</h1>
-      <form onSubmit={submitionHandler}>
+      <form onSubmit={handleSubmit}>
         {!scanComplete && <Scanner scan={addCycleHandler} />}
         {scanComplete && <h3>{id}</h3>}
         <div className={classes.actions}>

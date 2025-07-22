@@ -1,7 +1,7 @@
-import { useState, useRef, useContext } from "react";
+import { useState, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import { AuthContext } from "../../contexts/authContext";
+import { useUser } from "../../contexts/authContext";
 import classes from "./login.module.css";
 import { loginUser } from "../../services/auth.service";
 
@@ -10,7 +10,7 @@ const LoginScreen = () => {
 
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
 
   const emailInputRef = useRef();
   const passwordInputRef = useRef();

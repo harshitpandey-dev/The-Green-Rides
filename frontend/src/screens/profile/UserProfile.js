@@ -1,35 +1,29 @@
-import { useContext, useState } from "react";
-import { AuthContext } from "../../contexts/authContext";
+import { useState } from "react";
+import { useUser } from "../../contexts/authContext";
 import ProfileForm from "../../components/Profile/ProfileForm";
 import classes from "./UserProfile.module.css";
 
 const UserProfile = () => {
-  const authCtx = useContext(AuthContext);
+  const { currentUser } = useUser();
   const [showChange, setShowChange] = useState(false);
 
   const showChangeHandler = () => {
-    if (showChange) setShowChange(false);
-    if (!showChange) setShowChange(true);
+    setShowChange(!showChange);
   };
 
-  const user = {
-    name: authCtx.name,
-    branch: authCtx.branch,
-    rollNo: authCtx.rollNo,
-    cycleId: authCtx.cycleId ? authCtx.cycleId : "",
-    role: authCtx.role,
-  };
   return (
     <section className={classes.profile}>
-      <h1>{authCtx.role?.charAt(0).toUpperCase()} Profile</h1>
-      <h3 className="centered">Name : {user.name}</h3>
-
-      {showChange && (
-        <ProfileForm
-          token={localStorage.getItem("token")}
-          userid={authCtx.userid}
-        />
+      <h1>
+        {currentUser.role?.charAt(0).toUpperCase() + currentUser.role?.slice(1)}{" "}
+        Profile
+      </h1>
+      <h3>Name : {currentUser?.name}</h3>
+      <h3>Email : {currentUser?.email}</h3>
+      {currentUser?.role === "student" && (
+        <h3>Roll No : {currentUser?.rollNo}</h3>
       )}
+
+      {showChange && <ProfileForm userid={currentUser.userid} />}
 
       <div className={classes.action}>
         <button onClick={showChangeHandler}>
