@@ -97,3 +97,12 @@ export const AuthContextProvider = ({ children }) => {
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
+
+export const useUser = () => {
+  const context = React.useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useUser() must be used inside AppProvider");
+  } else {
+    return context;
+  }
+};

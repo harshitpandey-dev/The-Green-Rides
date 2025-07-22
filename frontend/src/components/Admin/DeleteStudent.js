@@ -1,5 +1,5 @@
-import { useContext, useRef, useState } from "react";
-import { AuthContext } from "../../contexts/authContext";
+import { useRef, useState } from "react";
+import { useUser } from "../../contexts/authContext";
 import useHttp from "../../hooks/useHttp";
 import { deleteUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
@@ -7,7 +7,7 @@ import LoadingSpinner from "../common/LoadingSpinner";
 import classes from "./AddStudentForm.module.css";
 
 const DeleteStudent = () => {
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
   const emailRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 

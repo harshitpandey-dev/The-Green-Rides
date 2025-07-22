@@ -1,12 +1,12 @@
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import classes from "./AddStudentForm.module.css";
 import useHttp from "../../hooks/useHttp";
 import { deleteUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { AuthContext } from "../../contexts/authContext";
+import { useUser } from "../../contexts/authContext";
 
 const DeleteGuard = () => {
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
   const emailRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 

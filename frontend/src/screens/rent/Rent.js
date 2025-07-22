@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Scanner from "../../components/QrScaner/Scanner";
 import { rentCycle } from "../../services/cycle.service";
 import useHttp from "../../hooks/useHttp";
 import Button from "../../components/common/Button";
-import { AuthContext } from "../../contexts/authContext";
+import { useUser } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import classes from "./Rent.module.css";
 
 const Rent = (props) => {
   const history = useHistory();
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
   const [data, setData] = useState(null);
   const [done, setDone] = useState(false);
   const [rent, setRent] = useState(true);

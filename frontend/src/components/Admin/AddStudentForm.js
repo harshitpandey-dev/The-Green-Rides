@@ -1,5 +1,5 @@
-import { useContext, useRef, useState } from "react";
-import { AuthContext } from "../../contexts/authContext";
+import { useRef, useState } from "react";
+import { useUser } from "../../contexts/authContext";
 
 import useHttp from "../../hooks/useHttp";
 import { registerUser } from "../../services/auth.service";
@@ -8,7 +8,7 @@ import LoadingSpinner from "../common/LoadingSpinner";
 import classes from "./AddStudentForm.module.css";
 
 const AddStudentForm = () => {
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
   const nameRef = useRef();
   // const rollNoRef = useRef();
   // const branchRef = useRef();

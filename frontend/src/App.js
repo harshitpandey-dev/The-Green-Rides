@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { AuthContext } from "./contexts/authContext";
+import React from "react";
+import { useUser } from "./contexts/authContext";
 import { RouteConfig } from "./routes/RouteConfig";
 import LoadingSpinner from "./components/common/LoadingSpinner";
 
 function App() {
-  const { isAuthReady, isLoggedIn, currentUser } = useContext(AuthContext);
+  const { isAuthReady, isLoggedIn, currentUser } = useUser();
 
   if (!isAuthReady) return <LoadingSpinner />;
 

@@ -1,12 +1,12 @@
-import { Fragment, useContext, useState } from "react";
+import { Fragment, useState } from "react";
 import CycleList from "../../components/cycle/CycleList";
 import useHttp from "../../hooks/useHttp";
 import { getCycles } from "../../services/cycle.service";
-import { AuthContext } from "../../contexts/authContext";
+import { useUser } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const Cycles = () => {
-  const authCtx = useContext(AuthContext);
+  const authCtx = useUser();
   const [getit, setgit] = useState(true);
 
   const {
