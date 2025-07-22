@@ -52,33 +52,19 @@
 
 // export default Signup;
 
-import { useEffect, useState } from 'react';
-import { GoogleLogin } from 'react-google-login';
-import { gapi } from 'gapi-script';
+import { useState } from "react";
+import { GoogleLogin } from "@react-oauth/google";
+import jwt_decode from "jwt-decode";
 
-import AddStudentForm from '../components/auth/AddStudentForm';
+import AddStudentForm from "../components/auth/AddStudentForm";
 
 const Signup = () => {
-  const clientId =
-    '796516456467-obk13f0j5ajcme475pfl3ioecispqv5a.apps.googleusercontent.com';
-
   const [initialSignup, setInitialSignup] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    const initClient = () => {
-      gapi.client.init({
-        clientId: clientId,
-        scope: '',
-      });
-    };
-    gapi.load('client:auth2', initClient);
-  }, []);
-
-  const handleCallbackResponse = (response) => {
-    const userObject = response;
-    // console.log(userObject);
-    setUser(userObject);
+  const handleCallbackResponse = (credentialResponse) => {
+    const decoded = jwt_decode(credentialResponse.credential);
+    setUser(decoded);
     setInitialSignup(true);
   };
 
@@ -87,17 +73,15 @@ const Signup = () => {
       {!initialSignup && (
         <div className="centered">
           <GoogleLogin
-            clientId={clientId}
-            buttonText="Sign in with Google"
             onSuccess={handleCallbackResponse}
-            cookiePolicy={'single_host_origin'}
-            isSignedIn={true}
+            onError={() => console.log("Login Failed")}
           />
         </div>
       )}
-      {initialSignup && (
+
+      {initialSignup && user && (
         <div>
-          <AddStudentForm user={user.profileObj} />
+          <AddStudentForm user={user} />
         </div>
       )}
     </div>

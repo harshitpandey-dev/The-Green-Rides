@@ -1,9 +1,9 @@
-import { useState, useRef, useContext } from 'react';
-import { useHistory } from 'react-router-dom';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useState, useRef, useContext } from "react";
+import { useHistory } from "react-router-dom";
+import ReCAPTCHA from "react-google-recaptcha";
 
-import AuthContext from '../../store/auth-context';
-import classes from './AuthForm.module.css';
+import AuthContext from "../../store/auth-context";
+import classes from "./AuthForm.module.css";
 
 const AuthForm = () => {
   const history = useHistory();
@@ -44,16 +44,16 @@ const AuthForm = () => {
       setIsLoading(true);
 
       let url;
-      url = 'https://cycle-api.azurewebsites.net/users/login'; //login send req url
+      url = "http://localhost:5000/api/auth/login"; //login send req url
 
       fetch(url, {
-        method: 'POST',
+        method: "POST",
         body: JSON.stringify({
           email: enteredEmail,
           password: enteredPassword,
         }),
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       })
         .then((res) => {
@@ -62,7 +62,7 @@ const AuthForm = () => {
             return res.json();
           } else {
             return res.json().then((data) => {
-              let errorMessage = 'Authentication Failed';
+              let errorMessage = "Authentication Failed";
               if (data && data.error && data.error.message) {
                 setIsLoading(false);
                 errorMessage = data.error.message;
@@ -82,18 +82,18 @@ const AuthForm = () => {
             data.cycleid,
             experationTime.toISOString()
           );
-          history.replace('/');
+          history.replace("/");
         })
         .catch((err) => {
           alert(err.message);
         });
     } else {
-      alert('Verify if you are human');
+      alert("Verify if you are human");
     }
   };
 
   const signupHandler = () => {
-    history.push('/signup');
+    history.push("/signup");
   };
 
   return (
@@ -107,7 +107,7 @@ const AuthForm = () => {
         <div className={classes.control}>
           <label htmlFor="password">Your Password</label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
             required
             ref={passwordInputRef}
