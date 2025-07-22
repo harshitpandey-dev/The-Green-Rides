@@ -1,7 +1,7 @@
 import { useContext, useRef, useState } from "react";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 
-import useHttp from "../hooks/use-http";
+import useHttp from "../../hooks/useHttp";
 import { registerUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 

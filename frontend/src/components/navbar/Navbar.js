@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 
-import logo from "../../resources/gogreen.png";
-import classes from "./MainNavigation.module.css";
+import logo from "../../assets/gogreen.png";
+import classes from "./navbar.module.css";
 
 const Navbar = () => {
   const authCtx = useContext(AuthContext);

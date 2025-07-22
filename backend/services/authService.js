@@ -1,12 +1,12 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 
-exports.register = async ({ name, email, password }) => {
+exports.register = async ({ name, email, rollNo, password }) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw new Error("Email already in use");
-  const user = new User({ name, email, password });
+  const user = new User({ name, email, rollNo, password });
   await user.save();
-  return { message: "User registered successfully" };
+  return user;
 };
 
 exports.login = async ({ email, password }) => {
@@ -20,12 +20,13 @@ exports.login = async ({ email, password }) => {
     { expiresIn: "7d" }
   );
   return {
-    token,
     user: {
       id: user._id,
-      name: user.name,
-      email: user.email,
+      name: user?.name,
+      email: user?.email,
+      rollNo: user?.rollNo,
       role: user.role,
     },
+    token,
   };
 };

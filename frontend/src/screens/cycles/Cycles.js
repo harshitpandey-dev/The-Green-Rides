@@ -1,9 +1,9 @@
 import { Fragment, useContext, useState } from "react";
-import CycleList from "../components/cycle/CycleList";
-import useHttp from "../components/hooks/use-http";
-import { getCycles } from "../components/../services/cycle.service";
-import AuthContext from "../store/auth-context";
-import LoadingSpinner from "../components/common/LoadingSpinner";
+import CycleList from "../../components/cycle/CycleList";
+import useHttp from "../../hooks/useHttp";
+import { getCycles } from "../../services/cycle.service";
+import { AuthContext } from "../../contexts/authContext";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
 
 const Cycles = () => {
   const authCtx = useContext(AuthContext);

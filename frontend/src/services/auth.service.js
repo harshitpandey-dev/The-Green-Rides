@@ -3,7 +3,7 @@ export async function registerUser(props) {
     `${process.env.REACT_APP_API_ENDPOINT}/auth/register`,
     {
       method: "POST",
-      body: JSON.stringify(props.user),
+      body: JSON.stringify(props),
       headers: {
         "Content-Type": "application/json",
       },
@@ -13,7 +13,7 @@ export async function registerUser(props) {
   if (!response.ok) {
     throw new Error(data.message || "Could not Add Student.");
   }
-  return "Student Added";
+  return data;
 }
 
 export async function loginUser(props) {

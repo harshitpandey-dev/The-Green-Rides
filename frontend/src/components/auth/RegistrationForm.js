@@ -1,15 +1,13 @@
-import { useContext, useRef, useState } from "react";
-import AuthContext from "../../contexts/authContext";
+import { useRef, useState } from "react";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useHistory } from "react-router-dom";
 
-import useHttp from "../hooks/use-http";
+import useHttp from "../../hooks/useHttp";
 import { registerUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 import classes from "./registrationForm.module.css";
 
-const AddStudentForm = (props) => {
-  const authCtx = useContext(AuthContext);
+const RegistrationForm = (props) => {
   const passwordRef = useRef();
   const history = useHistory();
 
@@ -32,13 +30,9 @@ const AddStudentForm = (props) => {
     if (isVerified) {
       setIsLoading(true);
       sendRequest({
-        user: {
-          name: props?.user?.name,
-          role: "student",
-          email: props?.user?.email,
-          password: passwordRef?.current?.value,
-        },
-        token: authCtx?.token,
+        name: props?.user?.name,
+        email: props?.user?.email,
+        password: passwordRef?.current?.value,
       });
       setIsLoading(false);
       history.replace("/");
@@ -106,4 +100,4 @@ const AddStudentForm = (props) => {
   );
 };
 
-export default AddStudentForm;
+export default RegistrationForm;

@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { GoogleLogin } from "@react-oauth/google";
 import jwt_decode from "jwt-decode";
-
-import AddStudentForm from "../../components/auth/RegistrationForm";
+import RegistrationForm from "../../components/auth/RegistrationForm";
 
 const Signup = () => {
   const [initialSignup, setInitialSignup] = useState(false);
@@ -25,7 +24,7 @@ const Signup = () => {
         </div>
       )}
 
-      {initialSignup && user && <AddStudentForm user={user} />}
+      {initialSignup && user && <RegistrationForm user={user} />}
     </div>
   );
 };
