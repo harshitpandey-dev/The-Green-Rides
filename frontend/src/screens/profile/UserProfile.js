@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 import ProfileForm from "../../components/Profile/ProfileForm";
 import classes from "./UserProfile.module.css";
 

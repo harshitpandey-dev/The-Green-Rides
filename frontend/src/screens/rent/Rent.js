@@ -2,9 +2,9 @@ import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Scanner from "../../components/QrScaner/Scanner";
 import { rentCycle } from "../../services/cycle.service";
-import useHttp from "../components/hooks/use-http";
+import useHttp from "../../hooks/useHttp";
 import Button from "../../components/common/Button";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import classes from "./Rent.module.css";
 

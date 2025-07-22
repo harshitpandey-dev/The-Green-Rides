@@ -1,4 +1,5 @@
-import classes from './Button.module.css';
+import classes from "./common.module.css";
+
 const Button = (props) => {
   return (
     <div className="centered">

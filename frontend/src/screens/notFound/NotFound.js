@@ -1,5 +1,3 @@
-// import Button from '../components/UI/Button';
-
 const NotFound = () => {
   return (
     <div className="centered">

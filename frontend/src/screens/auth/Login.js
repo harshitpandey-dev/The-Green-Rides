@@ -1,7 +1,7 @@
 import { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 import classes from "./login.module.css";
 import { loginUser } from "../../services/auth.service";
 
@@ -39,33 +39,24 @@ const LoginScreen = () => {
         email: enteredEmail,
         password: enteredPassword,
       })
+        // .then((res) => {
+        //   setIsLoading(false);
+        //   console.log({ res });
+        //   if (res.ok) {
+        //     return res.json();
+        //   } else {
+        //     return res.json().then((data) => {
+        //       let errorMessage = "Authentication Failed";
+        //       if (data && data.error && data.error.message) {
+        //         setIsLoading(false);
+        //         errorMessage = data.error.message;
+        //       }
+        //       throw new Error(errorMessage);
+        //     });
+        //   }
+        // })
         .then((res) => {
-          setIsLoading(false);
-          console.log(res);
-          if (res.ok) {
-            return res.json();
-          } else {
-            return res.json().then((data) => {
-              let errorMessage = "Authentication Failed";
-              if (data && data.error && data.error.message) {
-                setIsLoading(false);
-                errorMessage = data.error.message;
-              }
-              throw new Error(errorMessage);
-            });
-          }
-        })
-        .then((data) => {
-          const expirationTime = new Date(new Date().getTime() + +36000000);
-          authCtx.login(
-            data,
-            enteredPassword,
-            data.token,
-            data._id,
-            data.role,
-            data.cycleId,
-            expirationTime.toISOString()
-          );
+          authCtx.login(res?.user, res?.token);
           history.replace("/");
         })
         .catch((err) => {

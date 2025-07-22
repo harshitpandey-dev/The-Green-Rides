@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import classes from "./AddStudentForm.module.css";
-import useHttp from "../hooks/use-http";
+import useHttp from "../../hooks/useHttp";
 import { registerUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 
 const AddGuard = () => {
   const nameRef = useRef();

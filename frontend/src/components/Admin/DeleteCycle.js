@@ -4,7 +4,7 @@ import Scanner from "../QrScaner/Scanner";
 import useHttp from "../../hooks/useHttp";
 import { deleteCycle } from "../../services/cycle.service";
 import classes from "./AddStudentForm.module.css";
-import AuthContext from "../../contexts/authContext";
+import { AuthContext } from "../../contexts/authContext";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const DeleteCycle = () => {

@@ -12,7 +12,7 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const result = await authService.login(req.body);
-    res.json(result);
+    res.status(201).json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
