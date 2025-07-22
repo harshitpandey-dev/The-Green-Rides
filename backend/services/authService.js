@@ -30,3 +30,16 @@ exports.login = async ({ email, password }) => {
     token,
   };
 };
+
+exports.changePassword = async ({ email, oldPassword, newPassword }) => {
+  const user = await User.findOne({ email });
+  if (!user) throw new Error("User not found");
+
+  const isMatch = await user.comparePassword(oldPassword);
+  if (!isMatch) throw new Error("Incorrect old password");
+
+  user.password = newPassword;
+  await user.save();
+
+  return { message: "Password updated successfully" };
+};

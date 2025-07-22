@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import Scanner from "../QrScaner/Scanner";
-import classes from "./AddStudentForm.module.css";
+import classes from "./forms.module.css";
 import useHttp from "../../hooks/useHttp";
 import { addCycle } from "../../services/cycle.service";
 import LoadingSpinner from "../common/LoadingSpinner";

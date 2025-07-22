@@ -4,7 +4,7 @@ import useHttp from "../../hooks/useHttp";
 import { deleteUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 
-import classes from "./AddStudentForm.module.css";
+import classes from "./forms.module.css";
 
 const DeleteStudent = () => {
   const authCtx = useUser();
