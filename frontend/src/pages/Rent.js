@@ -1,12 +1,12 @@
-import { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import Scanner from '../components/QrScaner/Scanner';
-import { rentCycle } from '../components/lib/api';
-import useHttp from '../components/hooks/use-http';
-import Button from '../components/UI/Button';
-import AuthContext from '../store/auth-context';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
-import classes from './Rent.module.css';
+import { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
+import Scanner from "../components/QrScaner/Scanner";
+import { rentCycle } from "../components/../services/cycle.service";
+import useHttp from "../components/hooks/use-http";
+import Button from "../components/UI/Button";
+import AuthContext from "../store/auth-context";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
+import classes from "./Rent.module.css";
 
 const Rent = (props) => {
   const history = useHistory();
@@ -30,28 +30,28 @@ const Rent = (props) => {
     });
     setDone(false);
     setData(null);
-    localStorage.removeItem('scaned');
-    localStorage.removeItem('scandata');
+    localStorage.removeItem("scaned");
+    localStorage.removeItem("scandata");
     if (!two && error) authCtx.addCycle(data);
   };
   useEffect(() => {
-    setData(localStorage.getItem('scandata'));
-    setDone(localStorage.getItem('scaned'));
-    if (localStorage.getItem('scandata') === 'undefined') {
+    setData(localStorage.getItem("scandata"));
+    setDone(localStorage.getItem("scaned"));
+    if (localStorage.getItem("scandata") === "undefined") {
       setData(null);
       setDone(false);
-      localStorage.removeItem('scaned');
-      localStorage.removeItem('scandata');
+      localStorage.removeItem("scaned");
+      localStorage.removeItem("scandata");
     }
   }, []);
   useEffect(() => {
-    if (authCtx.role === 'admin') {
+    if (authCtx.role === "admin") {
       setOne(true);
     }
-    if (authCtx.role === 'guard') {
+    if (authCtx.role === "guard") {
       setTwo(true);
     }
-    if (authCtx.cycleid !== undefined && authCtx.cycleid !== '') {
+    if (authCtx.cycleid !== undefined && authCtx.cycleid !== "") {
       setRent(false);
     }
   }, [
@@ -66,7 +66,7 @@ const Rent = (props) => {
     authCtx.cycleid,
   ]);
   //   console.log({ user: localStorage.getItem('data') });
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />
@@ -76,12 +76,12 @@ const Rent = (props) => {
   if (error) {
     return <p className="centered">{error}</p>;
   }
-  if (status === 'completed') {
+  if (status === "completed") {
     return (
       <div className="centered">
         <div>
           <h1 className="centered">
-            {two ? 'Cycle Returned' : 'Cycle Rented'}
+            {two ? "Cycle Returned" : "Cycle Rented"}
           </h1>
         </div>
         <div>
@@ -90,8 +90,8 @@ const Rent = (props) => {
               click={() => {
                 setDone(false);
                 setData(null);
-                localStorage.removeItem('scaned');
-                localStorage.removeItem('scandata');
+                localStorage.removeItem("scaned");
+                localStorage.removeItem("scandata");
                 history.go(0);
               }}
             >
@@ -105,9 +105,9 @@ const Rent = (props) => {
 
   const ScanComplete = (props) => {
     setData(props);
-    localStorage.setItem('scandata', props);
+    localStorage.setItem("scandata", props);
     setDone(true);
-    localStorage.setItem('scaned', true);
+    localStorage.setItem("scaned", true);
   };
   return (
     <div className={classes.body}>
@@ -126,8 +126,8 @@ const Rent = (props) => {
                   click={() => {
                     setDone(false);
                     setData(null);
-                    localStorage.removeItem('scaned');
-                    localStorage.removeItem('scandata');
+                    localStorage.removeItem("scaned");
+                    localStorage.removeItem("scandata");
                   }}
                 >
                   Scan Again
@@ -147,8 +147,8 @@ const Rent = (props) => {
               click={() => {
                 setDone(false);
                 setData(null);
-                localStorage.removeItem('scaned');
-                localStorage.removeItem('scandata');
+                localStorage.removeItem("scaned");
+                localStorage.removeItem("scandata");
               }}
             >
               Scan Again

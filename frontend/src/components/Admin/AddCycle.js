@@ -1,11 +1,11 @@
-import { useContext, useState } from 'react';
+import { useContext, useState } from "react";
 
-import Scanner from '../QrScaner/Scanner';
-import classes from './AddStudentForm.module.css';
-import useHttp from '../hooks/use-http';
-import { addCycle } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
-import AuthContext from '../../store/auth-context';
+import Scanner from "../QrScaner/Scanner";
+import classes from "./AddStudentForm.module.css";
+import useHttp from "../hooks/use-http";
+import { addCycle } from "../../services/cycle.service";
+import LoadingSpinner from "../UI/LoadingSpinner";
+import AuthContext from "../../store/auth-context";
 
 const AddCycle = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -25,11 +25,11 @@ const AddCycle = () => {
     event.preventDefault();
     setIsLoading(true);
     sendRequest({
-      cycle: { cycleid: id, status: '', stdid: '' },
+      cycle: { cycleid: id, status: "", stdid: "" },
       token: authCtx.token,
     });
     if (!error) {
-      alert('Cycle Added');
+      alert("Cycle Added");
     }
     // console.log({
     //   cycle: { cycleid: id, status: '', stdid: '' },
@@ -38,7 +38,7 @@ const AddCycle = () => {
     setIsLoading(false);
   };
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />

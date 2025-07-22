@@ -4,7 +4,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { useHistory } from "react-router-dom";
 
 import useHttp from "../hooks/use-http";
-import { addStudent } from "../lib/api";
+import { registerUser } from "../../services/auth.service";
 import LoadingSpinner from "../UI/LoadingSpinner";
 
 import classes from "./AddStudentForm.module.css";
@@ -19,7 +19,7 @@ const AddStudentForm = (props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
 
-  const { sendRequest, status, error } = useHttp(addStudent, false);
+  const { sendRequest, status, error } = useHttp(registerUser, false);
 
   // console.log(JSON.stringify(props?.user));
 
@@ -43,9 +43,9 @@ const AddStudentForm = (props) => {
     return <p className="centered">{error}</p>;
   }
 
-  const submitionHandler = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    if (!isVerified) {
+    if (isVerified) {
       setIsLoading(true);
       sendRequest({
         student: {
@@ -59,14 +59,6 @@ const AddStudentForm = (props) => {
         token: authCtx.token,
       });
       setIsLoading(false);
-      // console.log({
-      //   name: nameRef.current.value,
-      //   rollno: rollnoRef.current.value,
-      //   branch: branchRef.current.value,
-      //   email: emailRef.current.value,
-      //   role: 'student',
-      //   password: passwordRef.current.value,
-      // });
       history.replace("/");
     } else {
       alert("Verify that you are a human");
@@ -75,7 +67,7 @@ const AddStudentForm = (props) => {
   return (
     <section className={classes.auth}>
       <h1>Add Student</h1>
-      <form onSubmit={submitionHandler}>
+      <form onSubmit={handleSubmit}>
         <div className={classes.control}>
           <label htmlFor="Name">Student Name</label>
           <input
@@ -86,26 +78,6 @@ const AddStudentForm = (props) => {
             readOnly
           />
         </div>
-        {/* <div className={classes.control}>
-          <label htmlFor="rollno">Student Roll Number</label>
-          <input
-            type="rollno"
-            id="rollno"
-            required
-            value={props?.user?.email.substring(0, 9)}
-            readOnly
-          />
-        </div>
-        <div className={classes.control}>
-          <label htmlFor="branch">Branch</label>
-          <input
-            type="branch"
-            id="branch"
-            required
-            value={props?.user?.email.substring(5, 7)}
-            readOnly
-          />
-        </div> */}
         <div className={classes.control}>
           <label htmlFor="email">Email</label>
           <input
@@ -127,16 +99,10 @@ const AddStudentForm = (props) => {
         </div>
         <input type="checkbox" onClick={toggleShowPassword} /> Show Password
         <div>
-          {/* <Recaptcha
-            sitekey="6LfOzVQjAAAAACIJVTM3w4iuAePfdEloNCQvRhj-"
-            render="explicit"
-            verifyCallback={verifyCallback}
-            onloadCallback={load}
-          /> */}
-          {/* <ReCAPTCHA
+          <ReCAPTCHA
             sitekey="6LcU0VQjAAAAAHdKzj2Ub7RAbfQCf6QXbgOif9Le"
             onChange={onChange}
-          /> */}
+          />
         </div>
         <div className={classes.actions}>
           {!isLoading && <button>Create Account</button>}

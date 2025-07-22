@@ -1,11 +1,11 @@
-import { useContext, useRef, useState } from 'react';
-import AuthContext from '../../store/auth-context';
+import { useContext, useRef, useState } from "react";
+import AuthContext from "../../store/auth-context";
 
-import useHttp from '../hooks/use-http';
-import { addStudent } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
+import useHttp from "../hooks/use-http";
+import { registerUser } from "../../services/auth.service";
+import LoadingSpinner from "../UI/LoadingSpinner";
 
-import classes from './AddStudentForm.module.css';
+import classes from "./AddStudentForm.module.css";
 
 const AddStudentForm = () => {
   const authCtx = useContext(AuthContext);
@@ -18,7 +18,7 @@ const AddStudentForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { sendRequest, status, error } = useHttp(addStudent, false);
+  const { sendRequest, status, error } = useHttp(registerUser, false);
 
   const toggleShowPassword = () => {
     if (showPassword) setShowPassword(false);
@@ -33,7 +33,7 @@ const AddStudentForm = () => {
     );
   }
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />
@@ -51,17 +51,17 @@ const AddStudentForm = () => {
       student: {
         name: nameRef.current.value,
         // rollno: rollnoRef.current.value,
-        rollno: '',
-        branch: '',
+        rollno: "",
+        branch: "",
         // branch: branchRef.current.value,
-        role: 'student',
+        role: "student",
         email: emailRef.current.value,
         password: passwordRef.current.value,
       },
       token: authCtx.token,
     });
     if (!error) {
-      alert('Student Added');
+      alert("Student Added");
     }
     // console.log({
     //   name: nameRef.current.value,
@@ -97,7 +97,7 @@ const AddStudentForm = () => {
         <div className={classes.control}>
           <label htmlFor="password">Password</label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
             required
             ref={passwordRef}

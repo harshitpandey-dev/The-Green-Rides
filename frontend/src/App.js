@@ -1,23 +1,18 @@
 import React, { useContext, Suspense, useState, useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
-// import NotFound from './pages/NotFound';
-// import ProfilePage from './pages/ProfilePage';
-// import AuthPage from './/pages/AuthPage';
-// import Rent from './pages/Rent';
-import Signup from "./pages/Signup";
-
+import Signup from "./screens/auth/Signup";
 import Layout from "./components/layout/Layout";
 import LoadingSpinner from "./components/UI/LoadingSpinner";
 import AdminPage from "./pages/AdminPage";
 import Cycles from "./pages/Cycles";
 import AuthContext from "./store/auth-context";
+import { loginUser } from "./services/auth.service";
 
 function App() {
   const NotFound = React.lazy(() => import("./pages/NotFound"));
   const ProfilePage = React.lazy(() => import("./pages/ProfilePage"));
-  const AuthPage = React.lazy(() => import("./pages/AuthPage"));
+  const LoginPage = React.lazy(() => import("./screens/auth/Login"));
   const Rent = React.lazy(() => import("./pages/Rent"));
-  // const Signup = React.lazy(() => import('./pages/Signup'));
 
   const authCtx = useContext(AuthContext);
 
@@ -28,15 +23,9 @@ function App() {
   useEffect(() => {
     if (loggedIn) {
       setIsLoading(true);
-      fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({
-          email: authCtx.email,
-          password: authCtx.password,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
+      loginUser({
+        email: authCtx.email,
+        password: authCtx.password,
       })
         .then((res) => {
           setIsLoading(false);
@@ -108,7 +97,7 @@ function App() {
           </Route>
           <Route path="/auth">
             {loggedIn && <Redirect to="/mainPage" />}
-            {!loggedIn && <AuthPage />}
+            {!loggedIn && <LoginPage />}
           </Route>
           <Route path="/mainPage">
             {loggedIn && <ProfilePage />}

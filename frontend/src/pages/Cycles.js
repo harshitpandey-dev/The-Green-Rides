@@ -1,9 +1,9 @@
-import { Fragment, useContext, useState } from 'react';
-import CycleList from '../components/cycle/CycleList';
-import useHttp from '../components/hooks/use-http';
-import { getCycles } from '../components/lib/api';
-import AuthContext from '../store/auth-context';
-import LoadingSpinner from '../components/UI/LoadingSpinner';
+import { Fragment, useContext, useState } from "react";
+import CycleList from "../components/cycle/CycleList";
+import useHttp from "../components/hooks/use-http";
+import { getCycles } from "../components/../services/cycle.service";
+import AuthContext from "../store/auth-context";
+import LoadingSpinner from "../components/UI/LoadingSpinner";
 
 const Cycles = () => {
   const authCtx = useContext(AuthContext);
@@ -21,7 +21,7 @@ const Cycles = () => {
     sendRequest({ token: authCtx.token });
   }
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />

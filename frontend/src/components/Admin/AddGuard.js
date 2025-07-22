@@ -1,9 +1,9 @@
-import { useRef, useState } from 'react';
-import classes from './AddStudentForm.module.css';
-import useHttp from '../hooks/use-http';
-import { addStudent } from '../lib/api';
-import LoadingSpinner from '../UI/LoadingSpinner';
-import AuthContext from '../../store/auth-context';
+import { useRef, useState } from "react";
+import classes from "./AddStudentForm.module.css";
+import useHttp from "../hooks/use-http";
+import { registerUser } from "../../services/auth.service";
+import LoadingSpinner from "../UI/LoadingSpinner";
+import AuthContext from "../../store/auth-context";
 
 const AddGuard = () => {
   const nameRef = useRef();
@@ -13,7 +13,7 @@ const AddGuard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { sendRequest, status, error } = useHttp(addStudent, false);
+  const { sendRequest, status, error } = useHttp(registerUser, false);
 
   const toggleShowPassword = () => {
     if (showPassword) setShowPassword(false);
@@ -28,14 +28,14 @@ const AddGuard = () => {
       student: {
         name: nameRef.current.value,
         email: emailRef.current.value,
-        role: 'guard',
+        role: "guard",
         password: passwordRef.current.value,
       },
       token: AuthContext.token,
     });
 
     if (!error) {
-      alert('Guard Added');
+      alert("Guard Added");
     }
     setIsLoading(false);
 
@@ -47,7 +47,7 @@ const AddGuard = () => {
     // });
   };
 
-  if (status === 'pending') {
+  if (status === "pending") {
     return (
       <div className="centered">
         <LoadingSpinner />
@@ -73,7 +73,7 @@ const AddGuard = () => {
         <div className={classes.control}>
           <label htmlFor="password">Guard Password</label>
           <input
-            type={showPassword ? 'text' : 'password'}
+            type={showPassword ? "text" : "password"}
             id="password"
             required
             ref={passwordRef}
