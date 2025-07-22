@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import Scanner from "../components/QrScaner/Scanner";
-import { rentCycle } from "../components/../services/cycle.service";
+import Scanner from "../../components/QrScaner/Scanner";
+import { rentCycle } from "../../services/cycle.service";
 import useHttp from "../components/hooks/use-http";
-import Button from "../components/UI/Button";
-import AuthContext from "../store/auth-context";
-import LoadingSpinner from "../components/UI/LoadingSpinner";
+import Button from "../../components/common/Button";
+import AuthContext from "../../contexts/authContext";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
 import classes from "./Rent.module.css";
 
 const Rent = (props) => {
@@ -23,7 +23,7 @@ const Rent = (props) => {
   const rentHandler = () => {
     sendRequest({
       token: authCtx.token,
-      cycleid: data,
+      cycleId: data,
       userid: authCtx.userid,
       role: authCtx.role,
       name: authCtx.name,
@@ -51,7 +51,7 @@ const Rent = (props) => {
     if (authCtx.role === "guard") {
       setTwo(true);
     }
-    if (authCtx.cycleid !== undefined && authCtx.cycleid !== "") {
+    if (authCtx.cycleId !== undefined && authCtx.cycleId !== "") {
       setRent(false);
     }
   }, [
@@ -63,7 +63,7 @@ const Rent = (props) => {
     one,
     two,
     setTwo,
-    authCtx.cycleid,
+    authCtx.cycleId,
   ]);
   //   console.log({ user: localStorage.getItem('data') });
   if (status === "pending") {

@@ -1,13 +1,12 @@
 import { useContext, useRef, useState } from "react";
-import AuthContext from "../../store/auth-context";
+import AuthContext from "../../contexts/authContext";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useHistory } from "react-router-dom";
 
 import useHttp from "../hooks/use-http";
 import { registerUser } from "../../services/auth.service";
-import LoadingSpinner from "../UI/LoadingSpinner";
-
-import classes from "./AddStudentForm.module.css";
+import LoadingSpinner from "../common/LoadingSpinner";
+import classes from "./registrationForm.module.css";
 
 const AddStudentForm = (props) => {
   const authCtx = useContext(AuthContext);
@@ -25,8 +24,27 @@ const AddStudentForm = (props) => {
   };
 
   const toggleShowPassword = () => {
-    if (showPassword) setShowPassword(false);
-    if (!showPassword) setShowPassword(true);
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (isVerified) {
+      setIsLoading(true);
+      sendRequest({
+        user: {
+          name: props?.user?.name,
+          role: "student",
+          email: props?.user?.email,
+          password: passwordRef?.current?.value,
+        },
+        token: authCtx?.token,
+      });
+      setIsLoading(false);
+      history.replace("/");
+    } else {
+      alert("Verify that you are a human");
+    }
   };
 
   if (status === "pending") {
@@ -36,37 +54,17 @@ const AddStudentForm = (props) => {
       </div>
     );
   }
+
   if (error) {
     return <p className="centered">{error}</p>;
   }
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    if (isVerified) {
-      setIsLoading(true);
-      sendRequest({
-        user: {
-          name: props?.user?.name,
-          rollNo: "0",
-          branch: "default",
-          role: "user",
-          email: props?.user?.email,
-          password: passwordRef.current.value,
-        },
-        token: authCtx.token,
-      });
-      setIsLoading(false);
-      history.replace("/");
-    } else {
-      alert("Verify that you are a human");
-    }
-  };
   return (
     <section className={classes.auth}>
-      <h1>Add Student</h1>
+      <h1>Registration</h1>
       <form onSubmit={handleSubmit}>
         <div className={classes.control}>
-          <label htmlFor="Name">Student Name</label>
+          <label htmlFor="Name">Name</label>
           <input
             type="Name"
             id="Name"

@@ -2,8 +2,8 @@ import { useContext, useRef, useState } from "react";
 import classes from "./AddStudentForm.module.css";
 import useHttp from "../hooks/use-http";
 import { deleteUser } from "../../services/auth.service";
-import LoadingSpinner from "../UI/LoadingSpinner";
-import AuthContext from "../../store/auth-context";
+import LoadingSpinner from "../common/LoadingSpinner";
+import AuthContext from "../../contexts/authContext";
 
 const DeleteGuard = () => {
   const authCtx = useContext(AuthContext);

@@ -1,16 +1,16 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import AddCycle from '../components/Admin/AddCycle';
-import AddGuard from '../components/Admin/AddGuard';
-import AddStudentForm from '../components/Admin/AddStudentForm';
-import DeleteCycle from '../components/Admin/DeleteCycle';
-import DeleteGuard from '../components/Admin/DeleteGuard';
-import DeleteStudent from '../components/Admin/DeleteStudent';
-import Form from '../components/Admin/Form';
+import AddCycle from "../../components/Admin/AddCycle";
+import AddGuard from "../../components/Admin/AddGuard";
+import AddStudentForm from "../../components/Admin/AddStudentForm";
+import DeleteCycle from "../../components/Admin/DeleteCycle";
+import DeleteGuard from "../../components/Admin/DeleteGuard";
+import DeleteStudent from "../../components/Admin/DeleteStudent";
+import Form from "../../components/Admin/Form";
 
-import classes from './AdminPage.module.css';
+import classes from "./admin.module.css";
 
-const AdminPage = () => {
+const AdminScreen = () => {
   const [addst, setAddst] = useState(false);
   const [delst, setDelst] = useState(false);
   const [addgu, setAddgu] = useState(false);
@@ -30,6 +30,7 @@ const AdminPage = () => {
       setDelcy(false);
     }
   };
+
   const dels = () => {
     if (delst) setDelst(false);
     if (!delst) {
@@ -110,4 +111,4 @@ const AdminPage = () => {
     </div>
   );
 };
-export default AdminPage;
+export default AdminScreen;

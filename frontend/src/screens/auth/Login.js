@@ -1,7 +1,7 @@
 import { useState, useRef, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import ReCAPTCHA from "react-google-recaptcha";
-import AuthContext from "../../store/auth-context";
+import AuthContext from "../../contexts/authContext";
 import classes from "./login.module.css";
 import { loginUser } from "../../services/auth.service";
 
@@ -63,7 +63,7 @@ const LoginScreen = () => {
             data.token,
             data._id,
             data.role,
-            data.cycleid,
+            data.cycleId,
             expirationTime.toISOString()
           );
           history.replace("/");

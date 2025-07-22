@@ -1,8 +1,8 @@
 import { useContext, useRef, useState } from "react";
-import AuthContext from "../../store/auth-context";
+import AuthContext from "../../contexts/authContext";
 import useHttp from "../hooks/use-http";
 import { deleteUser } from "../../services/auth.service";
-import LoadingSpinner from "../UI/LoadingSpinner";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 import classes from "./AddStudentForm.module.css";
 
