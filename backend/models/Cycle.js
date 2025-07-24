@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const cycleSchema = new mongoose.Schema({
-  cycleId: { type: Number, required: true },
+  cycleId: { type: String, required: true },
   status: {
     type: String,
     enum: ["available", "damaged"],

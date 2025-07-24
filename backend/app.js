@@ -22,10 +22,10 @@ mongoose
 const jwtMiddleware = require("./middleware/auth");
 app.use(jwtMiddleware);
 
-const authRoutes = require("./routes/auth");
-const cycleRoutes = require("./routes/cycles");
-const rentalRoutes = require("./routes/rentals");
-const userRoutes = require("./routes/users");
+const authRoutes = require("./routes/authRoutes");
+const cycleRoutes = require("./routes/cycleRoutes");
+const rentalRoutes = require("./routes/rentalRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/cycles", cycleRoutes);

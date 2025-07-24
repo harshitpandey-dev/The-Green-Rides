@@ -21,7 +21,7 @@ const CycleListScreen = () => {
       <li className={classes.item}>
         <figure>
           <p>Cycle Id: {props.cycleId}</p>
-          <figcaption>{props.status}</figcaption>
+          <p>Status: {props.status}</p>
         </figure>
       </li>
     );
@@ -40,12 +40,12 @@ const CycleListScreen = () => {
 
   return (
     <Fragment>
-      {cycles.length !== 0 ? (
+      {cycles && cycles.length !== 0 ? (
         <ul className={classes.list}>
           {cycles.map((cycle) => (
             <CycleItem
               key={cycle.cycleId}
-              id={cycle.cycleId}
+              cycleId={cycle.cycleId}
               status={cycle.status}
             />
           ))}
