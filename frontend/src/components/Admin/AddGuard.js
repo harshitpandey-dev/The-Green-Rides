@@ -1,9 +1,9 @@
 import { useRef, useState } from "react";
 import classes from "./forms.module.css";
 import useHttp from "../../hooks/useHttp";
-import { registerUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 import { AuthContext } from "../../contexts/authContext";
+import { createUser } from "../../services/user.service";
 
 const AddGuard = () => {
   const nameRef = useRef();
@@ -13,11 +13,10 @@ const AddGuard = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { sendRequest, status, error } = useHttp(registerUser, false);
+  const { sendRequest, status, error } = useHttp(createUser, false);
 
   const toggleShowPassword = () => {
-    if (showPassword) setShowPassword(false);
-    if (!showPassword) setShowPassword(true);
+    setShowPassword(!showPassword);
   };
 
   const submitionHandler = (event) => {
@@ -38,13 +37,6 @@ const AddGuard = () => {
       alert("Guard Added");
     }
     setIsLoading(false);
-
-    // console.log({
-    //   name: nameRef.current.value,
-    //   email: emailRef.current.value,
-    //   role: 'guard',
-    //   password: passwordRef.current.value,
-    // });
   };
 
   if (status === "pending") {

@@ -1,14 +1,12 @@
-import { useContext, useState } from "react";
+import { useState } from "react";
 
 import Scanner from "../QrScaner/Scanner";
 import useHttp from "../../hooks/useHttp";
 import { deleteCycle } from "../../services/cycle.service";
 import classes from "./forms.module.css";
-import { AuthContext } from "../../contexts/authContext";
 import LoadingSpinner from "../common/LoadingSpinner";
 
 const DeleteCycle = () => {
-  const authCtx = useContext(AuthContext);
   const [isLoading, setIsLoading] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [id, setId] = useState(null);
@@ -23,11 +21,12 @@ const DeleteCycle = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
-    sendRequest({ cycleId: id, token: authCtx.token });
+    sendRequest({ cycleId: id });
+
     if (!error) {
       alert("Cycle Deleted");
     }
-    // console.log(id);
+
     setIsLoading(false);
   };
 

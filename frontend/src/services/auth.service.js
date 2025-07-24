@@ -1,3 +1,8 @@
+const getBearerToken = () => {
+  const authKey = localStorage.getItem("GR_TOKEN");
+  return `Bearer ${authKey}`;
+};
+
 export async function registerUser(props) {
   let response = await fetch(
     `${process.env.REACT_APP_API_ENDPOINT}/auth/register`,
@@ -54,6 +59,7 @@ export async function changePassword(props) {
       }),
       headers: {
         "Content-Type": "application/json",
+        Authorization: getBearerToken(),
       },
     }
   );

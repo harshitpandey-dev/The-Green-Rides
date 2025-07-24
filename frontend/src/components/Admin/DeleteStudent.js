@@ -1,13 +1,10 @@
 import { useRef, useState } from "react";
-import { useUser } from "../../contexts/authContext";
 import useHttp from "../../hooks/useHttp";
 import { deleteUser } from "../../services/auth.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-
 import classes from "./forms.module.css";
 
 const DeleteStudent = () => {
-  const authCtx = useUser();
   const emailRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,19 +14,13 @@ const DeleteStudent = () => {
     event.preventDefault();
     setIsLoading(true);
     sendRequest({
-      student: {
-        email: emailRef.current.value,
-      },
-      token: authCtx.token,
+      email: emailRef.current.value,
     });
 
     if (!error) {
       alert("Student Deleted");
     }
 
-    // console.log({
-    //   email: emailRef.current.value,
-    // });
     setIsLoading(false);
   };
   if (isLoading) {
@@ -51,7 +42,6 @@ const DeleteStudent = () => {
   }
   return (
     <section className={classes.auth}>
-      {/* <h1>{isLogin ? "Login" : "Sign Up"}</h1> */}
       <h1>Delete User</h1>
       <form onSubmit={submitionHandler}>
         <div className={classes.control}>

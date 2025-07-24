@@ -5,3 +5,11 @@ exports.getCurrentUser = async (userId) => {
   if (!user) throw new Error("User not found");
   return user;
 };
+
+exports.addUser = async ({ name, email, role, password, rollNo }) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser) throw new Error("Email already in use");
+  const user = new User({ name, email, role, password, rollNo });
+  await user.save();
+  return user;
+};
