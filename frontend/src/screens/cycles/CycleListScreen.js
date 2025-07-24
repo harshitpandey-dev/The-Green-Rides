@@ -1,14 +1,10 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect } from "react";
 import useHttp from "../../hooks/useHttp";
 import { getCycles } from "../../services/cycle.service";
-import { useUser } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import classes from "./cycle.module.css";
 
-const Cycles = () => {
-  const authCtx = useUser();
-  const [getit, setgit] = useState(true);
-
+const CycleListScreen = () => {
   const {
     sendRequest,
     status,
@@ -16,19 +12,15 @@ const Cycles = () => {
     error,
   } = useHttp(getCycles, false);
 
-  if (getit) {
-    setgit(false);
-    sendRequest({ token: authCtx.token });
-  }
+  useEffect(() => {
+    sendRequest();
+  }, [sendRequest]);
 
   const CycleItem = (props) => {
     return (
       <li className={classes.item}>
         <figure>
-          <blockcycle>
-            <p>Cycle Id: {props.cycleId}</p>
-            <p>Name: {props.stdname}</p>
-          </blockcycle>
+          <p>Cycle Id: {props.cycleId}</p>
           <figcaption>{props.status}</figcaption>
         </figure>
       </li>
@@ -53,10 +45,8 @@ const Cycles = () => {
           {cycles.map((cycle) => (
             <CycleItem
               key={cycle.cycleId}
-              stdid={cycle.stdid}
               id={cycle.cycleId}
               status={cycle.status}
-              stdname={cycle.stdname}
             />
           ))}
         </ul>
@@ -69,4 +59,4 @@ const Cycles = () => {
   );
 };
 
-export default Cycles;
+export default CycleListScreen;
