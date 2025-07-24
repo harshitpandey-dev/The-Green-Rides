@@ -19,7 +19,7 @@ const AddStudentForm = () => {
     setShowPassword(!showPassword);
   };
 
-  const submitionHandler = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
     sendRequest({
@@ -57,7 +57,7 @@ const AddStudentForm = () => {
   return (
     <section className={classes.auth}>
       <h1>Add User</h1>
-      <form onSubmit={submitionHandler}>
+      <form onSubmit={handleSubmit}>
         <div className={classes.control}>
           <label htmlFor="Name">Name</label>
           <input type="Name" id="Name" required ref={nameRef} />

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 module.exports = function (req, res, next) {
   const publicPaths = ["/login", "/register"];
 
-  if (publicPaths.includes(req.path)) {
+  if (publicPaths.find((path) => req?.url?.includes(path))) {
     return next();
   }
 

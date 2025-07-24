@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import classes from "./forms.module.css";
 import useHttp from "../../hooks/useHttp";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { AuthContext } from "../../contexts/authContext";
 import { createUser } from "../../services/user.service";
 
 const AddGuard = () => {
@@ -19,23 +18,21 @@ const AddGuard = () => {
     setShowPassword(!showPassword);
   };
 
-  const submitionHandler = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
 
     sendRequest({
-      student: {
-        name: nameRef.current.value,
-        email: emailRef.current.value,
-        role: "guard",
-        password: passwordRef.current.value,
-      },
-      token: AuthContext.token,
+      name: nameRef.current.value,
+      email: emailRef.current.value,
+      role: "guard",
+      password: passwordRef.current.value,
     });
 
     if (!error) {
       alert("Guard Added");
     }
+
     setIsLoading(false);
   };
 
@@ -53,7 +50,7 @@ const AddGuard = () => {
   return (
     <section className={classes.auth}>
       <h1>Add Guard</h1>
-      <form onSubmit={submitionHandler}>
+      <form onSubmit={handleSubmit}>
         <div className={classes.control}>
           <label htmlFor="Name">Guard Name</label>
           <input type="Name" id="Name" required ref={nameRef} />

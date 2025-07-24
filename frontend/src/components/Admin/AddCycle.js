@@ -20,7 +20,13 @@ const AddCycle = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
-    sendRequest({ cycleId: id });
+    sendRequest({
+      cycleId: id,
+      addedBy: {
+        name: localStorage.getItem("GR_USER").name,
+        id: localStorage.getItem("GR_USER").id,
+      },
+    });
 
     if (!error) {
       alert("Cycle Added");
