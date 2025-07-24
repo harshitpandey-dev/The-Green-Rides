@@ -2,7 +2,7 @@ import React, { Suspense, Fragment } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Signup from "../screens/auth/Signup";
 import AdminScreen from "../screens/admin/AdminScreen";
-import Cycles from "../screens/cycles/Cycles";
+import CycleListScreen from "../screens/cycles/CycleListScreen";
 import Navbar from "../components/navbar/Navbar";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
@@ -72,7 +72,7 @@ export const RouteConfig = ({ loggedIn, isAdmin }) => {
             </ProtectedRoute>
 
             <Route path="/cycles">
-              <Cycles />
+              <CycleListScreen />
             </Route>
 
             <Route path="*">

@@ -39,7 +39,7 @@ export async function deleteCycle(cycleId) {
 }
 
 // GET ALL CYCLES
-export async function getCycles(props) {
+export async function getCycles() {
   let response = await fetch(`${url}/cycles`, {
     method: "GET",
     headers: {
