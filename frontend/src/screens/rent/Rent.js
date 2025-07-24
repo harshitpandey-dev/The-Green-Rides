@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import Scanner from "../../components/QrScaner/Scanner";
-import { rentCycle } from "../../services/cycle.service";
+import { rentCycle } from "../../services/rent.service";
 import useHttp from "../../hooks/useHttp";
 import Button from "../../components/common/Button";
 import { useUser } from "../../contexts/authContext";
@@ -16,8 +16,6 @@ const Rent = (props) => {
   const [rent, setRent] = useState(true);
   const [one, setOne] = useState(false);
   const [two, setTwo] = useState(false);
-
-  //   console.log(authCtx);
 
   let { sendRequest, status, error } = useHttp(rentCycle, false);
   const rentHandler = () => {
@@ -65,7 +63,7 @@ const Rent = (props) => {
     setTwo,
     authCtx.cycleId,
   ]);
-  //   console.log({ user: localStorage.getItem('data') });
+
   if (status === "pending") {
     return (
       <div className="centered">
@@ -73,9 +71,11 @@ const Rent = (props) => {
       </div>
     );
   }
+
   if (error) {
     return <p className="centered">{error}</p>;
   }
+
   if (status === "completed") {
     return (
       <div className="centered">

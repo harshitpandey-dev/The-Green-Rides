@@ -1,18 +1,14 @@
 import { useState } from "react";
-
 import Scanner from "../QrScaner/Scanner";
 import classes from "./forms.module.css";
 import useHttp from "../../hooks/useHttp";
 import { addCycle } from "../../services/cycle.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-import { useUser } from "../../contexts/authContext";
 
 const AddCycle = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [scanComplete, setScanComplete] = useState(false);
   const [id, setId] = useState(null);
-
-  const authCtx = useUser();
 
   const { sendRequest, status, error } = useHttp(addCycle, false);
 
@@ -24,10 +20,8 @@ const AddCycle = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     setIsLoading(true);
-    sendRequest({
-      cycle: { cycleId: id, status: "", stdid: "" },
-      token: authCtx.token,
-    });
+    sendRequest({ cycleId: id });
+
     if (!error) {
       alert("Cycle Added");
     }
@@ -50,11 +44,13 @@ const AddCycle = () => {
     <section className={classes.auth}>
       <h1>Add Cycle</h1>
       <form onSubmit={handleSubmit}>
-        {!scanComplete && <Scanner scan={addCycleHandler} />}
-        {scanComplete && <h3>{id}</h3>}
+        {scanComplete ? <h3>{id}</h3> : <Scanner scan={addCycleHandler} />}
         <div className={classes.actions}>
-          {!isLoading && scanComplete && <button>Add Cycle</button>}
-          {isLoading && <p>Sending Request....</p>}
+          {isLoading ? (
+            <p>Sending Request....</p>
+          ) : (
+            scanComplete && <button>Add Cycle</button>
+          )}
         </div>
       </form>
     </section>

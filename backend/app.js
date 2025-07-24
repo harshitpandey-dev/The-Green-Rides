@@ -19,8 +19,8 @@ mongoose
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Placeholder for JWT middleware
-// const jwtMiddleware = require('./middleware/auth');
-// app.use(jwtMiddleware);
+const jwtMiddleware = require("./middleware/auth");
+app.use(jwtMiddleware);
 
 const authRoutes = require("./routes/auth");
 const cycleRoutes = require("./routes/cycles");
