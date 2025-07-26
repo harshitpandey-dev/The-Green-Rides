@@ -22,9 +22,18 @@ exports.createRental = async (req, res) => {
 exports.completeRental = async (req, res) => {
   try {
     const { cycleId } = req.body;
-    const rental = await rentalService.completeRental(req.user.userId, cycleId);
+    const rental = await rentalService.completeRental(cycleId);
     res.status(201).json(rental);
-  } catch (error) {
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.getRentalByUserId = async (req, res) => {
+  try {
+    const rental = await rentalService.getRentalByUserId(req.user.userId);
+    res.status(201).json(rental);
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };

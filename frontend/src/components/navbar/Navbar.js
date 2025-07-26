@@ -22,7 +22,7 @@ const Navbar = () => {
               </NavLink>
             </li>
           )}
-          {isLoggedIn && currentUser?.role === "student" && (
+          {isLoggedIn && currentUser?.role !== "admin" && (
             <li>
               <NavLink to="/rent" activeClassName={classes.active}>
                 {currentUser?.role === "guard" ? "Return" : "Rent"}

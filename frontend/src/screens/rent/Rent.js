@@ -1,68 +1,60 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useHistory } from "react-router-dom";
 import Scanner from "../../components/QrScaner/Scanner";
-import { rentCycle } from "../../services/rent.service";
+import {
+  getRentedCycleByUserId,
+  rentCycle,
+  returnCycle,
+} from "../../services/rent.service";
 import useHttp from "../../hooks/useHttp";
 import Button from "../../components/common/Button";
 import { useUser } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import classes from "./Rent.module.css";
 
-const Rent = (props) => {
+const Rent = () => {
   const history = useHistory();
-  const authCtx = useUser();
-  const [data, setData] = useState(null);
+  const { currentUser } = useUser();
+  const [cycleId, setCycleId] = useState("");
   const [done, setDone] = useState(false);
-  const [rent, setRent] = useState(true);
-  const [one, setOne] = useState(false);
-  const [two, setTwo] = useState(false);
+  const [rent, setRent] = useState(null);
 
-  let { sendRequest, status, error } = useHttp(rentCycle, false);
-  const rentHandler = () => {
-    sendRequest({
-      token: authCtx.token,
-      cycleId: data,
-      userid: authCtx.userid,
-      role: authCtx.role,
-      name: authCtx.name,
-    });
-    setDone(false);
-    setData(null);
-    localStorage.removeItem("scaned");
-    localStorage.removeItem("scandata");
-    if (!two && error) authCtx.addCycle(data);
-  };
-  useEffect(() => {
-    setData(localStorage.getItem("scandata"));
-    setDone(localStorage.getItem("scaned"));
-    if (localStorage.getItem("scandata") === "undefined") {
-      setData(null);
-      setDone(false);
-      localStorage.removeItem("scaned");
-      localStorage.removeItem("scandata");
+  const { sendRequest, status, error } = useHttp(rentCycle, false);
+
+  const rentHandler = useCallback(() => {
+    sendRequest({ cycleId });
+    setCycleId(null);
+  }, [cycleId, sendRequest]);
+
+  const returnHandler = useCallback(async () => {
+    const res = await returnCycle({ cycleId });
+
+    if (res) {
+      alert("Cycle returned successfully");
+      setCycleId(null);
+    } else {
+      alert("error while returning cycle");
     }
+  }, [cycleId]);
+
+  useEffect(() => {
+    const fetchRentedCycle = async () => {
+      try {
+        const rentedCycle = await getRentedCycleByUserId();
+        if (rentedCycle) {
+          setRent(rentedCycle);
+        }
+      } catch (err) {
+        console.error("Failed to fetch rented cycle", err);
+      }
+    };
+    fetchRentedCycle();
   }, []);
-  useEffect(() => {
-    if (authCtx.role === "admin") {
-      setOne(true);
-    }
-    if (authCtx.role === "guard") {
-      setTwo(true);
-    }
-    if (authCtx.cycleId !== undefined && authCtx.cycleId !== "") {
-      setRent(false);
-    }
-  }, [
-    authCtx,
-    authCtx.role,
-    rent,
-    setRent,
-    setOne,
-    one,
-    two,
-    setTwo,
-    authCtx.cycleId,
-  ]);
+
+  const scanCompleteHandler = (scannedCycleId) => {
+    setCycleId(scannedCycleId);
+    setDone(true);
+  };
 
   if (status === "pending") {
     return (
@@ -81,17 +73,14 @@ const Rent = (props) => {
       <div className="centered">
         <div>
           <h1 className="centered">
-            {two ? "Cycle Returned" : "Cycle Rented"}
+            {currentUser?.role === "guard" ? "Cycle Returned" : "Cycle Rented"}
           </h1>
         </div>
         <div>
-          {two && (
+          {currentUser?.role === "guard" && (
             <Button
               click={() => {
                 setDone(false);
-                setData(null);
-                localStorage.removeItem("scaned");
-                localStorage.removeItem("scandata");
                 history.go(0);
               }}
             >
@@ -103,31 +92,22 @@ const Rent = (props) => {
     );
   }
 
-  const ScanComplete = (props) => {
-    setData(props);
-    localStorage.setItem("scandata", props);
-    setDone(true);
-    localStorage.setItem("scaned", true);
-  };
   return (
     <div className={classes.body}>
-      {!one && !two && (
+      {currentUser?.role === "student" && (
         <div className={classes.comp}>
-          {!rent && (
+          {rent ? (
             <h1 className="centered">You have already rented one Cycle</h1>
-          )}
-          {rent && (
+          ) : (
             <>
-              {!done && <Scanner scan={ScanComplete} />}
-              {data && <p className={classes.p}>{data}</p>}
+              {!done && <Scanner scan={scanCompleteHandler} />}
+              {cycleId && <p className={classes.p}>{cycleId}</p>}
               {done && <Button click={rentHandler}>Rent</Button>}
               {done && (
                 <Button
                   click={() => {
                     setDone(false);
-                    setData(null);
-                    localStorage.removeItem("scaned");
-                    localStorage.removeItem("scandata");
+                    setCycleId(null);
                   }}
                 >
                   Scan Again
@@ -137,30 +117,22 @@ const Rent = (props) => {
           )}
         </div>
       )}
-      {two && (
+
+      {currentUser?.role === "guard" && (
         <div className={classes.comp}>
-          {!done && <Scanner scan={ScanComplete} />}
-          {data && <p className={classes.p}>{data}</p>}
-          {done && <Button click={rentHandler}>Return</Button>}
+          {!done && <Scanner scan={scanCompleteHandler} />}
+          {cycleId && <p className={classes.p}>{cycleId}</p>}
+          {done && <Button click={returnHandler}>Return</Button>}
           {done && (
             <Button
               click={() => {
                 setDone(false);
-                setData(null);
-                localStorage.removeItem("scaned");
-                localStorage.removeItem("scandata");
+                setCycleId(null);
               }}
             >
               Scan Again
             </Button>
           )}
-        </div>
-      )}
-      {one && !two && (
-        <div className={classes.comp}>
-          {!done && <Scanner scan={ScanComplete} />}
-          {data && <p className={classes.p}>{data}</p>}
-          {done && <Button click={rentHandler}>Admin</Button>}
         </div>
       )}
     </div>

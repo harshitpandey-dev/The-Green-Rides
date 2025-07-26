@@ -21,3 +21,9 @@ exports.deleteCycle = async (id) => {
   if (!cycle) throw new Error("Cycle not found");
   return { message: "Cycle deleted" };
 };
+
+exports.getCycleByCycleId = async (cycleId) => {
+  const cycle = await Cycle.findOne({ cycleId });
+  if (!cycle) throw new Error("Cycle not found");
+  return cycle;
+};
