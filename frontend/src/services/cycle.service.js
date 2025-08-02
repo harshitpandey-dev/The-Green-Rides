@@ -1,55 +1,17 @@
-const url = process.env.REACT_APP_API_ENDPOINT;
-
-const getBearerToken = () => {
-  const authKey = localStorage.getItem("GR_TOKEN");
-  return `Bearer ${authKey}`;
-};
+import { apiUtils } from "../utils/api.util.js";
 
 // ADD CYCLE
 export async function addCycle(props) {
-  let response = await fetch(`${url}/cycles`, {
-    method: "POST",
-    body: JSON.stringify(props),
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getBearerToken(),
-    },
-  });
-  let data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || "Could not Add Cycle.");
-  }
-  return data;
+  return await apiUtils.post("/cycles", props);
 }
 
 // DELETE CYCLE
 export async function deleteCycle(cycleId) {
-  let response = await fetch(`${url}/cycles/${cycleId}`, {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getBearerToken(),
-    },
-  });
-  let data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || "Could not Delete Cycle");
-  }
+  await apiUtils.delete(`/cycles/${cycleId}`);
   return "Cycle Deleted";
 }
 
 // GET ALL CYCLES
 export async function getCycles() {
-  let response = await fetch(`${url}/cycles`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: getBearerToken(),
-    },
-  });
-  let data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || "Could not fetch Cycles.");
-  }
-  return data;
+  return await apiUtils.get("/cycles");
 }

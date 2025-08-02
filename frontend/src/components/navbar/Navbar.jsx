@@ -38,11 +38,7 @@ const Navbar = () => {
           )}
           {!isLoggedIn && (
             <li>
-              <NavLink
-                to="/auth"
-                activeClassName={classes.active}
-                onClick={() => login()}
-              >
+              <NavLink to="/auth" activeClassName={classes.active}>
                 Login
               </NavLink>
             </li>
