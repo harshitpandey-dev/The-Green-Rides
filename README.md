@@ -22,7 +22,6 @@ The Green Rides is a modern, eco-friendly cycle rental system designed specifica
 - [🧪 Testing](#-testing)
 - [📈 Future Enhancements](#-future-enhancements)
 - [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
 
 ---
 
@@ -635,12 +634,6 @@ We welcome contributions from the community! Here's how you can help:
 - 🎨 UI/UX enhancements
 - ⚡ Performance optimizations
 - 🧪 Test coverage expansion
-
----
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ---
 
