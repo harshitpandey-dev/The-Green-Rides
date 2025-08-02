@@ -88,7 +88,7 @@ const RegistrationForm = (props) => {
         </div>
         <input type="checkbox" onClick={toggleShowPassword} /> Show Password
         <ReCAPTCHA
-          sitekey={process.env.REACT_APP_GOOGLE_RECAPTCHA_SITE_KEY || ""}
+          sitekey={import.meta.env.VITE_GOOGLE_RECAPTCHA_SITE_KEY || ""}
           onChange={onChange}
         />
         <div className={classes.actions}>
