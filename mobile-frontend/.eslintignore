@@ -1,0 +1,12 @@
+node_modules/
+android/
+ios/
+__tests__/
+.expo/
+.vscode/
+*.log
+metro.config.js
+babel.config.js
+.eslintrc.js
+
+
