@@ -47,11 +47,13 @@ const MainTabs = ({ isAdmin }) => (
       component={CycleListScreen}
       options={{ title: 'Available Cycles' }}
     />
-    <Tab.Screen
-      name="Rent"
-      component={RentScreen}
-      options={{ title: 'My Rentals' }}
-    />
+    {!isAdmin && (
+      <Tab.Screen
+        name="Rent"
+        component={RentScreen}
+        options={{ title: 'My Rentals' }}
+      />
+    )}
     <Tab.Screen
       name="Profile"
       component={ProfileScreen}

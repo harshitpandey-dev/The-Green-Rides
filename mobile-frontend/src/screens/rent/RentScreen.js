@@ -163,7 +163,7 @@ const RentScreen = () => {
     </View>
   );
 
-  if (isLoading && rentals.length === 0) {
+  if (isLoading && rentals?.length === 0) {
     return <LoadingSpinner message="Loading your rentals..." />;
   }
 
@@ -194,7 +194,7 @@ const RentScreen = () => {
         }
         contentContainerStyle={[
           styles.listContainer,
-          rentals.length === 0 && styles.centerContainer,
+          rentals?.length === 0 && styles.centerContainer,
         ]}
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
