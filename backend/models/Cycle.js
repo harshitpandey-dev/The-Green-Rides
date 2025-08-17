@@ -4,10 +4,18 @@ const cycleSchema = new mongoose.Schema({
   cycleId: { type: String, required: true },
   status: {
     type: String,
-    enum: ["available", "damaged"],
+    enum: ["available", "under_maintenance"],
     default: "available",
   },
-  addedBy: { type: JSON, required: true },
+  location: {
+    type: String,
+    enum: ["east_campus", "west_campus"],
+  },
+  addedBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
   createdAt: { type: Date, default: Date.now },
 });
 

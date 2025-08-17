@@ -8,9 +8,23 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["student", "guard", "admin"],
+    enum: ["student", "guard", "admin", "finance"],
     default: "student",
   },
+  status: {
+    type: String,
+    enum: ["active", "disabled"],
+    default: "active",
+  },
+  fine: { type: Number, default: 0 },
+  profilePicture: { type: String, default: "" },
+  location: {
+    type: String,
+    enum: ["east_campus", "west_campus"],
+    default: "east_campus",
+  },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  updatedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   createdAt: { type: Date, default: Date.now },
 });
 
