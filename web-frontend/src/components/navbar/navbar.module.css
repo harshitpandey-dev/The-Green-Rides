@@ -1,16 +1,56 @@
 .header {
   width: 100%;
-  height: 5rem;
+  min-height: 4rem;
   display: flex;
-  padding: 0 10%;
+  padding: 0.5rem 1rem;
   justify-content: space-between;
   align-items: center;
   background-color: #4fa22c;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+  .header {
+    padding: 0 2rem;
+    min-height: 5rem;
+    flex-wrap: nowrap;
+  }
+}
+
+@media (min-width: 1024px) {
+  .header {
+    padding: 0 10%;
+  }
 }
 
 .logo {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: white;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .logo {
+    font-size: 2rem;
+  }
+}
+
+.logo img {
+  height: 2rem;
+  width: auto;
+}
+
+@media (min-width: 768px) {
+  .logo img {
+    height: 2.5rem;
+  }
 }
 
 .nav ul {
@@ -18,16 +58,48 @@
   display: flex;
   margin: 0;
   padding: 0;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .nav ul {
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
 }
 
 .nav li {
-  margin-left: 1.5rem;
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .nav li {
+    margin-left: 1.5rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .nav li {
+    font-size: 1.25rem;
+  }
 }
 
 .nav a {
   text-decoration: none;
   color: #a1e583;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+  .nav a {
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 .nav a:hover,

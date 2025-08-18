@@ -68,9 +68,11 @@ const ProfileScreen = () => {
           <Text style={styles.userEmail}>
             {user?.email || 'user@example.com'}
           </Text>
-          {user?.role === 'admin' && (
-            <View style={styles.adminBadge}>
-              <Text style={styles.adminText}>Admin</Text>
+          {(user?.role === 'student' || user?.role === 'guard') && (
+            <View style={styles.roleBadge}>
+              <Text style={styles.roleText}>
+                {user?.role === 'student' ? 'Student' : 'Guard'}
+              </Text>
             </View>
           )}
         </View>
@@ -97,7 +99,11 @@ const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Role</Text>
               <Text style={styles.infoValue}>
-                {user?.role === 'admin' ? 'Administrator' : 'Student'}
+                {user?.role === 'student'
+                  ? 'Student'
+                  : user?.role === 'guard'
+                  ? 'Guard'
+                  : user?.role || 'N/A'}
               </Text>
             </View>
 
@@ -187,13 +193,13 @@ const styles = StyleSheet.create({
     color: '#666',
     marginBottom: 12,
   },
-  adminBadge: {
-    backgroundColor: '#FF9800',
+  roleBadge: {
+    backgroundColor: '#4CAF50',
     paddingHorizontal: 12,
     paddingVertical: 4,
     borderRadius: 12,
   },
-  adminText: {
+  roleText: {
     color: '#fff',
     fontSize: 12,
     fontWeight: '600',
