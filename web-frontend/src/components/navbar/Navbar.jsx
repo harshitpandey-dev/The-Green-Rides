@@ -6,6 +6,9 @@ import classes from "./navbar.module.css";
 
 const Navbar = () => {
   const { login, isLoggedIn, currentUser, logout } = useUser();
+  const isAdmin = currentUser?.role === "admin";
+  const isFinance = currentUser?.role === "finance";
+  const hasWebAccess = isAdmin || isFinance;
 
   return (
     <header className={classes.header}>
@@ -15,24 +18,31 @@ const Navbar = () => {
       </div>
       <nav className={classes.nav}>
         <ul>
-          {isLoggedIn && (
+          {isLoggedIn && hasWebAccess && (
             <li>
               <NavLink to="/profile" activeClassName={classes.active}>
                 Profile
               </NavLink>
             </li>
           )}
-          {isLoggedIn && currentUser?.role !== "admin" && (
+          {isLoggedIn && isAdmin && (
             <li>
-              <NavLink to="/rent" activeClassName={classes.active}>
-                {currentUser?.role === "guard" ? "Return" : "Rent"}
+              <NavLink to="/admin" activeClassName={classes.active}>
+                Admin Dashboard
               </NavLink>
             </li>
           )}
-          {isLoggedIn && currentUser?.role === "admin" && (
+          {isLoggedIn && isFinance && (
             <li>
-              <NavLink to="/admin" activeClassName={classes.active}>
-                Admin
+              <NavLink to="/finance" activeClassName={classes.active}>
+                Finance Dashboard
+              </NavLink>
+            </li>
+          )}
+          {isLoggedIn && hasWebAccess && (
+            <li>
+              <NavLink to="/cycles" activeClassName={classes.active}>
+                Manage Cycles
               </NavLink>
             </li>
           )}
@@ -40,13 +50,6 @@ const Navbar = () => {
             <li>
               <NavLink to="/auth" activeClassName={classes.active}>
                 Login
-              </NavLink>
-            </li>
-          )}
-          {isLoggedIn && currentUser?.role === "admin" && (
-            <li>
-              <NavLink to="/cycles" activeClassName={classes.active}>
-                Cycles
               </NavLink>
             </li>
           )}

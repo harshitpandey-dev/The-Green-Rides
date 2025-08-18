@@ -21,6 +21,10 @@ const RentScreen = () => {
   const [showQRScanner, setShowQRScanner] = useState(false);
   const dispatch = useDispatch();
   const { rentals, isLoading, error } = useSelector(state => state.rentals);
+  const { user } = useSelector(state => state.auth);
+
+  const isGuard = user?.role === 'guard';
+  const isStudent = user?.role === 'student';
 
   useEffect(() => {
     dispatch(fetchRentalsAsync());
@@ -156,9 +160,13 @@ const RentScreen = () => {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyText}>No rental history found</Text>
+      <Text style={styles.emptyText}>
+        {isGuard ? 'No returns processed yet' : 'No rental history found'}
+      </Text>
       <Text style={styles.emptySubtext}>
-        Start by renting a cycle from the Cycles tab
+        {isGuard
+          ? 'Scan QR codes to process cycle returns'
+          : 'Start by renting a cycle from the Cycles tab'}
       </Text>
     </View>
   );
@@ -170,8 +178,14 @@ const RentScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>My Rentals</Text>
-        <Text style={styles.subtitle}>Track your cycle rentals</Text>
+        <Text style={styles.title}>
+          {isGuard ? 'Process Returns' : 'My Rentals'}
+        </Text>
+        <Text style={styles.subtitle}>
+          {isGuard
+            ? 'Scan QR codes to process cycle returns'
+            : 'Track your cycle rentals'}
+        </Text>
       </View>
 
       {error && (
@@ -199,6 +213,16 @@ const RentScreen = () => {
         ListEmptyComponent={renderEmptyState}
         showsVerticalScrollIndicator={false}
       />
+
+      {isGuard && (
+        <View style={styles.fab}>
+          <Button
+            title="Scan QR"
+            onPress={() => setShowQRScanner(true)}
+            style={styles.fabButton}
+          />
+        </View>
+      )}
 
       <QRScannerModal
         visible={showQRScanner}
@@ -338,6 +362,23 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#f44336',
     textAlign: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    borderRadius: 50,
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  fabButton: {
+    borderRadius: 50,
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    minWidth: 120,
   },
 });
 

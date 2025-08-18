@@ -28,20 +28,17 @@ const AdminScreen = () => {
 
   return (
     <div className={classes.container}>
-      <div>
+      <div className={classes.content}>
+        <h1 className={classes.title}>Admin Dashboard</h1>
+        <p className={classes.subtitle}>Manage your Green Rides system</p>
+
         {formComponents[activeForm]}
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: "1rem",
-            maxWidth: "600px",
-            margin: "2rem auto",
-          }}
-        >
-          <Button click={() => toggleForm("addStudent")}>Add User</Button>
-          <Button click={() => toggleForm("deleteStudent")}>Delete User</Button>
+        <div className={classes.buttonGrid}>
+          <Button click={() => toggleForm("addStudent")}>Add Student</Button>
+          <Button click={() => toggleForm("deleteStudent")}>
+            Delete Student
+          </Button>
           <Button click={() => toggleForm("addGuard")}>Add Guard</Button>
           <Button click={() => toggleForm("deleteGuard")}>Delete Guard</Button>
           <Button click={() => toggleForm("addCycle")}>Add Cycle</Button>

@@ -7,11 +7,10 @@ import { useSelector } from 'react-redux';
 // Import screens
 import LoginScreen from '../screens/auth/LoginScreen';
 import SignupScreen from '../screens/auth/SignupScreen';
+import AccessDeniedScreen from '../screens/auth/AccessDeniedScreen';
 import CycleListScreen from '../screens/cycles/CycleListScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 import RentScreen from '../screens/rent/RentScreen';
-import AdminScreen from '../screens/admin/AdminScreen';
-import NotFoundScreen from '../screens/notFound/NotFoundScreen';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 
 const Stack = createStackNavigator();
@@ -33,8 +32,8 @@ const AuthStack = () => (
   </Stack.Navigator>
 );
 
-// Main Tab Navigation
-const MainTabs = ({ isAdmin }) => (
+// Main Tab Navigation for Guard and Student roles only
+const MainTabs = ({ userRole }) => (
   <Tab.Navigator
     initialRouteName="Cycles"
     screenOptions={{
@@ -47,11 +46,18 @@ const MainTabs = ({ isAdmin }) => (
       component={CycleListScreen}
       options={{ title: 'Available Cycles' }}
     />
-    {!isAdmin && (
+    {userRole === 'student' && (
       <Tab.Screen
         name="Rent"
         component={RentScreen}
         options={{ title: 'My Rentals' }}
+      />
+    )}
+    {userRole === 'guard' && (
+      <Tab.Screen
+        name="Return"
+        component={RentScreen}
+        options={{ title: 'Process Returns' }}
       />
     )}
     <Tab.Screen
@@ -59,27 +65,37 @@ const MainTabs = ({ isAdmin }) => (
       component={ProfileScreen}
       options={{ title: 'Profile' }}
     />
-    {isAdmin && (
-      <Tab.Screen
-        name="Admin"
-        component={AdminScreen}
-        options={{ title: 'Admin' }}
-      />
-    )}
   </Tab.Navigator>
 );
 
 const AppNavigator = () => {
   const { isLoggedIn, isAuthReady, user } = useSelector(state => state.auth);
-  const isAdmin = user?.role === 'admin';
+
+  // Check if user has access to mobile app (only guard and student)
+  const hasAccess = user?.role === 'guard' || user?.role === 'student';
 
   if (!isAuthReady) {
     return <LoadingSpinner />;
   }
 
+  // If user is logged in but doesn't have mobile access (admin/finance)
+  if (isLoggedIn && !hasAccess) {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="AccessDenied"
+            component={AccessDeniedScreen}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+
   return (
     <NavigationContainer>
-      {isLoggedIn ? <MainTabs isAdmin={isAdmin} /> : <AuthStack />}
+      {isLoggedIn ? <MainTabs userRole={user?.role} /> : <AuthStack />}
     </NavigationContainer>
   );
 };

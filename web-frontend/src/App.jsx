@@ -8,12 +8,7 @@ function App() {
 
   if (!isAuthReady) return <LoadingSpinner />;
 
-  return (
-    <RouteConfig
-      loggedIn={isLoggedIn}
-      isAdmin={currentUser?.role === "admin"}
-    />
-  );
+  return <RouteConfig loggedIn={isLoggedIn} user={currentUser} />;
 }
 
 export default App;
