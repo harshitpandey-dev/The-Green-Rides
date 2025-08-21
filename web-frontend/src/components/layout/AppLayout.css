@@ -1,0 +1,126 @@
+/* ==============================
+   APP LAYOUT - MODERN SIDEBAR DESIGN (NO NAVBAR)
+============================== */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.app-main.with-sidebar {
+  margin-left: 0; /* Sidebar will handle the spacing */
+}
+
+.app-main.full-width {
+  margin-left: 0;
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  background: #f8f9fa;
+}
+
+/* Content padding adjustments */
+.app-content > * {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Remove the old centered container styling for admin screens */
+.admin-screen,
+.finance-admin-screen {
+  min-height: 100vh;
+  background: #f8f9fa;
+  padding: 0;
+}
+
+/* Page headers should be full width */
+.page-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 2rem 2.5rem;
+  margin: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.page-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-subtitle {
+  margin: 0.5rem 0 0;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.page-content {
+  padding: 2rem 2.5rem;
+  max-width: none;
+  margin: 0;
+  flex: 1;
+}
+
+/* Full-width layout for non-authenticated users */
+.app-layout:not(:has(.sidebar)) .app-main {
+  margin-left: 0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .app-main.with-sidebar {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+}
+
+/* Adjust main content margin when sidebar is present */
+@media (min-width: 1025px) {
+  body:has(.sidebar:not(.collapsed)) .app-main {
+    margin-left: 280px;
+  }
+
+  body:has(.sidebar.collapsed) .app-main {
+    margin-left: 80px;
+  }
+}
+
+/* Smooth transitions */
+.app-main {
+  transition: margin-left 0.3s ease;
+}

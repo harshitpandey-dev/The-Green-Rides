@@ -19,56 +19,43 @@ const Navbar = () => {
         <img src={logo} alt="Logo" />
         Green Rides
       </div>
+
+      {/* Show minimal navigation for logged in users - sidebar will handle main navigation */}
       <nav className={classes.nav}>
         <ul>
-          {isLoggedIn && hasWebAccess && (
-            <li>
-              <NavLink to="/profile" activeClassName={classes.active}>
-                Profile
-              </NavLink>
-            </li>
+          {!isLoggedIn && (
+            <>
+              <li>
+                <NavLink to="/auth" activeClassName={classes.active}>
+                  Login
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/signup" activeClassName={classes.active}>
+                  Sign Up
+                </NavLink>
+              </li>
+            </>
           )}
-          {isLoggedIn && isSuperAdmin && (
-            <li>
-              <NavLink to="/admin" activeClassName={classes.active}>
-                Super Admin Dashboard
-              </NavLink>
-            </li>
-          )}
-          {isLoggedIn && isFinanceAdmin && (
-            <li>
-              <NavLink to="/finance-admin" activeClassName={classes.active}>
-                Finance Dashboard
-              </NavLink>
-            </li>
-          )}
-          {isLoggedIn && hasWebAccess && (
+
+          {isLoggedIn && !hasWebAccess && (
             <li className={classes.userInfo}>
               <span className={`${classes.roleChip} ${classes[userRole]}`}>
-                {userRole === "super_admin"
-                  ? "Super Admin"
-                  : userRole === "finance_admin"
-                  ? "Finance Admin"
-                  : userRole}
+                {userRole === "student" ? "Student" : "Guard"}
               </span>
-            </li>
-          )}
-          {!isLoggedIn && (
-            <li>
-              <NavLink to="/auth" activeClassName={classes.active}>
-                Login
-              </NavLink>
-            </li>
-          )}
-          {isLoggedIn && (
-            <li>
-              <NavLink
-                to="/auth"
-                activeClassName={classes.active}
-                onClick={() => logout()}
-              >
+              <span className={classes.userName}>{currentUser?.name}</span>
+              <button onClick={logout} className={classes.logoutBtn}>
                 Logout
-              </NavLink>
+              </button>
+            </li>
+          )}
+
+          {/* For web users, show minimal info - sidebar handles navigation */}
+          {isLoggedIn && hasWebAccess && (
+            <li className={classes.userInfo}>
+              <span className={classes.welcomeText}>
+                Welcome, {currentUser?.name}
+              </span>
             </li>
           )}
         </ul>
