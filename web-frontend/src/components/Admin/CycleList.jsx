@@ -11,7 +11,7 @@ import {
 } from "react-icons/fa";
 import DataTable from "../common/DataTable";
 import { cycleService } from "../../services/cycle.service";
-import "./CycleList.css";
+import "./adminList.css";
 
 const CycleList = () => {
   const [cycles, setCycles] = useState([]);

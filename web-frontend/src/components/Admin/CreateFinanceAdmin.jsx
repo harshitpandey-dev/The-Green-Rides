@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaUserPlus, FaTimes } from "react-icons/fa";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../common/LoadingSpinner";
-import "./CreateFinanceAdmin.css";
+import "./adminList.css";
 
 const CreateFinanceAdmin = ({
   isOpen,
