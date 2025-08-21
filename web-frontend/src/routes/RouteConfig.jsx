@@ -1,7 +1,7 @@
 import React, { Suspense, Fragment } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Signup from "../screens/auth/Signup";
-import AdminScreen from "../screens/admin/DashboardScreen";
+import DashboardScreen from "../screens/admin/DashboardScreen";
 import StudentsScreen from "../screens/admin/StudentsScreen";
 import GuardsScreen from "../screens/admin/GuardsScreen";
 import CyclesScreen from "../screens/admin/CyclesScreen";
@@ -106,7 +106,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                 : "/auth"
             }
           >
-            <AdminScreen />
+            <DashboardScreen />
           </ProtectedRoute>
 
           <ProtectedRoute

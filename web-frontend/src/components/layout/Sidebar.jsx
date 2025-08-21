@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useUser } from "../../contexts/authContext";
 import {
   FaTachometerAlt,
@@ -23,7 +23,6 @@ import "./Sidebar.css";
 
 const Sidebar = () => {
   const { currentUser, logout } = useUser();
-  const location = useLocation();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -41,8 +40,6 @@ const Sidebar = () => {
       icon: FaMoneyBillWave,
       label: "Finance Admins",
     },
-    { path: "/admin/analytics", icon: FaChartLine, label: "Analytics" },
-    { path: "/admin/settings", icon: FaCog, label: "Settings" },
   ];
 
   const financeAdminItems = [
@@ -122,15 +119,14 @@ const Sidebar = () => {
           <ul className="nav-list">
             {menuItems.map((item) => {
               const IconComponent = item.icon;
-              const isActive = item.exact
-                ? location.pathname === item.path
-                : location.pathname.startsWith(item.path);
 
               return (
                 <li key={item.path} className="nav-item">
                   <NavLink
                     to={item.path}
-                    className={`nav-link ${isActive ? "active" : ""}`}
+                    className="nav-link"
+                    activeClassName="active"
+                    exact={item.exact}
                     onClick={() => setIsMobileOpen(false)}
                   >
                     <IconComponent className="nav-icon" />

@@ -1,0 +1,49 @@
+/* ==============================
+   CYCLES SCREEN - SPECIFIC STYLES
+============================== */
+
+/* Import common screen styles */
+@import "../common/screen.css";
+
+/* Cycle-specific badges */
+.condition-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.condition-excellent {
+  background: #d4edda;
+  color: #155724;
+}
+
+.condition-good {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.condition-fair {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.condition-poor {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.location {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.maintenance-btn {
+  background: #f39c12;
+  color: white;
+}
+
+.maintenance-btn:hover {
+  background: #e67e22;
+}

@@ -15,9 +15,9 @@ import DashboardCard from "../../components/admin/DashboardCard";
 import SystemAlerts from "../../components/admin/SystemAlerts";
 import FinanceAdminScreen from "../financeAdmin/FinanceAdminScreen";
 import { userService } from "../../services/user.service";
-import "./AdminScreen.css";
+import "../../styles/screens/dashboardScreen.css";
 
-const AdminScreen = () => {
+const DashboardScreen = () => {
   const { currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [dashboardData, setDashboardData] = useState({
@@ -148,47 +148,9 @@ const AdminScreen = () => {
             color="danger"
           />
         </div>
-
-        {/* Quick Actions */}
-        <div className="section">
-          <h2 className="section-title">Quick Actions</h2>
-          <div className="quick-actions-grid">
-            <button className="action-card">
-              <FaPlus className="action-icon" />
-              <div className="action-content">
-                <h3>Add Student</h3>
-                <p>Register new student</p>
-              </div>
-            </button>
-
-            <button className="action-card">
-              <FaPlus className="action-icon" />
-              <div className="action-content">
-                <h3>Add Guard</h3>
-                <p>Register security guard</p>
-              </div>
-            </button>
-
-            <button className="action-card">
-              <FaPlus className="action-icon" />
-              <div className="action-content">
-                <h3>Add Cycle</h3>
-                <p>Register new bicycle</p>
-              </div>
-            </button>
-
-            <button className="action-card">
-              <FaPlus className="action-icon" />
-              <div className="action-content">
-                <h3>Add Finance Admin</h3>
-                <p>Register finance admin</p>
-              </div>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
 
-export default AdminScreen;
+export default DashboardScreen;
