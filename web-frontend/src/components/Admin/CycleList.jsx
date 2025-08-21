@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   FaSearch,
-  FaBicycle,
   FaEye,
   FaEdit,
   FaTools,
@@ -18,11 +17,10 @@ const CycleList = () => {
   const [filteredCycles, setFilteredCycles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [filterRentStatus, setFilterRentStatus] = useState("all");
   const [selectedCycle, setSelectedCycle] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [showStatsModal, setShowStatsModal] = useState(false);
-  const [modalType, setModalType] = useState("view"); // 'view', 'edit', 'add', 'stats'
+  const [modalType, setModalType] = useState("view");
   const [loading, setLoading] = useState(true);
 
   // Load cycles data from API
@@ -35,25 +33,8 @@ const CycleList = () => {
       setLoading(true);
       const cyclesData = await cycleService.getAllCycles();
 
-      // Transform API response to match component format
-      const transformedCycles = cyclesData.map((cycle) => ({
-        id: cycle._id,
-        cycle_id: cycle.cycleId || cycle._id,
-        status: cycle.status || "active",
-        rent_status:
-          cycle.rentStatus || cycle.isRented ? "rented" : "available",
-        location: cycle.location || "Unknown",
-        battery_level: cycle.batteryLevel || Math.floor(Math.random() * 100),
-        last_maintenance: cycle.lastMaintenance || "2024-01-10",
-        total_rentals: cycle.totalRentals || 0,
-        total_distance: cycle.totalDistance || 0,
-        current_user: cycle.currentUser || null,
-        rental_start_time: cycle.rentalStartTime || null,
-        expected_return: cycle.expectedReturn || null,
-      }));
-
-      setCycles(transformedCycles);
-      setFilteredCycles(transformedCycles);
+      setCycles(cyclesData);
+      setFilteredCycles(cyclesData);
     } catch (error) {
       console.error("Error fetching cycles:", error);
       // Fallback to empty array on error
@@ -68,28 +49,19 @@ const CycleList = () => {
   useEffect(() => {
     let filtered = cycles.filter(
       (cycle) =>
-        cycle.cycle_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cycle.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (cycle.current_user &&
-          cycle.current_user.toLowerCase().includes(searchTerm.toLowerCase()))
+        cycle.cycleNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cycle.location.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     if (filterStatus !== "all") {
       filtered = filtered.filter((cycle) => cycle.status === filterStatus);
     }
-
-    if (filterRentStatus !== "all") {
-      filtered = filtered.filter(
-        (cycle) => cycle.rent_status === filterRentStatus
-      );
-    }
-
     setFilteredCycles(filtered);
-  }, [cycles, searchTerm, filterStatus, filterRentStatus]);
+  }, [cycles, searchTerm, filterStatus]);
 
   const columns = [
     {
-      key: "cycle_id",
+      key: "cycleNumber",
       header: "Cycle ID",
       sortable: true,
       render: (value) => <span className="cycle-id">{value}</span>,
@@ -105,7 +77,7 @@ const CycleList = () => {
       ),
     },
     {
-      key: "rent_status",
+      key: "status",
       header: "Rent Status",
       sortable: true,
       render: (value) => (
@@ -121,30 +93,7 @@ const CycleList = () => {
       render: (value) => <span className="location">{value}</span>,
     },
     {
-      key: "battery_level",
-      header: "Battery",
-      sortable: true,
-      render: (value) => (
-        <div className="battery-indicator">
-          <div className={`battery-bar ${getBatteryClass(value)}`}>
-            <div className="battery-fill" style={{ width: `${value}%` }}></div>
-          </div>
-          <span className="battery-text">{value}%</span>
-        </div>
-      ),
-    },
-    {
-      key: "current_user",
-      header: "Current User",
-      sortable: false,
-      render: (value) => (
-        <span className={`current-user ${value ? "has-user" : "no-user"}`}>
-          {value || "Available"}
-        </span>
-      ),
-    },
-    {
-      key: "total_rentals",
+      key: "totalRentCount",
       header: "Rentals",
       sortable: true,
       render: (value) => <span className="rental-count">{value}</span>,
@@ -189,12 +138,6 @@ const CycleList = () => {
     },
   ];
 
-  const getBatteryClass = (level) => {
-    if (level > 60) return "battery-high";
-    if (level > 30) return "battery-medium";
-    return "battery-low";
-  };
-
   const handleViewCycle = (cycle) => {
     setSelectedCycle(cycle);
     setModalType("view");
@@ -209,14 +152,12 @@ const CycleList = () => {
 
   const handleAddCycle = () => {
     setSelectedCycle({
-      cycle_id: "",
+      cycleNumber: "",
       status: "active",
-      rent_status: "available",
+      status: "available",
       location: "",
       battery_level: 100,
-      total_rentals: 0,
-      total_distance: 0,
-      current_user: null,
+      totalRentCount: 0,
     });
     setModalType("add");
     setShowModal(true);
@@ -228,18 +169,14 @@ const CycleList = () => {
   };
 
   const handleMaintenance = (cycle) => {
-    if (window.confirm(`Mark ${cycle.cycle_id} for maintenance?`)) {
+    if (window.confirm(`Mark ${cycle.cycleNumber} for maintenance?`)) {
       setCycles((prev) =>
         prev.map((c) =>
           c.id === cycle.id
             ? {
                 ...c,
                 status: "maintenance",
-                rent_status: "unavailable",
                 location: "Maintenance Hub",
-                current_user: null,
-                rental_start_time: null,
-                expected_return: null,
               }
             : c
         )
@@ -254,11 +191,7 @@ const CycleList = () => {
         ...formData,
         id: `CYC${String(cycles.length + 1).padStart(3, "0")}`,
         last_maintenance: new Date().toISOString().split("T")[0],
-        total_rentals: 0,
-        total_distance: 0,
-        current_user: null,
-        rental_start_time: null,
-        expected_return: null,
+        totalRentCount: 0,
       };
       setCycles((prev) => [...prev, newCycle]);
     } else if (modalType === "edit") {
@@ -310,22 +243,10 @@ const CycleList = () => {
               onChange={(e) => setFilterStatus(e.target.value)}
             >
               <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="maintenance">Maintenance</option>
-            </select>
-          </div>
-
-          <div className="rent-filter">
-            <FaBicycle className="filter-icon" />
-            <select
-              value={filterRentStatus}
-              onChange={(e) => setFilterRentStatus(e.target.value)}
-            >
-              <option value="all">All Rent Status</option>
-              <option value="available">Available</option>
+              <option value="available">Active</option>
               <option value="rented">Rented</option>
-              <option value="unavailable">Unavailable</option>
+              <option value="under_maintenance">Under maintenance</option>
+              <option value="disabled">Unavailable</option>
             </select>
           </div>
         </div>
@@ -338,11 +259,11 @@ const CycleList = () => {
         </div>
         <div className="stat-card available">
           <h3>Available</h3>
-          <p>{cycles.filter((c) => c.rent_status === "available").length}</p>
+          <p>{cycles.filter((c) => c.status === "available").length}</p>
         </div>
         <div className="stat-card rented">
           <h3>Currently Rented</h3>
-          <p>{cycles.filter((c) => c.rent_status === "rented").length}</p>
+          <p>{cycles.filter((c) => c.status === "rented").length}</p>
         </div>
         <div className="stat-card maintenance">
           <h3>In Maintenance</h3>
@@ -398,11 +319,9 @@ const CycleModal = ({ cycle, type, onSave, onClose }) => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.cycle_id.trim()) newErrors.cycle_id = "Cycle ID is required";
+    if (!formData.cycleNumber.trim())
+      newErrors.cycleNumber = "Cycle ID is required";
     if (!formData.location.trim()) newErrors.location = "Location is required";
-    if (formData.battery_level < 0 || formData.battery_level > 100) {
-      newErrors.battery_level = "Battery level must be between 0-100";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -440,14 +359,14 @@ const CycleModal = ({ cycle, type, onSave, onClose }) => {
                 <label>Cycle ID</label>
                 <input
                   type="text"
-                  name="cycle_id"
-                  value={formData.cycle_id}
+                  name="cycleNumber"
+                  value={formData.cycleNumber}
                   onChange={handleInputChange}
                   readOnly={type === "edit" || isReadOnly}
-                  className={errors.cycle_id ? "error" : ""}
+                  className={errors.cycleNumber ? "error" : ""}
                 />
-                {errors.cycle_id && (
-                  <span className="error-text">{errors.cycle_id}</span>
+                {errors.cycleNumber && (
+                  <span className="error-text">{errors.cycleNumber}</span>
                 )}
               </div>
 
@@ -483,10 +402,10 @@ const CycleModal = ({ cycle, type, onSave, onClose }) => {
               </div>
 
               <div className="form-group">
-                <label>Rent Status</label>
+                <label>Status</label>
                 <select
-                  name="rent_status"
-                  value={formData.rent_status}
+                  name="status"
+                  value={formData.status}
                   onChange={handleInputChange}
                   disabled={isReadOnly}
                 >
@@ -496,48 +415,6 @@ const CycleModal = ({ cycle, type, onSave, onClose }) => {
                 </select>
               </div>
             </div>
-
-            <div className="form-row">
-              <div className="form-group">
-                <label>Battery Level (%)</label>
-                <input
-                  type="number"
-                  name="battery_level"
-                  value={formData.battery_level}
-                  onChange={handleInputChange}
-                  min="0"
-                  max="100"
-                  readOnly={isReadOnly}
-                  className={errors.battery_level ? "error" : ""}
-                />
-                {errors.battery_level && (
-                  <span className="error-text">{errors.battery_level}</span>
-                )}
-              </div>
-
-              <div className="form-group">
-                <label>Total Rentals</label>
-                <input type="number" value={formData.total_rentals} readOnly />
-              </div>
-            </div>
-
-            {formData.current_user && (
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Current User</label>
-                  <input type="text" value={formData.current_user} readOnly />
-                </div>
-
-                <div className="form-group">
-                  <label>Rental Start Time</label>
-                  <input
-                    type="text"
-                    value={formData.rental_start_time || "N/A"}
-                    readOnly
-                  />
-                </div>
-              </div>
-            )}
 
             {!isReadOnly && (
               <div className="form-actions">
@@ -560,13 +437,13 @@ const CycleModal = ({ cycle, type, onSave, onClose }) => {
 const CycleStatsModal = ({ cycle, onClose }) => {
   const statsData = {
     usage: {
-      totalRentals: cycle.total_rentals,
+      totalRentals: cycle.totalRentCount,
       totalDistance: cycle.total_distance,
       averageRentalDuration: "2.5 hours",
       utilizationRate: "78%",
     },
     maintenance: {
-      lastMaintenance: cycle.last_maintenance,
+      lastMaintenanceAt: cycle.last_maintenance,
       nextMaintenanceDate: "2024-02-10",
       maintenanceCount: 3,
       totalDowntime: "12 hours",
@@ -592,7 +469,7 @@ const CycleStatsModal = ({ cycle, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>Statistics for {cycle.cycle_id}</h3>
+          <h3>Statistics for {cycle.cycleNumber}</h3>
           <button className="close-btn" onClick={onClose}>
             ×
           </button>
@@ -637,7 +514,7 @@ const CycleStatsModal = ({ cycle, onClose }) => {
                   <span className="stat-label">Last Maintenance</span>
                   <span className="stat-value">
                     {new Date(
-                      statsData.maintenance.lastMaintenance
+                      statsData.maintenance.lastMaintenanceAt
                     ).toLocaleDateString()}
                   </span>
                 </div>
