@@ -74,26 +74,6 @@ exports.addUser = async ({
     .populate("createdBy", "name role");
 };
 
-// Get all students with statistics
-exports.getStudents = async () => {
-  const students = await User.find({ role: "student" })
-    .select("-password -resetPasswordOTP -emailVerificationToken")
-    .populate("createdBy", "name role")
-    .sort({ rollNo: 1 });
-
-  return students;
-};
-
-// Get all guards
-exports.getGuards = async () => {
-  const guards = await User.find({ role: "guard" })
-    .select("-password -resetPasswordOTP -emailVerificationToken")
-    .populate("createdBy", "name role")
-    .sort({ name: 1 });
-
-  return guards;
-};
-
 // Get user statistics (for profile/admin dashboard)
 exports.getUserStats = async (userId) => {
   const user = await User.findById(userId).select("-password");
@@ -168,40 +148,60 @@ exports.deleteUser = async ({ userId, deletedBy }) => {
   return { message: "User deleted successfully" };
 };
 
-// Reset user password (admin only)
-exports.resetUserPassword = async ({ userId, newPassword, resetBy }) => {
-  const user = await User.findById(userId);
-  if (!user) throw new Error("User not found");
+// Search students by roll number or name (for guards)
+exports.getByRollNo = async (rollNo) => {
+  const student = await User.findOne({
+    rollNo: rollNo.trim(),
+    role: "student",
+  }).select("-password -resetPasswordOTP -emailVerificationToken");
+  if (!student) throw new Error("Student not found");
 
-  user.password = newPassword;
-  user.updatedBy = resetBy;
-  await user.save();
-
-  return { message: "Password reset successfully" };
+  return student;
 };
 
-// Search students by roll number or name (for guards)
-exports.searchStudents = async ({ query }) => {
-  const searchRegex = new RegExp(query, "i");
+// Finance admin: Clear student fine
+exports.clearStudentFine = async (studentId, clearedBy) => {
+  const student = await User.findById(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
 
-  const students = await User.find({
-    role: "student",
-    status: "active",
-    $or: [
-      { rollNo: parseInt(query) || 0 },
-      { name: searchRegex },
-      { email: searchRegex },
-    ],
-  })
-    .select("name rollNo email fine status totalTimesRented phone")
-    .limit(10)
-    .sort({ rollNo: 1 });
+  if (student.role !== "student") {
+    throw new Error("Only student fines can be cleared");
+  }
 
-  return students;
+  const previousFine = student.fine || 0;
+
+  // Update student fine to 0
+  student.fine = 0;
+  student.updatedBy = clearedBy;
+  student.updatedAt = new Date();
+
+  await student.save();
+
+  return {
+    message: "Student fine cleared successfully",
+    student: {
+      id: student._id,
+      name: student.name,
+      rollNo: student.rollNo,
+      previousFine,
+      currentFine: 0,
+      clearedAt: new Date(),
+    },
+  };
+};
+
+exports.getUserById = async (userId) => {
+  const user = await User.findById(userId)
+    .select("-password -resetPasswordOTP -emailVerificationToken")
+    .populate("createdBy", "name role");
+  if (!user) throw new Error("User not found");
+  return user;
 };
 
 // Get dashboard statistics (admin only)
-exports.getDashboardStats = async () => {
+exports.getUsersStatistics = async () => {
   const [userStats, rentalStats] = await Promise.all([
     User.aggregate([
       {
@@ -246,64 +246,4 @@ exports.getDashboardStats = async () => {
       ...rentals,
     },
   };
-};
-
-// Finance admin: Clear student fine
-exports.clearStudentFine = async (studentId, clearedBy) => {
-  const student = await User.findById(studentId);
-  if (!student) {
-    throw new Error("Student not found");
-  }
-
-  if (student.role !== "student") {
-    throw new Error("Only student fines can be cleared");
-  }
-
-  const previousFine = student.fine || 0;
-
-  // Update student fine to 0
-  student.fine = 0;
-  student.updatedBy = clearedBy;
-  student.updatedAt = new Date();
-
-  await student.save();
-
-  return {
-    message: "Student fine cleared successfully",
-    student: {
-      id: student._id,
-      name: student.name,
-      rollNo: student.rollNo,
-      previousFine,
-      currentFine: 0,
-      clearedAt: new Date(),
-    },
-  };
-};
-
-// Super admin: Create finance admin
-exports.createFinanceAdmin = async (adminData) => {
-  const { name, email, password, createdBy } = adminData;
-
-  // Check if email already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error("Email already in use");
-  }
-
-  const financeAdmin = new User({
-    name,
-    email,
-    password,
-    role: "finance_admin",
-    status: "active",
-    emailVerified: true,
-    createdBy,
-  });
-
-  await financeAdmin.save();
-
-  return await User.findById(financeAdmin._id)
-    .select("-password -resetPasswordOTP -emailVerificationToken")
-    .populate("createdBy", "name role");
 };

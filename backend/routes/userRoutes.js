@@ -9,8 +9,8 @@ const router = express.Router();
 router.get("/me", auth, userController.getCurrentUser);
 router.post("/", userController.addUser);
 
-// General admin endpoints (super_admin, finance_admin can view students)
 router.get("/", auth, roleCheck(["super_admin"]), userController.getAllUsers);
+
 router.get(
   "/role/:role",
   auth,
@@ -18,7 +18,6 @@ router.get(
   userController.getAllUsersByRole
 );
 
-// Student lookup by roll number (finance_admin and super_admin)
 router.get(
   "/rollno/:rollNumber",
   auth,
@@ -26,7 +25,6 @@ router.get(
   userController.getUserByRollNumber
 );
 
-// User management (super_admin only)
 router.get(
   "/:id",
   auth,
@@ -46,8 +44,13 @@ router.put(
   roleCheck(["super_admin"]),
   userController.updateUserStatus
 );
+router.get(
+  "/statistics",
+  auth,
+  roleCheck(["super_admin"]),
+  userController.getUserStatistics
+);
 
-// Finance admin specific endpoints
 router.post(
   "/:studentId/clear-fine",
   auth,
