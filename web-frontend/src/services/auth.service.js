@@ -11,11 +11,6 @@ export async function loginUser(props) {
   });
 }
 
-// DELETE USER (not implemented in backend, placeholder)
-export async function deleteUser(props) {
-  throw new Error("Delete student API not implemented in backend");
-}
-
 export async function changePassword(props) {
   return await apiUtils.put("/auth/change-password", {
     email: props?.email,
