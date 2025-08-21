@@ -50,6 +50,26 @@ export const userService = {
   getCurrentUser: async () => {
     return await apiUtils.get("/users/me");
   },
+
+  // Get student by roll number (finance_admin, super_admin)
+  getStudentByRollNumber: async (rollNumber) => {
+    return await apiUtils.get(`/users/rollno/${rollNumber}`);
+  },
+
+  // Clear student fine (finance_admin, super_admin)
+  clearStudentFine: async (studentId) => {
+    return await apiUtils.post(`/users/${studentId}/clear-fine`);
+  },
+
+  // Get all finance admins (super_admin only)
+  getAllFinanceAdmins: async () => {
+    return await apiUtils.get("/users/finance-admins");
+  },
+
+  // Create finance admin (super_admin only)
+  createFinanceAdmin: async (adminData) => {
+    return await apiUtils.post("/users/finance-admin", adminData);
+  },
 };
 
 // For backward compatibility

@@ -247,3 +247,63 @@ exports.getDashboardStats = async () => {
     },
   };
 };
+
+// Finance admin: Clear student fine
+exports.clearStudentFine = async (studentId, clearedBy) => {
+  const student = await User.findById(studentId);
+  if (!student) {
+    throw new Error("Student not found");
+  }
+
+  if (student.role !== "student") {
+    throw new Error("Only student fines can be cleared");
+  }
+
+  const previousFine = student.fine || 0;
+
+  // Update student fine to 0
+  student.fine = 0;
+  student.updatedBy = clearedBy;
+  student.updatedAt = new Date();
+
+  await student.save();
+
+  return {
+    message: "Student fine cleared successfully",
+    student: {
+      id: student._id,
+      name: student.name,
+      rollNo: student.rollNo,
+      previousFine,
+      currentFine: 0,
+      clearedAt: new Date(),
+    },
+  };
+};
+
+// Super admin: Create finance admin
+exports.createFinanceAdmin = async (adminData) => {
+  const { name, email, password, createdBy } = adminData;
+
+  // Check if email already exists
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw new Error("Email already in use");
+  }
+
+  const financeAdmin = new User({
+    name,
+    email,
+    password,
+    role: "finance_admin",
+    status: "active",
+    emailVerified: true,
+    createdBy,
+  });
+
+  await financeAdmin.save();
+
+  return await User.findById(financeAdmin._id)
+    .select("-password -resetPasswordOTP -emailVerificationToken")
+    .populate("createdBy", "name role");
+};

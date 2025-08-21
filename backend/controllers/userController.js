@@ -120,3 +120,40 @@ exports.getUserByRollNumber = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+// Finance admin endpoint to clear student fines
+exports.clearStudentFine = async (req, res) => {
+  try {
+    const { studentId } = req.params;
+    const clearedBy = req.user.userId;
+
+    const result = await userService.clearStudentFine(studentId, clearedBy);
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Super admin endpoint to create finance admin
+exports.createFinanceAdmin = async (req, res) => {
+  try {
+    const createdBy = req.user.userId;
+    const financeAdmin = await userService.createFinanceAdmin({
+      ...req.body,
+      createdBy,
+    });
+    res.status(201).json(financeAdmin);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+// Get all finance admins (super admin only)
+exports.getAllFinanceAdmins = async (req, res) => {
+  try {
+    const financeAdmins = await userService.getUsersByRole("finance_admin");
+    res.json(financeAdmins);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

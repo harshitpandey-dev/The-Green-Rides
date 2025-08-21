@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   FaUsers,
   FaBicycle,
@@ -8,17 +8,17 @@ import {
   FaCog,
   FaBell,
   FaPlus,
-  FaEye,
-  FaEdit,
 } from "react-icons/fa";
 
+import { AuthContext } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DashboardCard from "../../components/admin/DashboardCard";
 import StudentList from "../../components/admin/StudentList";
 import GuardList from "../../components/admin/GuardList";
 import CycleList from "../../components/admin/CycleList";
-import FinanceList from "../../components/admin/FinanceList";
+import FinanceAdminList from "../../components/admin/FinanceAdminList";
 import SystemAlerts from "../../components/admin/SystemAlerts";
+import FinanceAdminScreen from "./FinanceAdminScreen";
 import { adminService } from "../../services/admin.service";
 import { userService } from "../../services/user.service";
 import { cycleService } from "../../services/cycle.service";
@@ -26,6 +26,7 @@ import { cycleService } from "../../services/cycle.service";
 import "./AdminScreen.css";
 
 const AdminScreen = () => {
+  const { currentUser } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("dashboard");
   const [dashboardData, setDashboardData] = useState({
@@ -37,9 +38,21 @@ const AdminScreen = () => {
   });
   const [systemAlerts, setSystemAlerts] = useState([]);
 
+  // Check user role to determine interface type
+  const userRole = currentUser?.role;
+  const isFinanceAdmin = userRole === "finance_admin";
+  const isSuperAdmin = userRole === "super_admin";
+
+  // If finance admin, show simplified interface
+  if (isFinanceAdmin) {
+    return <FinanceAdminScreen />;
+  }
+
   useEffect(() => {
-    fetchDashboardData();
-  }, []);
+    if (isSuperAdmin) {
+      fetchDashboardData();
+    }
+  }, [isSuperAdmin]);
 
   const fetchDashboardData = async () => {
     try {
@@ -82,7 +95,11 @@ const AdminScreen = () => {
     { id: "students", label: "Students", icon: <FaUsers /> },
     { id: "guards", label: "Guards", icon: <FaUserShield /> },
     { id: "cycles", label: "Cycles", icon: <FaBicycle /> },
-    { id: "finance", label: "Finance", icon: <FaMoneyBillWave /> },
+    {
+      id: "finance-admins",
+      label: "Finance Admins",
+      icon: <FaMoneyBillWave />,
+    },
   ];
 
   const renderContent = () => {
@@ -95,8 +112,8 @@ const AdminScreen = () => {
         return <GuardList />;
       case "cycles":
         return <CycleList />;
-      case "finance":
-        return <FinanceList />;
+      case "finance-admins":
+        return <FinanceAdminList />;
       default:
         return renderDashboard();
     }
@@ -206,8 +223,8 @@ const AdminScreen = () => {
             className="quick-action-btn"
             onClick={() => setActiveTab("finance")}
           >
-            <FaEye />
-            <span>View Finance</span>
+            <FaPlus />
+            <span>Add Finance admin</span>
           </button>
         </div>
       </div>

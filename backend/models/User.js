@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
   googleId: { type: String },
   role: {
     type: String,
-    enum: ["student", "guard", "admin", "finance"],
+    enum: ["student", "guard", "super_admin", "finance_admin"],
     default: "student",
   },
   status: {
