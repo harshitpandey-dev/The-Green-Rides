@@ -183,7 +183,7 @@ const GuardList = () => {
   };
 
   const handleToggleStatus = async (guard) => {
-    const newStatus = guard.status === "active" ? "inactive" : "active";
+    const newStatus = guard.status === "active" ? "disabled" : "active";
     try {
       await userService.updateUserStatus(guard._id || guard.id, newStatus);
       // Update local state

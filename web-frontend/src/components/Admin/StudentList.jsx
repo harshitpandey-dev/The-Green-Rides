@@ -17,8 +17,6 @@ const StudentList = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [selectedStudent, setSelectedStudent] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -131,12 +129,7 @@ const StudentList = () => {
             className={`action-btn status-btn ${
               student.status === "active" ? "disable-btn" : "enable-btn"
             }`}
-            onClick={() =>
-              handleStatusChange(
-                student._id || student.id,
-                student.status === "active" ? "suspended" : "active"
-              )
-            }
+            onClick={() => handleToggleStatus(student)}
             title={
               student.status === "active"
                 ? "Suspend Student"
@@ -159,11 +152,6 @@ const StudentList = () => {
     },
   ];
 
-  const handleViewStudent = (student) => {
-    setSelectedStudent(student);
-    setShowModal(true);
-  };
-
   const handleEditStudent = (student) => {
     setEditingStudent(student);
     setShowEditModal(true);
@@ -184,27 +172,23 @@ const StudentList = () => {
     }
   };
 
-  const handleStatusChange = async (studentId, newStatus) => {
+  const handleToggleStatus = async (student) => {
+    const newStatus = student.status === "active" ? "disabled" : "active";
     try {
-      await userService.updateUserStatus(studentId, newStatus);
+      await userService.updateUserStatus(student._id || student.id, newStatus);
       // Update local state
       setStudents((prev) =>
-        prev.map((student) =>
-          (student._id || student.id) === studentId
-            ? { ...student, status: newStatus }
-            : student
+        prev.map((g) =>
+          (g._id || g.id) === (student._id || student.id)
+            ? { ...g, status: newStatus }
+            : g
         )
       );
-      setSelectedStudent((prev) => ({
-        ...prev,
-        status: newStatus,
-      }));
-
       setFilteredStudents((prev) =>
-        prev.map((student) =>
-          (student._id || student.id) === studentId
-            ? { ...student, status: newStatus }
-            : student
+        prev.map((g) =>
+          (g._id || g.id) === (student._id || student.id)
+            ? { ...g, status: newStatus }
+            : g
         )
       );
     } catch (error) {
@@ -330,9 +314,9 @@ const StudentList = () => {
           </p>
         </div>
         <div className="stat-card suspended">
-          <h3>Suspended Students</h3>
+          <h3>Disabled Students</h3>
           <p className="stat-number">
-            {students.filter((s) => s.status === "suspended").length}
+            {students.filter((s) => s.status === "disabled").length}
           </p>
         </div>
       </div>
@@ -347,84 +331,6 @@ const StudentList = () => {
           pageSize={10}
         />
       </div>
-
-      {showModal && selectedStudent && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
-              <h3>Student Details</h3>
-              <button className="close-btn" onClick={() => setShowModal(false)}>
-                ×
-              </button>
-            </div>
-            <div className="modal-body">
-              <div className="student-details">
-                <div className="detail-row">
-                  <span className="label">Roll Number:</span>
-                  <span className="value">{selectedStudent.rollNo}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Name:</span>
-                  <span className="value">{selectedStudent.name}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Email:</span>
-                  <span className="value">{selectedStudent.email}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Phone:</span>
-                  <span className="value">{selectedStudent.phone}</span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Total Fine:</span>
-                  <span
-                    className={`value ${
-                      selectedStudent.fine > 0 ? "has-fine" : "no-fine"
-                    }`}
-                  >
-                    ₹{selectedStudent.fine}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Total Rentals:</span>
-                  <span className="value">
-                    {selectedStudent.totalTimesRented}
-                  </span>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Status:</span>
-                  <div className="status-controls">
-                    <span
-                      className={`status-badge status-${selectedStudent.status}`}
-                    >
-                      {selectedStudent.status &&
-                      typeof selectedStudent.status === "string"
-                        ? selectedStudent.status.charAt(0).toUpperCase() +
-                          selectedStudent.status.slice(1)
-                        : "Unknown"}
-                    </span>
-                    <select
-                      value={selectedStudent.status}
-                      onChange={(e) =>
-                        handleStatusChange(selectedStudent._id, e.target.value)
-                      }
-                    >
-                      <option value="active">Active</option>
-                      <option value="disabled">Disabled</option>
-                    </select>
-                  </div>
-                </div>
-                <div className="detail-row">
-                  <span className="label">Join Date:</span>
-                  <span className="value">
-                    {new Date(selectedStudent.joinDate).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {showEditModal && editingStudent && (
         <div className="modal-overlay" onClick={() => setShowEditModal(false)}>
