@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   },
   fine: { type: Number, default: 0 },
   totalTimesRented: { type: Number, default: 0 },
-  totalDurationOfRent: { type: Number, default: 0 }, // in minutes
+  totalDurationOfRent: { type: Number, default: 0 },
   profilePicture: { type: String, default: "" },
   location: {
     type: String,
