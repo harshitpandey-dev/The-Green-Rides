@@ -46,7 +46,6 @@ const cycleRoutes = require("./routes/cycleRoutes");
 const rentalRoutes = require("./routes/rentalRoutes");
 const userRoutes = require("./routes/userRoutes");
 const qrRoutes = require("./routes/qrRoutes");
-const financeRoutes = require("./routes/financeRoutes");
 
 // API routes
 app.use("/api/auth", authRoutes);
@@ -54,7 +53,6 @@ app.use("/api/cycles", cycleRoutes);
 app.use("/api/rentals", rentalRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/qr", qrRoutes);
-app.use("/api/finance", financeRoutes);
 
 // Health check
 app.get("/", (req, res) => {

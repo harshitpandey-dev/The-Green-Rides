@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 
 const cycleSchema = new mongoose.Schema({
   cycleNumber: { type: String, required: true, unique: true },
-  cycleId: { type: String, required: true }, // For backward compatibility
   status: {
     type: String,
     enum: ["available", "rented", "under_maintenance", "disabled"],

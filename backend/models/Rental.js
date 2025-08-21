@@ -7,10 +7,9 @@ const rentalSchema = new mongoose.Schema({
     required: true,
   },
   cycle: { type: mongoose.Schema.Types.ObjectId, ref: "Cycle", required: true },
-  guard: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 
   // Rental details
-  duration: { type: Number, required: true }, // in minutes
+  duration: { type: Number, required: true },
   rentedAt: { type: Date, default: Date.now },
   returnedAt: { type: Date },
 
