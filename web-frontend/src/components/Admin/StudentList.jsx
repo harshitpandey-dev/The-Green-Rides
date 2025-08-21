@@ -6,10 +6,11 @@ import {
   FaEye,
   FaFilter,
   FaDownload,
+  FaUsers,
 } from "react-icons/fa";
 import DataTable from "../common/DataTable";
 import { userService } from "../../services/user.service";
-import "./StudentList.css";
+import "../admin/adminList.css";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -115,20 +116,31 @@ const StudentList = () => {
       render: (_, student) => (
         <div className="action-buttons">
           <button
-            className="action-btn view-btn"
-            onClick={() => handleViewStudent(student)}
-            title="View Details"
-            disabled={loading}
-          >
-            <FaEye />
-          </button>
-          <button
             className="action-btn edit-btn"
             onClick={() => handleEditStudent(student)}
             title="Edit Student"
             disabled={loading}
           >
             <FaEdit />
+          </button>
+          <button
+            className={`action-btn status-btn ${
+              student.status === "active" ? "disable-btn" : "enable-btn"
+            }`}
+            onClick={() =>
+              handleStatusChange(
+                student._id || student.id,
+                student.status === "active" ? "suspended" : "active"
+              )
+            }
+            title={
+              student.status === "active"
+                ? "Suspend Student"
+                : "Activate Student"
+            }
+            disabled={loading}
+          >
+            {student.status === "active" ? "🔒" : "🔓"}
           </button>
           <button
             className="action-btn delete-btn"
@@ -158,7 +170,7 @@ const StudentList = () => {
       window.confirm(`Are you sure you want to delete student ${student.name}?`)
     ) {
       try {
-        await userService.deleteUser(student.id);
+        await userService.deleteUser(student._id || student.id);
         // Refresh the list after deletion
         fetchStudents();
       } catch (error) {
@@ -174,7 +186,9 @@ const StudentList = () => {
       // Update local state
       setStudents((prev) =>
         prev.map((student) =>
-          student.id === studentId ? { ...student, status: newStatus } : student
+          (student._id || student.id) === studentId
+            ? { ...student, status: newStatus }
+            : student
         )
       );
       setSelectedStudent((prev) => ({
@@ -184,7 +198,9 @@ const StudentList = () => {
 
       setFilteredStudents((prev) =>
         prev.map((student) =>
-          student.id === studentId ? { ...student, status: newStatus } : student
+          (student._id || student.id) === studentId
+            ? { ...student, status: newStatus }
+            : student
         )
       );
     } catch (error) {
@@ -251,9 +267,15 @@ const StudentList = () => {
   }
 
   return (
-    <div className="student-list">
-      <div className="student-list-header">
-        <h2>Student Management</h2>
+    <div className="admin-list-container">
+      <div className="list-header">
+        <div className="header-content">
+          <h2>
+            <FaUsers />
+            Student Management
+          </h2>
+          <p>Manage student accounts and track rental activity</p>
+        </div>
         <div className="header-actions">
           <button className="export-btn" onClick={exportStudents}>
             <FaDownload /> Export CSV
@@ -261,7 +283,7 @@ const StudentList = () => {
         </div>
       </div>
 
-      <div className="student-filters">
+      <div className="filters-section">
         <div className="search-box">
           <FaSearch className="search-icon" />
           <input
@@ -286,33 +308,41 @@ const StudentList = () => {
         </div>
       </div>
 
-      <div className="student-stats">
+      <div className="stats-cards">
         <div className="stat-card">
           <h3>Total Students</h3>
-          <p>{students.length}</p>
+          <p className="stat-number">{students.length}</p>
         </div>
         <div className="stat-card">
           <h3>Active Students</h3>
-          <p>{students.filter((s) => s.status === "active").length}</p>
+          <p className="stat-number">
+            {students.filter((s) => s.status === "active").length}
+          </p>
         </div>
         <div className="stat-card">
           <h3>Students with Fines</h3>
-          <p>{students.filter((s) => s.fine > 0).length}</p>
+          <p className="stat-number">
+            {students.filter((s) => s.fine > 0).length}
+          </p>
         </div>
         <div className="stat-card">
-          <h3>Disabled Students</h3>
-          <p>{students.filter((s) => s.status === "blocked").length}</p>
+          <h3>Suspended Students</h3>
+          <p className="stat-number">
+            {students.filter((s) => s.status === "suspended").length}
+          </p>
         </div>
       </div>
 
-      <DataTable
-        data={filteredStudents}
-        columns={columns}
-        searchable={false}
-        sortable={true}
-        paginated={true}
-        pageSize={10}
-      />
+      <div className="table-container">
+        <DataTable
+          data={filteredStudents}
+          columns={columns}
+          searchable={false}
+          sortable={true}
+          paginated={true}
+          pageSize={10}
+        />
+      </div>
 
       {showModal && selectedStudent && (
         <div className="modal-overlay" onClick={() => setShowModal(false)}>

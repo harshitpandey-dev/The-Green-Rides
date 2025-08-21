@@ -7,10 +7,11 @@ import {
   FaKey,
   FaFilter,
   FaUserPlus,
+  FaUserShield,
 } from "react-icons/fa";
 import DataTable from "../common/DataTable";
 import { userService } from "../../services/user.service";
-import "./GuardList.css";
+import "./adminList.css";
 
 const GuardList = () => {
   const [guards, setGuards] = useState([]);
@@ -110,18 +111,22 @@ const GuardList = () => {
       render: (_, guard) => (
         <div className="action-buttons">
           <button
-            className="action-btn view-btn"
-            onClick={() => handleViewGuard(guard)}
-            title="View Details"
-          >
-            <FaEye />
-          </button>
-          <button
             className="action-btn edit-btn"
             onClick={() => handleEditGuard(guard)}
             title="Edit Guard"
           >
             <FaEdit />
+          </button>
+          <button
+            className={`action-btn status-btn ${
+              guard.status === "active" ? "disable-btn" : "enable-btn"
+            }`}
+            onClick={() => handleToggleStatus(guard)}
+            title={
+              guard.status === "active" ? "Deactivate Guard" : "Activate Guard"
+            }
+          >
+            {guard.status === "active" ? "🔒" : "🔓"}
           </button>
           <button
             className="action-btn delete-btn"
@@ -160,12 +165,43 @@ const GuardList = () => {
     setShowModal(true);
   };
 
-  const handleDeleteGuard = (guard) => {
+  const handleDeleteGuard = async (guard) => {
     if (
       window.confirm(`Are you sure you want to delete guard ${guard.name}?`)
     ) {
-      setGuards((prev) => prev.filter((g) => g.id !== guard.id));
-      console.log("Delete guard:", guard);
+      try {
+        await userService.deleteUser(guard._id || guard.id);
+        // Refresh the list after deletion
+        fetchGuards();
+      } catch (error) {
+        console.error("Error deleting guard:", error);
+        alert("Failed to delete guard. Please try again.");
+      }
+    }
+  };
+
+  const handleToggleStatus = async (guard) => {
+    const newStatus = guard.status === "active" ? "inactive" : "active";
+    try {
+      await userService.updateUserStatus(guard._id || guard.id, newStatus);
+      // Update local state
+      setGuards((prev) =>
+        prev.map((g) =>
+          (g._id || g.id) === (guard._id || guard.id)
+            ? { ...g, status: newStatus }
+            : g
+        )
+      );
+      setFilteredGuards((prev) =>
+        prev.map((g) =>
+          (g._id || g.id) === (guard._id || guard.id)
+            ? { ...g, status: newStatus }
+            : g
+        )
+      );
+    } catch (error) {
+      console.error("Error updating guard status:", error);
+      alert("Failed to update guard status. Please try again.");
     }
   };
 
@@ -199,9 +235,15 @@ const GuardList = () => {
   }
 
   return (
-    <div className="guard-list">
-      <div className="guard-list-header">
-        <h2>Guard Management</h2>
+    <div className="admin-list-container">
+      <div className="list-header">
+        <div className="header-content">
+          <h2>
+            <FaUserShield />
+            Security Guard Management
+          </h2>
+          <p>Manage security personnel and shift assignments</p>
+        </div>
         <div className="header-actions">
           <button className="add-btn" onClick={handleAddGuard}>
             <FaUserPlus /> Add Guard
@@ -209,7 +251,7 @@ const GuardList = () => {
         </div>
       </div>
 
-      <div className="guard-filters">
+      <div className="filters-section">
         <div className="search-box">
           <FaSearch className="search-icon" />
           <input
@@ -233,33 +275,41 @@ const GuardList = () => {
         </div>
       </div>
 
-      <div className="guard-stats">
+      <div className="stats-cards">
         <div className="stat-card">
           <h3>Total Guards</h3>
-          <p>{guards.length}</p>
+          <p className="stat-number">{guards.length}</p>
         </div>
         <div className="stat-card">
           <h3>Active Guards</h3>
-          <p>{guards.filter((g) => g.status === "active").length}</p>
+          <p className="stat-number">
+            {guards.filter((g) => g.status === "active").length}
+          </p>
         </div>
         <div className="stat-card">
           <h3>Morning Shift</h3>
-          <p>{guards.filter((g) => g.shift === "Morning").length}</p>
+          <p className="stat-number">
+            {guards.filter((g) => g.shift === "Morning").length}
+          </p>
         </div>
         <div className="stat-card">
           <h3>Evening Shift</h3>
-          <p>{guards.filter((g) => g.shift === "Evening").length}</p>
+          <p className="stat-number">
+            {guards.filter((g) => g.shift === "Evening").length}
+          </p>
         </div>
       </div>
 
-      <DataTable
-        data={filteredGuards}
-        columns={columns}
-        searchable={false}
-        sortable={true}
-        paginated={true}
-        pageSize={10}
-      />
+      <div className="table-container">
+        <DataTable
+          data={filteredGuards}
+          columns={columns}
+          searchable={false}
+          sortable={true}
+          paginated={true}
+          pageSize={10}
+        />
+      </div>
 
       {showModal && selectedGuard && (
         <GuardModal

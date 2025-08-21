@@ -4,12 +4,14 @@ import { userService } from "../../services/user.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 import DataTable from "../common/DataTable";
 import CreateFinanceAdmin from "./CreateFinanceAdmin";
-import "./FinanceAdminList.css";
+import "./adminList.css";
 
 const FinanceAdminList = () => {
   const [financeAdmins, setFinanceAdmins] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingAdmin, setEditingAdmin] = useState(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -118,11 +120,11 @@ const FinanceAdminList = () => {
       render: (_, admin) => (
         <div className="action-buttons">
           <button
-            className="action-btn view-btn"
-            onClick={() => handleViewAdmin(admin)}
-            title="View Details"
+            className="action-btn edit-btn"
+            onClick={() => handleEditAdmin(admin)}
+            title="Edit Admin"
           >
-            <FaEye />
+            <FaEdit />
           </button>
           <button
             className={`action-btn status-btn ${
@@ -155,12 +157,29 @@ const FinanceAdminList = () => {
     console.log("View admin:", admin);
   };
 
+  const handleEditAdmin = (admin) => {
+    setEditingAdmin(admin);
+    setShowEditModal(true);
+  };
+
+  const handleEditSuccess = (updatedAdmin) => {
+    setFinanceAdmins((prev) =>
+      prev.map((admin) =>
+        admin._id === updatedAdmin._id ? { ...admin, ...updatedAdmin } : admin
+      )
+    );
+    setMessage(`Finance admin "${updatedAdmin.name}" updated successfully!`);
+    setShowEditModal(false);
+    setEditingAdmin(null);
+    setTimeout(() => setMessage(""), 5000);
+  };
+
   if (loading) {
     return <LoadingSpinner message="Loading finance admins..." />;
   }
 
   return (
-    <div className="finance-admin-list">
+    <div className="admin-list-container">
       <div className="list-header">
         <div className="header-content">
           <h2>
@@ -220,6 +239,19 @@ const FinanceAdminList = () => {
         onClose={() => setShowCreateModal(false)}
         onSuccess={handleCreateSuccess}
       />
+
+      {showEditModal && editingAdmin && (
+        <CreateFinanceAdmin
+          isOpen={showEditModal}
+          onClose={() => {
+            setShowEditModal(false);
+            setEditingAdmin(null);
+          }}
+          onSuccess={handleEditSuccess}
+          editMode={true}
+          adminData={editingAdmin}
+        />
+      )}
     </div>
   );
 };

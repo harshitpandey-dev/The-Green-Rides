@@ -4,10 +4,16 @@ import { userService } from "../../services/user.service";
 import LoadingSpinner from "../common/LoadingSpinner";
 import "./CreateFinanceAdmin.css";
 
-const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
+const CreateFinanceAdmin = ({
+  isOpen,
+  onClose,
+  onSuccess,
+  editMode = false,
+  adminData = null,
+}) => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    name: editMode && adminData ? adminData.name : "",
+    email: editMode && adminData ? adminData.email : "",
     password: "",
     confirmPassword: "",
   });
@@ -34,15 +40,28 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
     if (!/\S+@\S+\.\S+/.test(formData.email)) {
       return "Please enter a valid email address";
     }
-    if (!formData.password) {
-      return "Password is required";
+
+    // Password validation only required for new users or when password is being changed
+    if (!editMode) {
+      if (!formData.password) {
+        return "Password is required";
+      }
+      if (formData.password.length < 6) {
+        return "Password must be at least 6 characters long";
+      }
+      if (formData.password !== formData.confirmPassword) {
+        return "Passwords do not match";
+      }
+    } else if (formData.password) {
+      // If in edit mode and password is provided, validate it
+      if (formData.password.length < 6) {
+        return "Password must be at least 6 characters long";
+      }
+      if (formData.password !== formData.confirmPassword) {
+        return "Passwords do not match";
+      }
     }
-    if (formData.password.length < 6) {
-      return "Password must be at least 6 characters long";
-    }
-    if (formData.password !== formData.confirmPassword) {
-      return "Passwords do not match";
-    }
+
     return null;
   };
 
@@ -59,12 +78,30 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
       setLoading(true);
       setError("");
 
-      const result = await userService.createUser({
-        name: formData.name.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-        role: "finance_admin",
-      });
+      let result;
+
+      if (editMode) {
+        // Update existing admin
+        const updateData = {
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+        };
+
+        // Only include password if it's being changed
+        if (formData.password) {
+          updateData.password = formData.password;
+        }
+
+        result = await userService.updateUser(adminData._id, updateData);
+      } else {
+        // Create new admin
+        result = await userService.createUser({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          role: "finance_admin",
+        });
+      }
 
       // Reset form
       setFormData({
@@ -77,7 +114,10 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
       onSuccess(result);
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to create finance admin");
+      setError(
+        err.message ||
+          `Failed to ${editMode ? "update" : "create"} finance admin`
+      );
     } finally {
       setLoading(false);
     }
@@ -107,7 +147,7 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
         <div className="modal-header">
           <h2>
             <FaUserPlus />
-            Create Finance Admin
+            {editMode ? "Edit Finance Admin" : "Create Finance Admin"}
           </h2>
           <button
             className="close-btn"
@@ -148,31 +188,41 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="password">Password *</label>
+            <label htmlFor="password">
+              Password {editMode ? "(leave blank to keep current)" : "*"}
+            </label>
             <input
               type="password"
               id="password"
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              placeholder="Enter password (min 6 characters)"
+              placeholder={
+                editMode
+                  ? "Enter new password (optional)"
+                  : "Enter password (min 6 characters)"
+              }
               disabled={loading}
-              required
+              required={!editMode}
               minLength={6}
             />
           </div>
 
           <div className="form-group">
-            <label htmlFor="confirmPassword">Confirm Password *</label>
+            <label htmlFor="confirmPassword">
+              Confirm Password {editMode && !formData.password ? "" : "*"}
+            </label>
             <input
               type="password"
               id="confirmPassword"
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleInputChange}
-              placeholder="Confirm password"
-              disabled={loading}
-              required
+              placeholder={
+                editMode ? "Confirm new password" : "Confirm password"
+              }
+              disabled={loading || (editMode && !formData.password)}
+              required={!editMode || !!formData.password}
             />
           </div>
 
@@ -191,12 +241,12 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
               {loading ? (
                 <>
                   <LoadingSpinner size="small" />
-                  Creating...
+                  {editMode ? "Updating..." : "Creating..."}
                 </>
               ) : (
                 <>
                   <FaUserPlus />
-                  Create Finance Admin
+                  {editMode ? "Update Finance Admin" : "Create Finance Admin"}
                 </>
               )}
             </button>
