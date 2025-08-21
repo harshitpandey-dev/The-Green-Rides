@@ -1,17 +1,19 @@
 import { apiUtils } from "../utils/api.util.js";
 
-// ADD CYCLE
-export async function addCycle(props) {
-  return await apiUtils.post("/cycles", props);
-}
+export const cycleService = {
+  // ADD CYCLE
+  addCycle: async (props) => {
+    return await apiUtils.post("/cycles", props);
+  },
 
-// DELETE CYCLE
-export async function deleteCycle(cycleId) {
-  await apiUtils.delete(`/cycles/${cycleId}`);
-  return "Cycle Deleted";
-}
+  // DELETE CYCLE
+  deleteCycle: async (cycleId) => {
+    await apiUtils.delete(`/cycles/${cycleId}`);
+    return "Cycle Deleted";
+  },
 
-// GET ALL CYCLES
-export async function getCycles() {
-  return await apiUtils.get("/cycles");
-}
+  // GET ALL CYCLES
+  getCycles: async () => {
+    return await apiUtils.get("/cycles");
+  },
+};

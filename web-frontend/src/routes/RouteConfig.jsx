@@ -3,7 +3,6 @@ import { Route, Switch, Redirect } from "react-router-dom";
 import Signup from "../screens/auth/Signup";
 import AdminScreen from "../screens/admin/AdminScreen";
 import FinanceScreen from "../screens/finance/FinanceScreen";
-import CycleListScreen from "../screens/cycles/CycleListScreen";
 import Navbar from "../components/navbar/Navbar";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
@@ -16,7 +15,6 @@ export const RouteConfig = ({ loggedIn, user }) => {
     import("../screens/profile/UserProfile")
   );
   const LoginPage = React.lazy(() => import("../screens/auth/Login"));
-  const Rent = React.lazy(() => import("../screens/rent/Rent"));
 
   const ProtectedRoute = ({ condition, redirectTo, children, ...rest }) => (
     <Route
@@ -105,14 +103,6 @@ export const RouteConfig = ({ loggedIn, user }) => {
               }
             >
               <FinanceScreen />
-            </ProtectedRoute>
-
-            <ProtectedRoute
-              path="/cycles"
-              condition={loggedIn && hasWebAccess}
-              redirectTo={loggedIn ? "/access-denied" : "/auth"}
-            >
-              <CycleListScreen />
             </ProtectedRoute>
 
             <Route path="*">

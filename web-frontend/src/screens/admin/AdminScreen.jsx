@@ -1,49 +1,255 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  FaUsers,
+  FaBicycle,
+  FaChartLine,
+  FaMoneyBillWave,
+  FaUserShield,
+  FaCog,
+  FaBell,
+  FaPlus,
+  FaEye,
+  FaEdit,
+} from "react-icons/fa";
 
-import AddCycle from "../../components/Admin/AddCycle";
-import AddGuard from "../../components/Admin/AddGuard";
-import AddStudentForm from "../../components/Admin/AddStudent";
-import DeleteCycle from "../../components/Admin/DeleteCycle";
-import DeleteGuard from "../../components/Admin/DeleteGuard";
-import DeleteStudent from "../../components/Admin/DeleteStudent";
-import Button from "../../components/common/Button";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import DashboardCard from "../../components/admin/DashboardCard";
+import StudentList from "../../components/admin/StudentList";
+import GuardList from "../../components/admin/GuardList";
+import CycleList from "../../components/admin/CycleList";
+import FinanceList from "../../components/admin/FinanceList";
+import SystemAlerts from "../../components/admin/SystemAlerts";
+import { adminService } from "../../services/admin.service";
+import { userService } from "../../services/user.service";
+import { cycleService } from "../../services/cycle.service";
 
-import classes from "./admin.module.css";
-
-const formComponents = {
-  addStudent: <AddStudentForm />,
-  deleteStudent: <DeleteStudent />,
-  addGuard: <AddGuard />,
-  deleteGuard: <DeleteGuard />,
-  addCycle: <AddCycle />,
-  deleteCycle: <DeleteCycle />,
-};
+import "./AdminScreen.css";
 
 const AdminScreen = () => {
-  const [activeForm, setActiveForm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [dashboardData, setDashboardData] = useState({
+    students: { total: 0, active: 0, suspended: 0 },
+    guards: { total: 0, active: 0 },
+    cycles: { total: 0, available: 0, rented: 0, maintenance: 0 },
+    finance: { totalFines: 0, collectedToday: 0, pendingFines: 0 },
+    rentals: { activeRentals: 0, overdueRentals: 0, totalToday: 0 },
+  });
+  const [systemAlerts, setSystemAlerts] = useState([]);
 
-  const toggleForm = (formName) => {
-    setActiveForm((prev) => (prev === formName ? "" : formName));
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+
+      const [
+        studentsData,
+        guardsData,
+        cyclesData,
+        financeData,
+        rentalsData,
+        alertsData,
+      ] = await Promise.all([
+        //userService.getStudentStats(),
+        // userService.getGuardStats(),
+        //  cycleService.getCycleStats(),
+        //userService.getFinanceStats(),
+        //rentService.getRentalStats(),
+        userService.getSystemAlerts(),
+      ]);
+
+      setDashboardData({
+        students: studentsData,
+        guards: guardsData,
+        cycles: cyclesData,
+        finance: financeData,
+        rentals: rentalsData,
+      });
+
+      setSystemAlerts(alertsData);
+    } catch (error) {
+      console.error("Failed to fetch dashboard data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return (
-    <div className={classes.container}>
-      <div className={classes.content}>
-        <h1 className={classes.title}>Admin Dashboard</h1>
-        <p className={classes.subtitle}>Manage your Green Rides system</p>
+  const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: <FaChartLine /> },
+    { id: "students", label: "Students", icon: <FaUsers /> },
+    { id: "guards", label: "Guards", icon: <FaUserShield /> },
+    { id: "cycles", label: "Cycles", icon: <FaBicycle /> },
+    { id: "finance", label: "Finance", icon: <FaMoneyBillWave /> },
+  ];
 
-        {formComponents[activeForm]}
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return renderDashboard();
+      case "students":
+        return <StudentList />;
+      case "guards":
+        return <GuardList />;
+      case "cycles":
+        return <CycleList />;
+      case "finance":
+        return <FinanceList />;
+      default:
+        return renderDashboard();
+    }
+  };
 
-        <div className={classes.buttonGrid}>
-          <Button click={() => toggleForm("addStudent")}>Add Student</Button>
-          <Button click={() => toggleForm("deleteStudent")}>
-            Delete Student
-          </Button>
-          <Button click={() => toggleForm("addGuard")}>Add Guard</Button>
-          <Button click={() => toggleForm("deleteGuard")}>Delete Guard</Button>
-          <Button click={() => toggleForm("addCycle")}>Add Cycle</Button>
-          <Button click={() => toggleForm("deleteCycle")}>Delete Cycle</Button>
+  const renderDashboard = () => (
+    <div className="admin-dashboard">
+      {/* System Alerts */}
+      {systemAlerts.length > 0 && (
+        <SystemAlerts
+          alerts={systemAlerts}
+          onDismiss={(id) => {
+            setSystemAlerts((alerts) =>
+              alerts.filter((alert) => alert.id !== id)
+            );
+          }}
+        />
+      )}
+
+      {/* Dashboard Cards */}
+      <div className="dashboard-cards">
+        <DashboardCard
+          title="Total Students"
+          value={dashboardData.students.total}
+          icon={<FaUsers />}
+          trend={`${dashboardData.students.active} Active`}
+          subtitle={`${dashboardData.students.suspended} Suspended`}
+          color="primary"
+          onClick={() => setActiveTab("students")}
+        />
+
+        <DashboardCard
+          title="Security Guards"
+          value={dashboardData.guards.total}
+          icon={<FaUserShield />}
+          trend={`${dashboardData.guards.active} Active`}
+          subtitle="On duty personnel"
+          color="info"
+          onClick={() => setActiveTab("guards")}
+        />
+
+        <DashboardCard
+          title="Total Cycles"
+          value={dashboardData.cycles.total}
+          icon={<FaBicycle />}
+          trend={`${dashboardData.cycles.available} Available`}
+          subtitle={`${dashboardData.cycles.rented} Rented, ${dashboardData.cycles.maintenance} Maintenance`}
+          color="success"
+          onClick={() => setActiveTab("cycles")}
+        />
+
+        <DashboardCard
+          title="Active Rentals"
+          value={dashboardData.rentals.activeRentals}
+          icon={<FaChartLine />}
+          trend={`${dashboardData.rentals.totalToday} Today`}
+          subtitle={`${dashboardData.rentals.overdueRentals} Overdue`}
+          color="warning"
+        />
+
+        <DashboardCard
+          title="Total Fines"
+          value={`₹${dashboardData.finance.totalFines}`}
+          icon={<FaMoneyBillWave />}
+          trend={`₹${dashboardData.finance.collectedToday} Today`}
+          subtitle={`₹${dashboardData.finance.pendingFines} Pending`}
+          color="accent"
+          onClick={() => setActiveTab("finance")}
+        />
+
+        <DashboardCard
+          title="Maintenance Required"
+          value={dashboardData.cycles.maintenance}
+          icon={<FaCog />}
+          trend="urgent"
+          subtitle="Cycles need attention"
+          color="danger"
+        />
+      </div>
+
+      {/* Quick Actions */}
+      <div className="quick-actions-section">
+        <h2>Quick Actions</h2>
+        <div className="quick-actions-grid">
+          <button
+            className="quick-action-btn"
+            onClick={() => setActiveTab("students")}
+          >
+            <FaPlus />
+            <span>Add Student</span>
+          </button>
+          <button
+            className="quick-action-btn"
+            onClick={() => setActiveTab("guards")}
+          >
+            <FaPlus />
+            <span>Add Guard</span>
+          </button>
+          <button
+            className="quick-action-btn"
+            onClick={() => setActiveTab("cycles")}
+          >
+            <FaPlus />
+            <span>Add Cycle</span>
+          </button>
+          <button
+            className="quick-action-btn"
+            onClick={() => setActiveTab("finance")}
+          >
+            <FaEye />
+            <span>View Finance</span>
+          </button>
         </div>
+      </div>
+    </div>
+  );
+
+  if (loading) {
+    return <LoadingSpinner message="Loading admin dashboard..." />;
+  }
+
+  return (
+    <div className="admin-screen">
+      <div className="admin-header">
+        <div className="admin-title">
+          <h1>Admin Portal</h1>
+          <p>Complete system management and oversight</p>
+        </div>
+        <div className="admin-actions">
+          <button className="notification-btn">
+            <FaBell />
+            {systemAlerts.length > 0 && (
+              <span className="notification-badge">{systemAlerts.length}</span>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="admin-content">
+        <nav className="admin-tabs">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`admin-tab ${activeTab === tab.id ? "active" : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              {tab.icon}
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="admin-tab-content">{renderContent()}</div>
       </div>
     </div>
   );

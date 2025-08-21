@@ -1,0 +1,228 @@
+.dashboard-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 4px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-card--clickable {
+  cursor: pointer;
+}
+
+.dashboard-card--clickable:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+}
+
+.dashboard-card--primary {
+  border-left-color: #4caf50;
+}
+
+.dashboard-card--success {
+  border-left-color: #27ae60;
+}
+
+.dashboard-card--info {
+  border-left-color: #3498db;
+}
+
+.dashboard-card--warning {
+  border-left-color: #f39c12;
+}
+
+.dashboard-card--danger {
+  border-left-color: #e74c3c;
+}
+
+.dashboard-card--accent {
+  border-left-color: #9b59b6;
+}
+
+.dashboard-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.dashboard-card__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.dashboard-card--primary .dashboard-card__icon {
+  background: linear-gradient(135deg, #4caf50, #45a049);
+}
+
+.dashboard-card--success .dashboard-card__icon {
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.dashboard-card--info .dashboard-card__icon {
+  background: linear-gradient(135deg, #3498db, #74b9ff);
+}
+
+.dashboard-card--warning .dashboard-card__icon {
+  background: linear-gradient(135deg, #f39c12, #fdcb6e);
+}
+
+.dashboard-card--danger .dashboard-card__icon {
+  background: linear-gradient(135deg, #e74c3c, #fd79a8);
+}
+
+.dashboard-card--accent .dashboard-card__icon {
+  background: linear-gradient(135deg, #9b59b6, #a29bfe);
+}
+
+.dashboard-card__trend {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: white;
+}
+
+.trend--positive {
+  background: #27ae60;
+}
+
+.trend--negative {
+  background: #e74c3c;
+}
+
+.trend--urgent {
+  background: #f39c12;
+  animation: pulse 2s infinite;
+}
+
+.trend--critical {
+  background: #e74c3c;
+  animation: pulse 1s infinite;
+}
+
+.trend--neutral {
+  background: #7f8c8d;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.dashboard-card__content {
+  margin-bottom: 1rem;
+}
+
+.dashboard-card__title {
+  margin: 0 0 0.5rem;
+  color: #7f8c8d;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-card__value {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-card__subtitle {
+  margin: 0;
+  color: #95a5a6;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.dashboard-card__footer {
+  border-top: 1px solid #ecf0f1;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.dashboard-card__action {
+  color: #4caf50;
+  font-size: 0.9rem;
+  font-weight: 600;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: all 0.3s ease;
+}
+
+.dashboard-card--clickable:hover .dashboard-card__action {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.dashboard-card--primary .dashboard-card__action {
+  color: #4caf50;
+}
+
+.dashboard-card--success .dashboard-card__action {
+  color: #27ae60;
+}
+
+.dashboard-card--info .dashboard-card__action {
+  color: #3498db;
+}
+
+.dashboard-card--warning .dashboard-card__action {
+  color: #f39c12;
+}
+
+.dashboard-card--danger .dashboard-card__action {
+  color: #e74c3c;
+}
+
+.dashboard-card--accent .dashboard-card__action {
+  color: #9b59b6;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .dashboard-card {
+    padding: 1rem;
+  }
+
+  .dashboard-card__icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  .dashboard-card__value {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .dashboard-card__value {
+    font-size: 1.8rem;
+  }
+}
