@@ -12,22 +12,10 @@ router.post("/", userController.addUser);
 // General admin endpoints (super_admin, finance_admin can view students)
 router.get("/", auth, roleCheck(["super_admin"]), userController.getAllUsers);
 router.get(
-  "/students",
-  auth,
-  roleCheck(["super_admin", "finance_admin"]),
-  userController.getAllStudents
-);
-router.get(
-  "/guards",
+  "/role/:role",
   auth,
   roleCheck(["super_admin"]),
-  userController.getAllGuards
-);
-router.get(
-  "/finance-admins",
-  auth,
-  roleCheck(["super_admin"]),
-  userController.getAllFinanceAdmins
+  userController.getAllUsersByRole
 );
 
 // Student lookup by roll number (finance_admin and super_admin)
@@ -65,14 +53,6 @@ router.post(
   auth,
   roleCheck(["finance_admin", "super_admin"]),
   userController.clearStudentFine
-);
-
-// Super admin only endpoints
-router.post(
-  "/finance-admin",
-  auth,
-  roleCheck(["super_admin"]),
-  userController.createFinanceAdmin
 );
 
 module.exports = router;

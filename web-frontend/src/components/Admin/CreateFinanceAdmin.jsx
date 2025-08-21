@@ -59,10 +59,11 @@ const CreateFinanceAdmin = ({ isOpen, onClose, onSuccess }) => {
       setLoading(true);
       setError("");
 
-      const result = await userService.createFinanceAdmin({
+      const result = await userService.createUser({
         name: formData.name.trim(),
         email: formData.email.trim(),
         password: formData.password,
+        role: "finance_admin",
       });
 
       // Reset form

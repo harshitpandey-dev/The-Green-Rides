@@ -28,19 +28,11 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
-exports.getAllStudents = async (req, res) => {
+exports.getAllUsersByRole = async (req, res) => {
   try {
-    const students = await userService.getUsersByRole("student");
-    res.json(students);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-exports.getAllGuards = async (req, res) => {
-  try {
-    const guards = await userService.getUsersByRole("guard");
-    res.json(guards);
+    console.log("Fetching users by role:", req.params.role);
+    const users = await userService.getUsersByRole(req.params.role);
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -85,24 +77,6 @@ exports.updateUserStatus = async (req, res) => {
   }
 };
 
-exports.addGuard = async (req, res) => {
-  try {
-    const guard = await userService.addGuard(req.body);
-    res.json(guard);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
-exports.resetGuardPassword = async (req, res) => {
-  try {
-    await userService.resetGuardPassword(req.params.id);
-    res.json({ message: "Password reset successfully" });
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
 exports.getUserFines = async (req, res) => {
   try {
     const fines = await userService.getUserFines(req.params.id);
@@ -131,29 +105,5 @@ exports.clearStudentFine = async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
-  }
-};
-
-// Super admin endpoint to create finance admin
-exports.createFinanceAdmin = async (req, res) => {
-  try {
-    const createdBy = req.user.userId;
-    const financeAdmin = await userService.createFinanceAdmin({
-      ...req.body,
-      createdBy,
-    });
-    res.status(201).json(financeAdmin);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-};
-
-// Get all finance admins (super admin only)
-exports.getAllFinanceAdmins = async (req, res) => {
-  try {
-    const financeAdmins = await userService.getUsersByRole("finance_admin");
-    res.json(financeAdmins);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
   }
 };
