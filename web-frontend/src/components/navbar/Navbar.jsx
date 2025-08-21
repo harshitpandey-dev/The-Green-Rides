@@ -39,13 +39,6 @@ const Navbar = () => {
               </NavLink>
             </li>
           )}
-          {isLoggedIn && hasWebAccess && (
-            <li>
-              <NavLink to="/cycles" activeClassName={classes.active}>
-                Manage Cycles
-              </NavLink>
-            </li>
-          )}
           {!isLoggedIn && (
             <li>
               <NavLink to="/auth" activeClassName={classes.active}>

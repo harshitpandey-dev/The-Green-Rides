@@ -35,3 +35,54 @@ exports.deleteCycle = async (req, res) => {
     res.status(404).json({ message: err.message });
   }
 };
+
+exports.getCycleById = async (req, res) => {
+  try {
+    const cycle = await cycleService.getCycleById(req.params.id);
+    res.json(cycle);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+exports.getCycleStats = async (req, res) => {
+  try {
+    const stats = await cycleService.getCycleStats(req.params.id);
+    res.json(stats);
+  } catch (err) {
+    res.status(404).json({ message: err.message });
+  }
+};
+
+exports.updateCycleStatus = async (req, res) => {
+  try {
+    const cycle = await cycleService.updateCycleStatus(
+      req.params.id,
+      req.body.status
+    );
+    res.json(cycle);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.markForMaintenance = async (req, res) => {
+  try {
+    const cycle = await cycleService.markForMaintenance(
+      req.params.id,
+      req.body
+    );
+    res.json(cycle);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.getDashboardStats = async (req, res) => {
+  try {
+    const stats = await cycleService.getDashboardStats();
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};

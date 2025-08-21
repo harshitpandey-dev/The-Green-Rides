@@ -1,25 +1,119 @@
-import { apiUtils } from '../utils/api.util.js';
+import { apiCall } from '../utils/api.util';
 
-export async function registerUser(props) {
-  return await apiUtils.post('/auth/register', props);
+// REGISTER USER
+export async function registerUser(userData) {
+  try {
+    const response = await apiCall('POST', '/api/auth/register', userData);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Registration failed');
+  }
 }
 
-export async function loginUser(props) {
-  return await apiUtils.post('/auth/login', {
-    email: props.email,
-    password: props.password,
-  });
+// LOGIN USER
+export async function loginUser(credentials) {
+  try {
+    const response = await apiCall('POST', '/api/auth/login', credentials);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Login failed');
+  }
 }
 
-// DELETE USER (not implemented in backend, placeholder)
-export async function deleteUser(props) {
-  throw new Error('Delete student API not implemented in backend');
+// GOOGLE SIGN UP
+export async function googleSignUp(googleToken) {
+  try {
+    const response = await apiCall('POST', '/api/auth/google-signup', {
+      googleToken,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Google sign up failed');
+  }
 }
 
-export async function changePassword(props) {
-  return await apiUtils.put('/auth/change-password', {
-    email: props?.email,
-    oldPassword: props?.oldPassword,
-    newPassword: props?.newPassword,
-  });
+// VERIFY OTP
+export async function verifyOTP(email, otp) {
+  try {
+    const response = await apiCall('POST', '/api/auth/verify-otp', {
+      email,
+      otp,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'OTP verification failed');
+  }
+}
+
+// RESEND OTP
+export async function resendOTP(email) {
+  try {
+    const response = await apiCall('POST', '/api/auth/resend-otp', { email });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Failed to resend OTP');
+  }
+}
+
+// FORGOT PASSWORD
+export async function forgotPassword(email) {
+  try {
+    const response = await apiCall('POST', '/api/auth/forgot-password', {
+      email,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to send reset email',
+    );
+  }
+}
+
+// RESET PASSWORD
+export async function resetPassword(token, newPassword) {
+  try {
+    const response = await apiCall('POST', '/api/auth/reset-password', {
+      token,
+      newPassword,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Password reset failed');
+  }
+}
+
+// CHANGE PASSWORD
+export async function changePassword(passwords) {
+  try {
+    const response = await apiCall(
+      'PUT',
+      '/api/auth/change-password',
+      passwords,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Password change failed');
+  }
+}
+
+// LOGOUT USER
+export async function logoutUser() {
+  try {
+    const response = await apiCall('POST', '/api/auth/logout');
+    return response.data;
+  } catch (error) {
+    // Even if logout fails on server, we should clear local storage
+    console.warn('Logout request failed, clearing local data anyway');
+    return { message: 'Logged out locally' };
+  }
+}
+
+// REFRESH TOKEN
+export async function refreshToken() {
+  try {
+    const response = await apiCall('POST', '/api/auth/refresh');
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Token refresh failed');
+  }
 }
