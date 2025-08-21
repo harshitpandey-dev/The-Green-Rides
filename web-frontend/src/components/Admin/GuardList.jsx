@@ -33,22 +33,8 @@ const GuardList = () => {
       setLoading(true);
       const guardsData = await userService.getAllGuards();
 
-      // Transform API response to match component format
-      const transformedGuards = guardsData.map((guard) => ({
-        id: guard._id,
-        guard_id: guard.guardId || guard.rollNumber || guard._id,
-        name: guard.name,
-        email: guard.email,
-        phone: guard.phone || "+91-9876543220",
-        shift: guard.shift || "Morning",
-        status: guard.status || "active",
-        join_date: guard.createdAt || "2023-01-15",
-        last_login: guard.lastLogin || "2024-01-15 10:30 AM",
-        cycles_assigned: guard.cyclesAssigned || 0,
-      }));
-
-      setGuards(transformedGuards);
-      setFilteredGuards(transformedGuards);
+      setGuards(guardsData);
+      setFilteredGuards(guardsData);
     } catch (error) {
       console.error("Error fetching guards:", error);
       // Fallback to empty array on error
@@ -76,12 +62,6 @@ const GuardList = () => {
   }, [guards, searchTerm, filterStatus]);
 
   const columns = [
-    {
-      key: "guard_id",
-      header: "Guard ID",
-      sortable: true,
-      render: (value) => <span className="guard-id">{value}</span>,
-    },
     {
       key: "name",
       header: "Name",
@@ -125,12 +105,6 @@ const GuardList = () => {
       ),
     },
     {
-      key: "last_login",
-      header: "Last Login",
-      sortable: true,
-      render: (value) => <span className="last-login">{value}</span>,
-    },
-    {
       key: "actions",
       header: "Actions",
       render: (_, guard) => (
@@ -148,13 +122,6 @@ const GuardList = () => {
             title="Edit Guard"
           >
             <FaEdit />
-          </button>
-          <button
-            className="action-btn reset-btn"
-            onClick={() => handleResetPassword(guard)}
-            title="Reset Password"
-          >
-            <FaKey />
           </button>
           <button
             className="action-btn delete-btn"
@@ -175,7 +142,7 @@ const GuardList = () => {
   };
 
   const handleEditGuard = (guard) => {
-    setSelectedGuard({ ...guard });
+    setSelectedGuard(guard);
     setModalType("edit");
     setShowModal(true);
   };
@@ -199,13 +166,6 @@ const GuardList = () => {
     ) {
       setGuards((prev) => prev.filter((g) => g.id !== guard.id));
       console.log("Delete guard:", guard);
-    }
-  };
-
-  const handleResetPassword = (guard) => {
-    if (window.confirm(`Reset password for ${guard.name}?`)) {
-      console.log("Reset password for:", guard);
-      alert("Password reset email sent successfully!");
     }
   };
 
@@ -382,21 +342,6 @@ const GuardModal = ({ guard, type, onSave, onClose }) => {
           <form onSubmit={handleSubmit} className="guard-form">
             <div className="form-row">
               <div className="form-group">
-                <label>Guard ID</label>
-                <input
-                  type="text"
-                  name="guard_id"
-                  value={formData.guard_id}
-                  onChange={handleInputChange}
-                  readOnly={type !== "add"}
-                  className={errors.guard_id ? "error" : ""}
-                />
-                {errors.guard_id && (
-                  <span className="error-text">{errors.guard_id}</span>
-                )}
-              </div>
-
-              <div className="form-group">
                 <label>Name</label>
                 <input
                   type="text"
@@ -410,6 +355,19 @@ const GuardModal = ({ guard, type, onSave, onClose }) => {
                   <span className="error-text">{errors.name}</span>
                 )}
               </div>
+
+              {type !== "add" && (
+                <>
+                  <div className="form-group">
+                    <label>Join Date</label>
+                    <input
+                      type="text"
+                      value={new Date(formData.join_date).toLocaleDateString()}
+                      readOnly
+                    />
+                  </div>
+                </>
+              )}
             </div>
 
             <div className="form-row">
@@ -450,7 +408,7 @@ const GuardModal = ({ guard, type, onSave, onClose }) => {
                 <label>Shift</label>
                 <select
                   name="shift"
-                  value={formData.shift}
+                  value={formData.guardShift}
                   onChange={handleInputChange}
                   disabled={isReadOnly}
                 >
@@ -473,37 +431,6 @@ const GuardModal = ({ guard, type, onSave, onClose }) => {
                 </select>
               </div>
             </div>
-
-            {type !== "add" && (
-              <>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Join Date</label>
-                    <input
-                      type="text"
-                      value={new Date(formData.join_date).toLocaleDateString()}
-                      readOnly
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label>Cycles Assigned</label>
-                    <input
-                      type="text"
-                      value={formData.cycles_assigned}
-                      readOnly
-                    />
-                  </div>
-                </div>
-
-                <div className="form-row">
-                  <div className="form-group">
-                    <label>Last Login</label>
-                    <input type="text" value={formData.last_login} readOnly />
-                  </div>
-                </div>
-              </>
-            )}
 
             {!isReadOnly && (
               <div className="form-actions">

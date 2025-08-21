@@ -12,7 +12,6 @@ export const userService = {
     });
   },
 
-  // Get all users
   getAllUsers: async () => {
     return await apiUtils.get("/users");
   },
@@ -45,26 +44,6 @@ export const userService = {
   // Update user status
   updateUserStatus: async (userId, status) => {
     return await apiUtils.put(`/users/${userId}/status`, { status });
-  },
-
-  // Add guard
-  addGuard: async (guardData) => {
-    return await apiUtils.post("/users/guards", guardData);
-  },
-
-  // Reset guard password
-  resetGuardPassword: async (guardId) => {
-    return await apiUtils.post(`/users/${guardId}/reset-password`);
-  },
-
-  // Get user fines
-  getUserFines: async (userId) => {
-    return await apiUtils.get(`/users/${userId}/fines`);
-  },
-
-  // Get user by roll number
-  getUserByRollNumber: async (rollNumber) => {
-    return await apiUtils.get(`/users/roll/${rollNumber}`);
   },
 
   // Current user

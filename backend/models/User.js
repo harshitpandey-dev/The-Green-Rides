@@ -27,6 +27,11 @@ const userSchema = new mongoose.Schema({
     enum: ["east_campus", "west_campus"],
     default: "east_campus",
   },
+  guardShift: {
+    type: String,
+    enum: ["morning", "evening"],
+    default: "morning",
+  },
   // OTP for password reset
   resetPasswordOTP: { type: String },
   resetPasswordOTPExpires: { type: Date },

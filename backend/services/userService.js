@@ -1,6 +1,24 @@
 const User = require("../models/User");
 const Rental = require("../models/Rental");
 
+exports.getUsersByRole = async (role) => {
+  const users = await User.find({ role })
+    .select("-password -resetPasswordOTP -emailVerificationToken")
+    .populate("createdBy", "name role")
+    .sort({ name: 1 });
+  return users;
+};
+
+exports.updateUser = async (userId, updateData) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found");
+  Object.assign(user, updateData);
+  await user.save();
+  return await User.findById(userId)
+    .select("-password -resetPasswordOTP -emailVerificationToken")
+    .populate("createdBy", "name role");
+};
+
 exports.getCurrentUser = async (userId) => {
   const user = await User.findById(userId).select(
     "-password -resetPasswordOTP -emailVerificationToken"
@@ -116,14 +134,13 @@ exports.getUserStats = async (userId) => {
   return { user: user.toObject() };
 };
 
-// Update user status (admin/finance only)
-exports.updateUserStatus = async ({ userId, status, fine, updatedBy }) => {
+exports.updateUserStatus = async (userId, status) => {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found");
 
   if (status !== undefined) user.status = status;
-  if (fine !== undefined) user.fine = fine;
-  user.updatedBy = updatedBy;
+  // if (fine !== undefined) user.fine = fine;
+  // user.updatedBy = updatedBy;
 
   await user.save();
   return await User.findById(userId)

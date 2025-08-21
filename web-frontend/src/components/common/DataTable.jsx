@@ -4,8 +4,8 @@ import LoadingSpinner from "./LoadingSpinner";
 import "./DataTable.css";
 
 const DataTable = ({
-  columns = [],
   data = [],
+  columns = [],
   loading = false,
   emptyMessage = "No data available",
   emptyDescription = "There is no data to display at the moment.",
@@ -152,7 +152,7 @@ const DataTable = ({
                   onClick={() => handleSort(column)}
                 >
                   <div className="header-cell-content">
-                    <span>{column.label}</span>
+                    <span>{column.header}</span>
                     {column.sortable && getSortIcon(column)}
                   </div>
                 </th>
@@ -164,7 +164,9 @@ const DataTable = ({
               <tr key={row.id || row._id || index} className="table__row">
                 {columns.map((column) => (
                   <td key={column.key} className="table__cell">
-                    {column.render ? column.render(row) : row[column.key]}
+                    {column.render
+                      ? column.render(row[column.key], row)
+                      : row[column.key]}
                   </td>
                 ))}
               </tr>
