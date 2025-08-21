@@ -1,0 +1,14 @@
+@import "../common/screen.css";
+
+/* Stats grid customization for finance admins */
+.stat-card.total {
+  border-left-color: #9333ea;
+}
+
+.stat-card.active {
+  border-left-color: #22c55e;
+}
+
+.stat-card.inactive {
+  border-left-color: #ef4444;
+}

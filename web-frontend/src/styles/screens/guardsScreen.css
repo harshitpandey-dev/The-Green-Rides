@@ -1,0 +1,40 @@
+/* ==============================
+   GUARDS SCREEN - SPECIFIC STYLES
+============================== */
+
+/* Import common screen styles */
+@import "../common/screen.css";
+
+/* Guard-specific badges */
+.shift-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.shift-morning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.shift-afternoon {
+  background: #d4edda;
+  color: #155724;
+}
+
+.shift-evening {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.shift-night {
+  background: #e2e3e5;
+  color: #383d41;
+}
+
+.cycle-count {
+  background: #e8f4fd;
+  color: #3498db;
+}
