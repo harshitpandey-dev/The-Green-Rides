@@ -2,14 +2,20 @@ import React, { Suspense, Fragment } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Signup from "../screens/auth/Signup";
 import AdminScreen from "../screens/admin/AdminScreen";
-import FinanceScreen from "../screens/finance/FinanceScreen";
+import FinanceAdminScreen from "../screens/admin/FinanceAdminScreen";
 import Navbar from "../components/navbar/Navbar";
 import LoadingSpinner from "../components/common/LoadingSpinner";
 
 export const RouteConfig = ({ loggedIn, user }) => {
-  const isAdmin = user?.role === "admin";
-  const isFinance = user?.role === "finance";
-  const hasWebAccess = isAdmin || isFinance;
+  const userRole = user?.role;
+  const isSuperAdmin = userRole === "super_admin";
+  const isFinanceAdmin = userRole === "finance_admin";
+  const isGuard = userRole === "guard";
+  const isStudent = userRole === "student";
+
+  // Web access allowed for super_admin and finance_admin
+  const hasWebAccess = isSuperAdmin || isFinanceAdmin;
+
   const NotFound = React.lazy(() => import("../screens/notFound/NotFound"));
   const ProfilePage = React.lazy(() =>
     import("../screens/profile/UserProfile")
@@ -41,7 +47,9 @@ export const RouteConfig = ({ loggedIn, user }) => {
                 to={
                   loggedIn
                     ? hasWebAccess
-                      ? "/admin"
+                      ? isSuperAdmin
+                        ? "/admin"
+                        : "/finance-admin"
                       : "/access-denied"
                     : "/auth"
                 }
@@ -53,8 +61,19 @@ export const RouteConfig = ({ loggedIn, user }) => {
               {loggedIn && !hasWebAccess ? (
                 <div style={{ textAlign: "center", padding: "2rem" }}>
                   <h2>Web Access Not Available</h2>
-                  <p>Students and Guards should use the mobile application.</p>
+                  <p>
+                    {isStudent && "Students should use the mobile application."}
+                    {isGuard && "Guards should use the mobile application."}
+                  </p>
                   <p>Please download the mobile app to access your features.</p>
+                  <div style={{ marginTop: "2rem" }}>
+                    <p>
+                      <strong>Your Role:</strong> {userRole}
+                    </p>
+                    <p>
+                      <strong>Access Level:</strong> Mobile Only
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <Redirect to="/" />
@@ -77,13 +96,16 @@ export const RouteConfig = ({ loggedIn, user }) => {
               <ProfilePage />
             </ProtectedRoute>
 
+            {/* Super Admin Routes */}
             <ProtectedRoute
               path="/admin"
-              condition={loggedIn && isAdmin}
+              condition={loggedIn && isSuperAdmin}
               redirectTo={
                 loggedIn
                   ? hasWebAccess
-                    ? "/profile"
+                    ? isFinanceAdmin
+                      ? "/finance-admin"
+                      : "/access-denied"
                     : "/access-denied"
                   : "/auth"
               }
@@ -91,18 +113,21 @@ export const RouteConfig = ({ loggedIn, user }) => {
               <AdminScreen />
             </ProtectedRoute>
 
+            {/* Finance Admin Routes */}
             <ProtectedRoute
-              path="/finance"
-              condition={loggedIn && isFinance}
+              path="/finance-admin"
+              condition={loggedIn && isFinanceAdmin}
               redirectTo={
                 loggedIn
                   ? hasWebAccess
-                    ? "/profile"
+                    ? isSuperAdmin
+                      ? "/admin"
+                      : "/access-denied"
                     : "/access-denied"
                   : "/auth"
               }
             >
-              <FinanceScreen />
+              <FinanceAdminScreen />
             </ProtectedRoute>
 
             <Route path="*">

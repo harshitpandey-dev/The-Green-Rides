@@ -6,9 +6,12 @@ import classes from "./navbar.module.css";
 
 const Navbar = () => {
   const { login, isLoggedIn, currentUser, logout } = useUser();
-  const isAdmin = currentUser?.role === "admin";
-  const isFinance = currentUser?.role === "finance";
-  const hasWebAccess = isAdmin || isFinance;
+  const userRole = currentUser?.role;
+  const isSuperAdmin = userRole === "super_admin";
+  const isFinanceAdmin = userRole === "finance_admin";
+
+  // Web access allowed for super_admin and finance_admin
+  const hasWebAccess = isSuperAdmin || isFinanceAdmin;
 
   return (
     <header className={classes.header}>
@@ -25,18 +28,29 @@ const Navbar = () => {
               </NavLink>
             </li>
           )}
-          {isLoggedIn && isAdmin && (
+          {isLoggedIn && isSuperAdmin && (
             <li>
               <NavLink to="/admin" activeClassName={classes.active}>
-                Admin Dashboard
+                Super Admin Dashboard
               </NavLink>
             </li>
           )}
-          {isLoggedIn && isFinance && (
+          {isLoggedIn && isFinanceAdmin && (
             <li>
-              <NavLink to="/finance" activeClassName={classes.active}>
+              <NavLink to="/finance-admin" activeClassName={classes.active}>
                 Finance Dashboard
               </NavLink>
+            </li>
+          )}
+          {isLoggedIn && hasWebAccess && (
+            <li className={classes.userInfo}>
+              <span className={`${classes.roleChip} ${classes[userRole]}`}>
+                {userRole === "super_admin"
+                  ? "Super Admin"
+                  : userRole === "finance_admin"
+                  ? "Finance Admin"
+                  : userRole}
+              </span>
             </li>
           )}
           {!isLoggedIn && (
