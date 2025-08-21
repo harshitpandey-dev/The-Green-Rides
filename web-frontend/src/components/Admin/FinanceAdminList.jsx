@@ -20,7 +20,7 @@ const FinanceAdminList = () => {
   const fetchFinanceAdmins = async () => {
     try {
       setLoading(true);
-      const data = await userService.getAllFinanceAdmins();
+      const data = await userService.getAllUsersByRole("finance_admin");
       setFinanceAdmins(data || []);
     } catch (err) {
       setError("Failed to load finance admins");
@@ -61,7 +61,9 @@ const FinanceAdminList = () => {
         newStatus
       );
       setFinanceAdmins((prev) =>
-        prev.map((a) => (a._id === admin._id ? { ...a, status: newStatus } : a))
+        prev.map((a) =>
+          a._id === admin._id ? { ...a, status: updatedAdmin?.status } : a
+        )
       );
       setMessage(`Finance admin status updated successfully!`);
       setTimeout(() => setMessage(""), 5000);

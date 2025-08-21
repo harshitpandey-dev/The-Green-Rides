@@ -181,7 +181,7 @@ const AdminScreen = () => {
           trend={`₹${dashboardData.finance.collectedToday} Today`}
           subtitle={`₹${dashboardData.finance.pendingFines} Pending`}
           color="accent"
-          onClick={() => setActiveTab("finance")}
+          onClick={() => setActiveTab("finance-admins")}
         />
 
         <DashboardCard
@@ -221,7 +221,7 @@ const AdminScreen = () => {
           </button>
           <button
             className="quick-action-btn"
-            onClick={() => setActiveTab("finance")}
+            onClick={() => setActiveTab("finance-adminss")}
           >
             <FaPlus />
             <span>Add Finance admin</span>

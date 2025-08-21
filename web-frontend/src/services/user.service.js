@@ -16,17 +16,14 @@ export const userService = {
     return await apiUtils.get("/users");
   },
 
-  // Get all students
-  getAllStudents: async () => {
-    return await apiUtils.get("/users/students");
+  getAllUsersByRole: async (role) => {
+    return await apiUtils.get(`/users/role/${role}`);
   },
 
-  // Get all guards
-  getAllGuards: async () => {
-    return await apiUtils.get("/users/guards");
+  getStudentByRollNumber: async (rollNumber) => {
+    return await apiUtils.get(`/users/rollno/${rollNumber}`);
   },
 
-  // Get user by ID
   getUserById: async (userId) => {
     return await apiUtils.get(`/users/${userId}`);
   },
@@ -51,24 +48,8 @@ export const userService = {
     return await apiUtils.get("/users/me");
   },
 
-  // Get student by roll number (finance_admin, super_admin)
-  getStudentByRollNumber: async (rollNumber) => {
-    return await apiUtils.get(`/users/rollno/${rollNumber}`);
-  },
-
-  // Clear student fine (finance_admin, super_admin)
   clearStudentFine: async (studentId) => {
     return await apiUtils.post(`/users/${studentId}/clear-fine`);
-  },
-
-  // Get all finance admins (super_admin only)
-  getAllFinanceAdmins: async () => {
-    return await apiUtils.get("/users/finance-admins");
-  },
-
-  // Create finance admin (super_admin only)
-  createFinanceAdmin: async (adminData) => {
-    return await apiUtils.post("/users/finance-admin", adminData);
   },
 };
 

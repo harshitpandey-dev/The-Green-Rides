@@ -30,7 +30,7 @@ const StudentList = () => {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const studentsData = await userService.getAllStudents();
+      const studentsData = await userService.getAllUsersByRole("student");
       setStudents(studentsData);
       setFilteredStudents(studentsData);
     } catch (error) {

@@ -31,7 +31,7 @@ const GuardList = () => {
   const fetchGuards = async () => {
     try {
       setLoading(true);
-      const guardsData = await userService.getAllGuards();
+      const guardsData = await userService.getAllUsersByRole("guard");
 
       setGuards(guardsData);
       setFilteredGuards(guardsData);
