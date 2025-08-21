@@ -67,7 +67,7 @@ const GuardList = () => {
       key: "name",
       header: "Name",
       sortable: true,
-      render: (value) => <span className="guard-name">{value}</span>,
+      render: (value) => <span className="entity-name">{value}</span>,
     },
     {
       key: "email",
@@ -93,7 +93,9 @@ const GuardList = () => {
       key: "cycles_assigned",
       header: "Cycles",
       sortable: true,
-      render: (value) => <span className="cycle-count">{value}</span>,
+      render: (value) => (
+        <span className="count-badge cycle-count">{value}</span>
+      ),
     },
     {
       key: "status",
@@ -275,24 +277,24 @@ const GuardList = () => {
         </div>
       </div>
 
-      <div className="stats-cards">
-        <div className="stat-card">
+      <div className="stats-container">
+        <div className="stat-card total">
           <h3>Total Guards</h3>
           <p className="stat-number">{guards.length}</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card active">
           <h3>Active Guards</h3>
           <p className="stat-number">
             {guards.filter((g) => g.status === "active").length}
           </p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card available">
           <h3>Morning Shift</h3>
           <p className="stat-number">
             {guards.filter((g) => g.shift === "Morning").length}
           </p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card rented">
           <h3>Evening Shift</h3>
           <p className="stat-number">
             {guards.filter((g) => g.shift === "Evening").length}

@@ -80,13 +80,13 @@ const FinanceAdminList = () => {
       key: "name",
       header: "Name",
       sortable: true,
-      render: (value) => <span className="admin-name">{value || "N/A"}</span>,
+      render: (value) => <span className="entity-name">{value || "N/A"}</span>,
     },
     {
       key: "email",
       header: "Email",
       sortable: true,
-      render: (value) => <span className="admin-email">{value || "N/A"}</span>,
+      render: (value) => <span className="email">{value || "N/A"}</span>,
     },
     {
       key: "status",
@@ -201,18 +201,18 @@ const FinanceAdminList = () => {
 
       {error && <div className="error-message">{error}</div>}
 
-      <div className="stats-cards">
-        <div className="stat-card">
+      <div className="stats-container">
+        <div className="stat-card total">
           <h3>Total Finance Admins</h3>
           <p className="stat-number">{financeAdmins.length}</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card active">
           <h3>Active Admins</h3>
           <p className="stat-number">
             {financeAdmins.filter((admin) => admin.status === "active").length}
           </p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card inactive">
           <h3>Disabled Admins</h3>
           <p className="stat-number">
             {

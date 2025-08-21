@@ -9,7 +9,6 @@ import {
   FaBell,
   FaPlus,
 } from "react-icons/fa";
-
 import { AuthContext } from "../../contexts/authContext";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DashboardCard from "../../components/admin/DashboardCard";
@@ -19,10 +18,7 @@ import CycleList from "../../components/admin/CycleList";
 import FinanceAdminList from "../../components/admin/FinanceAdminList";
 import SystemAlerts from "../../components/admin/SystemAlerts";
 import FinanceAdminScreen from "./FinanceAdminScreen";
-import { adminService } from "../../services/admin.service";
 import { userService } from "../../services/user.service";
-import { cycleService } from "../../services/cycle.service";
-
 import "./AdminScreen.css";
 
 const AdminScreen = () => {
@@ -33,7 +29,6 @@ const AdminScreen = () => {
     students: { total: 0, active: 0, suspended: 0 },
     guards: { total: 0, active: 0 },
     cycles: { total: 0, available: 0, rented: 0, maintenance: 0 },
-    finance: { totalFines: 0, collectedToday: 0, pendingFines: 0 },
     rentals: { activeRentals: 0, overdueRentals: 0, totalToday: 0 },
   });
   const [systemAlerts, setSystemAlerts] = useState([]);
@@ -58,31 +53,14 @@ const AdminScreen = () => {
     try {
       setLoading(true);
 
-      const [
-        studentsData,
-        guardsData,
-        cyclesData,
-        financeData,
-        rentalsData,
-        alertsData,
-      ] = await Promise.all([
-        //userService.getStudentStats(),
-        // userService.getGuardStats(),
-        //  cycleService.getCycleStats(),
-        //userService.getFinanceStats(),
-        //rentService.getRentalStats(),
-        userService.getSystemAlerts(),
-      ]);
+      const [statsData] = await Promise.all([userService.getUsersStatistics()]);
 
       setDashboardData({
-        students: studentsData,
-        guards: guardsData,
-        cycles: cyclesData,
-        finance: financeData,
-        rentals: rentalsData,
+        students: statsData.studentsData,
+        guards: statsData.guardsData,
+        cycles: statsData.cyclesData,
+        rentals: statsData.rentalsData,
       });
-
-      setSystemAlerts(alertsData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
     } finally {
@@ -172,16 +150,6 @@ const AdminScreen = () => {
           trend={`${dashboardData.rentals.totalToday} Today`}
           subtitle={`${dashboardData.rentals.overdueRentals} Overdue`}
           color="warning"
-        />
-
-        <DashboardCard
-          title="Total Fines"
-          value={`₹${dashboardData.finance.totalFines}`}
-          icon={<FaMoneyBillWave />}
-          trend={`₹${dashboardData.finance.collectedToday} Today`}
-          subtitle={`₹${dashboardData.finance.pendingFines} Pending`}
-          color="accent"
-          onClick={() => setActiveTab("finance-admins")}
         />
 
         <DashboardCard

@@ -66,13 +66,13 @@ const StudentList = () => {
       key: "rollNo",
       header: "Roll Number",
       sortable: true,
-      render: (value) => <span className="roll-number">{value || "N/A"}</span>,
+      render: (value) => <span className="entity-id">{value || "N/A"}</span>,
     },
     {
       key: "name",
       header: "Name",
       sortable: true,
-      render: (value) => <span className="student-name">{value || "N/A"}</span>,
+      render: (value) => <span className="entity-name">{value || "N/A"}</span>,
     },
     {
       key: "email",
@@ -86,7 +86,9 @@ const StudentList = () => {
       sortable: true,
       render: (value) => (
         <span
-          className={`fine-amount ${(value || 0) > 0 ? "has-fine" : "no-fine"}`}
+          className={`count-badge fine-amount ${
+            (value || 0) > 0 ? "has-fine" : "no-fine"
+          }`}
         >
           ₹{value || 0}
         </span>
@@ -96,7 +98,9 @@ const StudentList = () => {
       key: "totalTimesRented",
       header: "Rentals",
       sortable: true,
-      render: (value) => <span className="rental-count">{value || 0}</span>,
+      render: (value) => (
+        <span className="count-badge rental-count">{value || 0}</span>
+      ),
     },
     {
       key: "status",
@@ -308,24 +312,24 @@ const StudentList = () => {
         </div>
       </div>
 
-      <div className="stats-cards">
-        <div className="stat-card">
+      <div className="stats-container">
+        <div className="stat-card total">
           <h3>Total Students</h3>
           <p className="stat-number">{students.length}</p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card active">
           <h3>Active Students</h3>
           <p className="stat-number">
             {students.filter((s) => s.status === "active").length}
           </p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card suspended">
           <h3>Students with Fines</h3>
           <p className="stat-number">
             {students.filter((s) => s.fine > 0).length}
           </p>
         </div>
-        <div className="stat-card">
+        <div className="stat-card suspended">
           <h3>Suspended Students</h3>
           <p className="stat-number">
             {students.filter((s) => s.status === "suspended").length}

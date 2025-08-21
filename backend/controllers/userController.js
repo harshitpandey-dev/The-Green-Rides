@@ -77,18 +77,9 @@ exports.updateUserStatus = async (req, res) => {
   }
 };
 
-exports.getUserFines = async (req, res) => {
-  try {
-    const fines = await userService.getUserFines(req.params.id);
-    res.json(fines);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
 exports.getUserByRollNumber = async (req, res) => {
   try {
-    const user = await userService.getUserByRollNumber(req.params.rollNumber);
+    const user = await userService.getByRollNo(req.params.rollNumber);
     res.json(user);
   } catch (err) {
     res.status(404).json({ message: err.message });
@@ -105,5 +96,14 @@ exports.clearStudentFine = async (req, res) => {
     res.json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
+  }
+};
+
+exports.getUserStatistics = async (req, res) => {
+  try {
+    const statistics = await userService.getUsersStatistics();
+    res.json(statistics);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

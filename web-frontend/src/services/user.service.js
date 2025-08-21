@@ -24,8 +24,9 @@ export const userService = {
     return await apiUtils.get(`/users/rollno/${rollNumber}`);
   },
 
-  getUserById: async (userId) => {
-    return await apiUtils.get(`/users/${userId}`);
+  // Update user status
+  updateUserStatus: async (userId, status) => {
+    return await apiUtils.put(`/users/${userId}/status`, { status });
   },
 
   // Update user
@@ -38,11 +39,6 @@ export const userService = {
     return await apiUtils.delete(`/users/${userId}`);
   },
 
-  // Update user status
-  updateUserStatus: async (userId, status) => {
-    return await apiUtils.put(`/users/${userId}/status`, { status });
-  },
-
   // Current user
   getCurrentUser: async () => {
     return await apiUtils.get("/users/me");
@@ -50,6 +46,10 @@ export const userService = {
 
   clearStudentFine: async (studentId) => {
     return await apiUtils.post(`/users/${studentId}/clear-fine`);
+  },
+
+  getUsersStatistics: async (userId) => {
+    return await apiUtils.get(`/users/statistics`);
   },
 };
 
