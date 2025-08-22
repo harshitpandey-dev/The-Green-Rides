@@ -323,7 +323,7 @@ const CyclesScreen = () => {
           </p>
         </div>
         <div className="stat-card suspended">
-          <h3>Maintenance</h3>
+          <h3>Under Maintenance</h3>
           <p className="stat-number">
             {cycles.filter((c) => c.status === "under_maintenance").length}
           </p>
