@@ -1,7 +1,7 @@
-import classes from "./common.module.css";
+import "../../styles/components/loadingSpinner.css";
 
 const LoadingSpinner = () => {
-  return <div className={classes.spinner}></div>;
+  return <div className={spinner}></div>;
 };
 
 export default LoadingSpinner;
