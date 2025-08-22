@@ -90,10 +90,10 @@ const EditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
             )}
             <div className="form-group">
               <label>Phone:</label>
-              <input 
-                type="tel" 
-                name="phone" 
-                defaultValue={student?.phone || ""} 
+              <input
+                type="tel"
+                name="phone"
+                defaultValue={student?.phone || ""}
                 placeholder="Enter phone number"
               />
             </div>

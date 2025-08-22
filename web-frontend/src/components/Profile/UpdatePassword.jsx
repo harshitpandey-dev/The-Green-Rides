@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import { useHistory } from "react-router-dom";
-import classes from "./updatePassword.module.css";
+import "../../screens/profile/UserProfile.css";
 import { changePassword } from "../../services/auth.service";
 
 const UpdatePassword = ({ currentUser }) => {
@@ -19,8 +19,8 @@ const UpdatePassword = ({ currentUser }) => {
   };
 
   return (
-    <form className={classes.form} onSubmit={handleSubmit}>
-      <div className={classes.control}>
+    <form className="update-password-form" onSubmit={handleSubmit}>
+      <div className="form-control">
         <label htmlFor="email">Email</label>
         <input
           type="email"
@@ -29,15 +29,15 @@ const UpdatePassword = ({ currentUser }) => {
           disabled={true}
         />
       </div>
-      <div className={classes.control}>
+      <div className="form-control">
         <label htmlFor="old-password">Old Password</label>
         <input type="password" id="old-password" ref={oldPasswordRef} />
       </div>
-      <div className={classes.control}>
+      <div className="form-control">
         <label htmlFor="new-password">New Password</label>
         <input type="password" id="new-password" ref={newPasswordRef} />
       </div>
-      <div className={classes.action}>
+      <div className="form-action">
         <button>Change Password</button>
       </div>
     </form>

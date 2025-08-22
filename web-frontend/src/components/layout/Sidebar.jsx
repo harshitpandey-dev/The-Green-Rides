@@ -29,17 +29,17 @@ const Sidebar = () => {
   // Update body class when sidebar is collapsed
   useEffect(() => {
     // Always add sidebar-present class when component mounts
-    document.body.classList.add('sidebar-present');
-    
+    document.body.classList.add("sidebar-present");
+
     if (isCollapsed) {
-      document.body.classList.add('sidebar-collapsed');
+      document.body.classList.add("sidebar-collapsed");
     } else {
-      document.body.classList.remove('sidebar-collapsed');
+      document.body.classList.remove("sidebar-collapsed");
     }
-    
+
     // Cleanup on unmount
     return () => {
-      document.body.classList.remove('sidebar-collapsed', 'sidebar-present');
+      document.body.classList.remove("sidebar-collapsed", "sidebar-present");
     };
   }, [isCollapsed]);
 

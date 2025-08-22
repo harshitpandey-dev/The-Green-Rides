@@ -37,13 +37,13 @@
 }
 
 .auth-brand::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: url('../../assets/gogreen.png') center/cover;
+  background: url("../../assets/gogreen.png") center/cover;
   opacity: 0.1;
   z-index: 1;
 }
@@ -212,7 +212,9 @@
 }
 
 @keyframes spin {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 /* Auth Links */
@@ -274,25 +276,25 @@
   .auth-container {
     padding: 1rem;
   }
-  
+
   .auth-content {
     grid-template-columns: 1fr;
     min-height: auto;
   }
-  
+
   .auth-brand {
     padding: 2rem;
     min-height: 200px;
   }
-  
+
   .brand-title {
     font-size: 2rem;
   }
-  
+
   .auth-form-section {
     padding: 2rem;
   }
-  
+
   .auth-title {
     font-size: 1.75rem;
   }
@@ -302,11 +304,11 @@
   .auth-container {
     padding: 0.5rem;
   }
-  
+
   .auth-form-section {
     padding: 1.5rem;
   }
-  
+
   .auth-brand {
     padding: 1.5rem;
   }

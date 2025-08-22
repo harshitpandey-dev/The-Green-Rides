@@ -1,8 +1,7 @@
 import React, { Suspense, Fragment } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
+import Login from "../screens/auth/Login";
 import Signup from "../screens/auth/Signup";
-import ModernLogin from "../screens/auth/Login";
-import ModernSignup from "../screens/auth/Signup";
 import DashboardScreen from "../screens/admin/DashboardScreen";
 import StudentsScreen from "../screens/admin/StudentsScreen";
 import GuardsScreen from "../screens/admin/GuardsScreen";
@@ -79,16 +78,11 @@ export const RouteConfig = ({ loggedIn, user }) => {
 
           {/* Auth Routes */}
           <ProtectedRoute path="/login" condition={!loggedIn} redirectTo="/">
-            <ModernLogin />
+            <Login />
           </ProtectedRoute>
 
           <ProtectedRoute path="/signup" condition={!loggedIn} redirectTo="/">
-            <ModernSignup />
-          </ProtectedRoute>
-
-          {/* Legacy auth route - redirect to login */}
-          <ProtectedRoute path="/login" condition={!loggedIn} redirectTo="/">
-            <ModernLogin />
+            <Signup />
           </ProtectedRoute>
 
           <ProtectedRoute
