@@ -68,12 +68,15 @@ const DashboardScreen = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="screen-container">
       {/* Page Header */}
-      <div className="page-header">
+      <div className="screen-header">
         <div className="header-content">
-          <h1 className="page-title">Admin Dashboard</h1>
-          <p className="page-subtitle">
+          <h1>
+            <FaChartLine className="header-icon" />
+            Admin Dashboard
+          </h1>
+          <p className="header-subtitle">
             Complete system management and oversight
           </p>
         </div>
@@ -102,7 +105,7 @@ const DashboardScreen = () => {
         )}
 
         {/* Dashboard Cards */}
-        <div className="stats-grid">
+        <div className="stats-grid dashboard-cards">
           <DashboardCard
             title="Total Students"
             value={dashboardData.students.total}

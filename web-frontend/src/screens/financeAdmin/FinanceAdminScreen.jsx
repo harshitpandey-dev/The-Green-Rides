@@ -3,7 +3,7 @@ import { FaSearch, FaMoneyBillWave, FaUser } from "react-icons/fa";
 import { AuthContext } from "../../contexts/authContext";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
-import "../../styles/screens/FinanceAdminScreen.css";
+import "../../styles/screens/financeAdminScreen.css";
 
 const FinanceAdminScreen = () => {
   const { currentUser } = useContext(AuthContext);

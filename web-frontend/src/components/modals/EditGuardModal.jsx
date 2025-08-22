@@ -1,7 +1,9 @@
 import React from "react";
 
 const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
-  if (!isOpen || !guard) return null;
+  if (!isOpen) return null;
+
+  const isEditMode = !!guard;
 
   const handleSubmit = (e) => {
     e.preventDefault();

@@ -6,6 +6,7 @@ import {
   FaFilter,
   FaDownload,
   FaUsers,
+  FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import EditStudentModal from "../../components/modals/EditStudentModal";
@@ -198,13 +199,22 @@ const StudentsScreen = () => {
 
   const handleUpdateStudent = async (studentData) => {
     try {
-      await userService.updateUser(editingStudent._id, studentData);
+      if (editingStudent) {
+        // Update existing student
+        await userService.updateUser(editingStudent._id, studentData);
+      } else {
+        // Create new student
+        await userService.createUser({
+          ...studentData,
+          role: "student",
+        });
+      }
       setShowEditModal(false);
       setEditingStudent(null);
       fetchStudents();
     } catch (error) {
-      console.error("Error updating student:", error);
-      alert("Failed to update student. Please try again.");
+      console.error("Error saving student:", error);
+      alert("Failed to save student. Please try again.");
     }
   };
 
@@ -253,93 +263,100 @@ const StudentsScreen = () => {
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
-        <div className="screen-container">
-          <div className="screen-header">
-            <div className="header-content">
-              <h2>
-                <FaUsers />
-                Student Management
-              </h2>
-              <p>Manage student accounts and track rental activity</p>
-            </div>
-            <div className="header-actions">
-              <button className="export-btn" onClick={exportStudents}>
-                <FaDownload /> Export CSV
-              </button>
-            </div>
-          </div>
-
-          <div className="filters-section">
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by name, roll number, or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="status-filter">
-              <FaFilter className="filter-icon" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="blocked">Blocked</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="stats-container">
-            <div className="stat-card total">
-              <h3>Total Students</h3>
-              <p className="stat-number">{students.length}</p>
-            </div>
-            <div className="stat-card active">
-              <h3>Active Students</h3>
-              <p className="stat-number">
-                {students.filter((s) => s.status === "active").length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>Students with Fines</h3>
-              <p className="stat-number">
-                {students.filter((s) => s.fine > 0).length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>Disabled Students</h3>
-              <p className="stat-number">
-                {students.filter((s) => s.status === "disabled").length}
-              </p>
-            </div>
-          </div>
-
-          <div className="table-container">
-            <DataTable
-              data={filteredStudents}
-              columns={columns}
-              searchable={false}
-              sortable={true}
-              paginated={true}
-              pageSize={10}
-            />
-          </div>
-
-          <EditStudentModal
-            student={editingStudent}
-            isOpen={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdate={handleUpdateStudent}
-          />
+    <div className="screen-container">
+      <div className="screen-header">
+        <div className="header-content">
+          <h1>
+            <FaUsers className="header-icon" />
+            Student Management
+          </h1>
+          <p className="header-subtitle">
+            Manage student accounts and track rental activity
+          </p>
+        </div>
+        <div className="header-actions">
+          <button
+            className="primary-btn"
+            onClick={() => setShowEditModal(true)}
+          >
+            <FaPlus /> Add Student
+          </button>
+          <button className="secondary-btn" onClick={exportStudents}>
+            <FaDownload /> Export CSV
+          </button>
         </div>
       </div>
+
+      <div className="filters-section">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by name, roll number, or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="status-filter">
+          <FaFilter className="filter-icon" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="stats-grid">
+        <div className="stat-card total">
+          <h3>Total Students</h3>
+          <p className="stat-number">{students.length}</p>
+        </div>
+        <div className="stat-card active">
+          <h3>Active Students</h3>
+          <p className="stat-number">
+            {students.filter((s) => s.status === "active").length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>Students with Fines</h3>
+          <p className="stat-number">
+            {students.filter((s) => s.fine > 0).length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>Disabled Students</h3>
+          <p className="stat-number">
+            {students.filter((s) => s.status === "disabled").length}
+          </p>
+        </div>
+      </div>
+
+      <div className="table-section">
+        <DataTable
+          data={filteredStudents}
+          columns={columns}
+          searchable={false}
+          sortable={true}
+          paginated={true}
+          pageSize={10}
+        />
+      </div>
+
+      <EditStudentModal
+        student={editingStudent}
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setEditingStudent(null);
+        }}
+        onUpdate={handleUpdateStudent}
+      />
     </div>
   );
 };
