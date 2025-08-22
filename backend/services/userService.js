@@ -1,5 +1,6 @@
 const User = require("../models/User");
 const Rental = require("../models/Rental");
+const Cycle = require("../models/Cycle");
 
 exports.getUsersByRole = async (role) => {
   const users = await User.find({ role })
@@ -72,46 +73,6 @@ exports.addUser = async ({
   return await User.findById(user._id)
     .select("-password")
     .populate("createdBy", "name role");
-};
-
-// Get user statistics (for profile/admin dashboard)
-exports.getUserStats = async (userId) => {
-  const user = await User.findById(userId).select("-password");
-  if (!user) throw new Error("User not found");
-
-  if (user.role === "student") {
-    // Get detailed rental statistics
-    const rentalStats = await Rental.aggregate([
-      { $match: { student: user._id } },
-      {
-        $group: {
-          _id: null,
-          totalRentals: { $sum: 1 },
-          totalDuration: { $sum: "$actualDuration" },
-          totalFines: { $sum: "$fine" },
-          averageRating: { $avg: "$rating" },
-          activeRentals: {
-            $sum: { $cond: [{ $eq: ["$isActive", true] }, 1, 0] },
-          },
-        },
-      },
-    ]);
-
-    const stats = rentalStats[0] || {
-      totalRentals: 0,
-      totalDuration: 0,
-      totalFines: 0,
-      averageRating: 0,
-      activeRentals: 0,
-    };
-
-    return {
-      user: user.toObject(),
-      stats,
-    };
-  }
-
-  return { user: user.toObject() };
 };
 
 exports.updateUserStatus = async (userId, status) => {
@@ -202,48 +163,94 @@ exports.getUserById = async (userId) => {
 
 // Get dashboard statistics (admin only)
 exports.getUsersStatistics = async () => {
-  const [userStats, rentalStats] = await Promise.all([
+  // Get today's date range for rental stats
+  const today = new Date();
+  const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+  const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+  const [
+    userStats,
+    cycleStats,
+    rentalStats,
+    todayRentalsCount,
+    overdueRentals,
+  ] = await Promise.all([
+    // User statistics by role and status
     User.aggregate([
       {
         $group: {
-          _id: "$role",
+          _id: { role: "$role", status: "$status" },
           count: { $sum: 1 },
-          active: { $sum: { $cond: [{ $eq: ["$status", "active"] }, 1, 0] } },
         },
       },
     ]),
-    Rental.aggregate([
+
+    // Cycle statistics by status
+    Cycle.aggregate([
       {
         $group: {
-          _id: null,
-          totalRentals: { $sum: 1 },
-          activeRentals: { $sum: { $cond: ["$isActive", 1, 0] } },
-          totalRevenue: { $sum: "$fine" },
-          averageRating: { $avg: "$rating" },
+          _id: "$status",
+          count: { $sum: 1 },
         },
       },
     ]),
+
+    // Active rental count
+    Rental.countDocuments({ isActive: true }),
+
+    // Today's rentals count
+    Rental.countDocuments({
+      rentedAt: { $gte: startOfDay, $lte: endOfDay },
+    }),
+
+    // Overdue rentals count (rentals that are active and past their duration)
+    Rental.countDocuments({
+      isActive: true,
+      $expr: {
+        $gt: [
+          { $divide: [{ $subtract: [new Date(), "$rentedAt"] }, 60000] }, // minutes elapsed
+          "$duration",
+        ],
+      },
+    }),
   ]);
 
-  const users = userStats.reduce((acc, stat) => {
-    acc[stat._id] = stat;
-    return acc;
-  }, {});
+  // Process user statistics
+  const students = { total: 0, active: 0, suspended: 0 };
+  const guards = { total: 0, active: 0 };
 
-  const rentals = rentalStats[0] || {
-    totalRentals: 0,
-    activeRentals: 0,
-    totalRevenue: 0,
-    averageRating: 0,
+  userStats.forEach((stat) => {
+    if (stat._id.role === "student") {
+      students.total += stat.count;
+      if (stat._id.status === "active") students.active += stat.count;
+      if (stat._id.status === "disabled") students.suspended += stat.count;
+    } else if (stat._id.role === "guard") {
+      guards.total += stat.count;
+      if (stat._id.status === "active") guards.active += stat.count;
+    }
+  });
+
+  // Process cycle statistics
+  const cycles = { total: 0, available: 0, rented: 0, maintenance: 0 };
+
+  cycleStats.forEach((stat) => {
+    cycles.total += stat.count;
+    if (stat._id === "available") cycles.available = stat.count;
+    if (stat._id === "rented") cycles.rented = stat.count;
+    if (stat._id === "under_maintenance") cycles.maintenance = stat.count;
+  });
+
+  // Process rental statistics
+  const rentals = {
+    activeRentals: rentalStats,
+    overdueRentals: overdueRentals,
+    totalToday: todayRentalsCount,
   };
 
   return {
-    users,
+    students,
+    guards,
+    cycles,
     rentals,
-    summary: {
-      totalUsers: userStats.reduce((sum, stat) => sum + stat.count, 0),
-      activeUsers: userStats.reduce((sum, stat) => sum + stat.active, 0),
-      ...rentals,
-    },
   };
 };

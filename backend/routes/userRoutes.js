@@ -26,6 +26,13 @@ router.get(
 );
 
 router.get(
+  "/statistics",
+  auth,
+  roleCheck(["super_admin"]),
+  userController.getUserStatistics
+);
+
+router.get(
   "/:id",
   auth,
   roleCheck(["super_admin"]),
@@ -43,12 +50,6 @@ router.put(
   auth,
   roleCheck(["super_admin"]),
   userController.updateUserStatus
-);
-router.get(
-  "/statistics",
-  auth,
-  roleCheck(["super_admin"]),
-  userController.getUserStatistics
 );
 
 router.post(

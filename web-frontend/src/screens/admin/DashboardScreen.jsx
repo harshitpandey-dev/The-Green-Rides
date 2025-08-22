@@ -50,12 +50,7 @@ const DashboardScreen = () => {
 
       const [statsData] = await Promise.all([userService.getUsersStatistics()]);
 
-      setDashboardData({
-        students: statsData.studentsData,
-        guards: statsData.guardsData,
-        cycles: statsData.cyclesData,
-        rentals: statsData.rentalsData,
-      });
+      setDashboardData(statsData);
     } catch (error) {
       console.error("Failed to fetch dashboard data:", error);
     } finally {

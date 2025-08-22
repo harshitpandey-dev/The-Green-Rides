@@ -48,7 +48,7 @@ export const userService = {
     return await apiUtils.post(`/users/${studentId}/clear-fine`);
   },
 
-  getUsersStatistics: async (userId) => {
+  getUsersStatistics: async () => {
     return await apiUtils.get(`/users/statistics`);
   },
 };
