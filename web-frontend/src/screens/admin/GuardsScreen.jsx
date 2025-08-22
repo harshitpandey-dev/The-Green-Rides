@@ -9,7 +9,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
-import EditGuardModal from "../../components/modals/EditGuardModal";
+import AddEditGuardModal from "../../components/modals/AddEditGuardModal";
 import { userService } from "../../services/user.service";
 import "../../styles/screens/guardsScreen.css";
 import "../../styles/components/modals.css";
@@ -321,7 +321,7 @@ const GuardsScreen = () => {
         />
       </div>
 
-      <EditGuardModal
+      <AddEditGuardModal
         guard={editingGuard}
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}

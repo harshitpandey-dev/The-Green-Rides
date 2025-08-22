@@ -11,7 +11,7 @@ import {
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DataTable from "../../components/common/DataTable";
-import EditFinanceAdminModal from "../../components/modals/EditFinanceAdminModal";
+import AddEditFinanceAdminModal from "../../components/modals/AddEditFinanceAdminModal";
 import "../../styles/screens/financeAdminsScreen.css";
 
 const FinanceAdminsScreen = () => {
@@ -307,7 +307,7 @@ const FinanceAdminsScreen = () => {
         />
       </div>
 
-      <EditFinanceAdminModal
+      <AddEditFinanceAdminModal
         isOpen={showCreateModal}
         onClose={() => {
           setShowCreateModal(false);
