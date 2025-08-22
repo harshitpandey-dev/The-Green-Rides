@@ -2,11 +2,13 @@
    MODERN AUTH SCREENS - LOGIN & SIGNUP
 ============================== */
 
+@import "../common/screen.css";
+
 /* Auth Container */
 .auth-container {
   min-height: 100vh;
   display: flex;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: linear-gradient(135deg, var(--light) 0%, #c3cfe2 100%);
   padding: 2rem;
 }
 
@@ -16,24 +18,31 @@
   max-width: 1200px;
   width: 100%;
   margin: auto;
-  background: white;
+  background: var(--white);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-medium);
   overflow: hidden;
   min-height: 600px;
+  transition: var(--transition);
+}
+
+.auth-content:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 70px rgba(0, 0, 0, 0.15);
 }
 
 /* Left Side - Brand/Image */
 .auth-brand {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  background: linear-gradient(135deg, var(--primary-green), var(--success));
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 3rem;
-  color: white;
+  color: var(--white);
   text-align: center;
   position: relative;
+  overflow: hidden;
 }
 
 .auth-brand::before {
@@ -91,12 +100,12 @@
 .auth-title {
   font-size: 2rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: var(--dark);
   margin-bottom: 0.5rem;
 }
 
 .auth-subtitle {
-  color: #6c757d;
+  color: var(--secondary);
   font-size: 1rem;
 }
 
@@ -114,30 +123,31 @@
 
 .form-label {
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--dark);
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
 }
 
 .form-input {
   padding: 0.875rem 1rem;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--border-light);
   border-radius: 10px;
   font-size: 1rem;
-  transition: all 0.3s ease;
-  background: #f8f9fa;
+  transition: var(--transition);
+  background: var(--background);
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #27ae60;
-  background: white;
+  border-color: var(--primary-green);
+  background: var(--white);
   box-shadow: 0 0 0 3px rgba(39, 174, 96, 0.1);
+  transform: translateY(-1px);
 }
 
 .form-input.error {
-  border-color: #dc3545;
-  background: #fff5f5;
+  border-color: var(--danger);
+  background: rgba(231, 76, 60, 0.05);
 }
 
 .password-input-group {

@@ -1,8 +1,15 @@
+@import "../common/screen.css";
+
 .data-table {
-  background: white;
+  background: var(--white);
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-light);
   overflow: hidden;
+  transition: var(--transition);
+}
+
+.data-table:hover {
+  box-shadow: var(--shadow-medium);
 }
 
 .data-table__container {
@@ -16,27 +23,28 @@
 }
 
 .table__header {
-  background: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
+  background: var(--light);
+  border-bottom: 2px solid var(--border-light);
 }
 
 .table__header-cell {
   padding: 1rem;
   text-align: left;
   font-weight: 600;
-  color: #2c3e50;
+  color: var(--dark);
   white-space: nowrap;
-  border-bottom: 1px solid #dee2e6;
+  border-bottom: 1px solid var(--border-light);
+  transition: var(--transition);
 }
 
 .table__header-cell--sortable {
   cursor: pointer;
   user-select: none;
-  transition: background-color 0.2s ease;
 }
 
 .table__header-cell--sortable:hover {
-  background: #e9ecef;
+  background: #dde4e6;
+  color: var(--primary-green);
 }
 
 .header-cell-content {
@@ -49,7 +57,7 @@
 .sort-icon {
   font-size: 0.8rem;
   opacity: 0.5;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .sort-icon--default {
@@ -58,25 +66,26 @@
 
 .sort-icon--active {
   opacity: 1;
-  color: #4caf50;
+  color: var(--primary-green);
 }
 
 .table__body {
-  background: white;
+  background: var(--white);
 }
 
 .table__row {
   border-bottom: 1px solid #f1f3f4;
-  transition: background-color 0.2s ease;
+  transition: var(--transition);
 }
 
 .table__row:hover {
-  background: #f8f9fa;
+  background: rgba(39, 174, 96, 0.05);
+  transform: scale(1.005);
 }
 
 .table__cell {
   padding: 1rem;
-  color: #2c3e50;
+  color: var(--dark);
   vertical-align: middle;
   border-bottom: 1px solid #f1f3f4;
 }
@@ -86,7 +95,7 @@
   justify-content: center;
   align-items: center;
   min-height: 300px;
-  background: white;
+  background: var(--white);
   border-radius: 8px;
 }
 

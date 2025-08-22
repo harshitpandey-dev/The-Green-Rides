@@ -7,43 +7,56 @@
 
 /* Cycle-specific badges */
 .condition-badge {
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: capitalize;
+  min-width: 70px;
+  transition: var(--transition);
+  border: 1px solid transparent;
 }
 
 .condition-excellent {
-  background: #d4edda;
-  color: #155724;
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--success);
+  border-color: rgba(46, 204, 113, 0.3);
 }
 
 .condition-good {
-  background: #d1ecf1;
-  color: #0c5460;
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border-color: rgba(52, 152, 219, 0.3);
 }
 
 .condition-fair {
-  background: #fff3cd;
-  color: #856404;
+  background: rgba(243, 156, 18, 0.15);
+  color: var(--warning);
+  border-color: rgba(243, 156, 18, 0.3);
 }
 
 .condition-poor {
-  background: #f8d7da;
-  color: #721c24;
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--danger);
+  border-color: rgba(231, 76, 60, 0.3);
 }
 
 .location {
-  color: #6c757d;
+  color: var(--secondary);
   font-weight: 500;
 }
 
 .maintenance-btn {
-  background: #f39c12;
-  color: white;
+  background: var(--warning);
+  color: var(--white);
+  transition: var(--transition);
 }
 
 .maintenance-btn:hover {
   background: #e67e22;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
 }
