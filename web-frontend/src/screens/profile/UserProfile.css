@@ -2,126 +2,265 @@
    USER PROFILE STYLES
 ============================== */
 
-/* Update Password Form Styles (merged from updatePassword.module.css) */
-.update-password-form {
-  width: 95%;
-  max-width: 25rem;
-  margin: 2rem auto;
-}
-
-.form-control {
-  margin-bottom: 0.5rem;
-}
-
-.form-control label {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #52a131;
-  display: block;
-}
-
-.form-control input {
-  display: block;
-  font: inherit;
-  width: 100%;
-  border-radius: 4px;
-  border: 1px solid #52a131;
-  padding: 0.25rem;
-  background-color: #f7f0fa;
-}
-
-.form-action {
-  margin-top: 1.5rem;
-}
-
-.form-action button {
-  font: inherit;
-  cursor: pointer;
-  padding: 0.5rem 1.5rem;
-  border-radius: 4px;
-  background-color: #52a131;
-  color: white;
-  border: 1px solid #52a131;
-}
-
-.form-action button:hover {
-  background-color: #419229;
-  border-color: #419229;
-}
-
 /* Profile Page Layout */
 .profile-container {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 2rem;
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: 1fr;
+}
+
+.profile-header-card {
   background: white;
-  border-radius: 8px;
+  border-radius: 12px;
+  padding: 2rem;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .profile-header {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #e9ecef;
+  gap: 2rem;
+  margin-bottom: 0;
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
-  background: #27ae60;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 2rem;
+  font-size: 2.5rem;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+}
+
+.profile-info {
+  flex: 1;
 }
 
 .profile-info h1 {
   margin: 0 0 0.5rem 0;
   color: #2c3e50;
-  font-size: 1.5rem;
+  font-size: 2rem;
+  font-weight: 600;
 }
 
 .profile-info p {
   margin: 0;
   color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.profile-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.profile-btn-primary {
+  background: #27ae60;
+  color: white;
+}
+
+.profile-btn-primary:hover {
+  background: #229954;
+  transform: translateY(-1px);
+}
+
+.profile-btn-secondary {
+  background: #6c757d;
+  color: white;
+}
+
+.profile-btn-secondary:hover {
+  background: #5a6268;
+  transform: translateY(-1px);
 }
 
 .profile-sections {
   display: grid;
   gap: 2rem;
+  grid-template-columns: 1fr 1fr;
 }
 
 .profile-section {
-  padding: 1.5rem;
-  border: 1px solid #e9ecef;
-  border-radius: 8px;
-  background: #f8f9fa;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-.profile-section h2 {
-  margin: 0 0 1rem 0;
-  color: #27ae60;
-  font-size: 1.2rem;
+.section-header {
+  background: #f8f9fa;
+  padding: 1.5rem 2rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.section-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.3rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.section-content {
+  padding: 2rem;
+}
+
+.detail-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-group:last-child {
+  margin-bottom: 0;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.detail-value {
+  font-size: 1.1rem;
+  color: #495057;
+  padding: 0.5rem 0;
+}
+
+.role-chip {
+  display: inline-block;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  color: white;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.security-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.security-item:last-child {
+  border-bottom: none;
+}
+
+.security-info h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.security-info p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.status-chip {
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Responsive design */
+@media (max-width: 1024px) {
+  .profile-sections {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-container {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 @media (max-width: 768px) {
-  .profile-container {
-    margin: 1rem;
-    padding: 1rem;
-  }
-
   .profile-header {
     flex-direction: column;
     text-align: center;
+    gap: 1.5rem;
   }
 
-  .update-password-form {
+  .profile-avatar {
+    width: 80px;
+    height: 80px;
+    font-size: 2rem;
+  }
+
+  .profile-info h1 {
+    font-size: 1.5rem;
+  }
+
+  .profile-actions {
+    justify-content: center;
     width: 100%;
-    margin: 1rem 0;
+  }
+
+  .profile-btn {
+    flex: 1;
+    justify-content: center;
+    min-width: 120px;
+  }
+
+  .section-header {
+    padding: 1rem 1.5rem;
+  }
+
+  .section-content {
+    padding: 1.5rem;
+  }
+
+  .security-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
   }
 }
