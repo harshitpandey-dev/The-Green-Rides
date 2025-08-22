@@ -7,34 +7,49 @@
 
 /* Guard-specific badges */
 .shift-badge {
-  padding: 0.25rem 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
   text-transform: capitalize;
+  min-width: 70px;
+  transition: var(--transition);
+  border: 1px solid transparent;
 }
 
 .shift-morning {
-  background: #fff3cd;
-  color: #856404;
+  background: rgba(243, 156, 18, 0.15);
+  color: var(--warning);
+  border-color: rgba(243, 156, 18, 0.3);
 }
 
 .shift-afternoon {
-  background: #d4edda;
-  color: #155724;
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--success);
+  border-color: rgba(46, 204, 113, 0.3);
 }
 
 .shift-evening {
-  background: #cce5ff;
-  color: #004085;
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border-color: rgba(52, 152, 219, 0.3);
 }
 
 .shift-night {
-  background: #e2e3e5;
-  color: #383d41;
+  background: rgba(149, 165, 166, 0.15);
+  color: var(--secondary);
+  border-color: rgba(149, 165, 166, 0.3);
 }
 
 .cycle-count {
-  background: #e8f4fd;
-  color: #3498db;
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
 }

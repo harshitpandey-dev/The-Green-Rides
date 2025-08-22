@@ -1,9 +1,11 @@
+@import "../common/screen.css";
+
 .dashboard-card {
-  background: white;
+  background: var(--white);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  box-shadow: var(--shadow-light);
+  transition: var(--transition);
   border-left: 4px solid transparent;
   position: relative;
   overflow: hidden;
@@ -14,28 +16,28 @@
 }
 
 .dashboard-card--clickable:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
 }
 
 .dashboard-card--primary {
-  border-left-color: #4caf50;
+  border-left-color: var(--primary-green);
 }
 
 .dashboard-card--success {
-  border-left-color: #27ae60;
+  border-left-color: var(--success);
 }
 
 .dashboard-card--info {
-  border-left-color: #3498db;
+  border-left-color: var(--info);
 }
 
 .dashboard-card--warning {
-  border-left-color: #f39c12;
+  border-left-color: var(--warning);
 }
 
 .dashboard-card--danger {
-  border-left-color: #e74c3c;
+  border-left-color: var(--danger);
 }
 
 .dashboard-card--accent {
@@ -57,27 +59,32 @@
   height: 50px;
   border-radius: 12px;
   font-size: 1.5rem;
-  color: white;
+  color: var(--white);
+  transition: var(--transition);
 }
 
 .dashboard-card--primary .dashboard-card__icon {
-  background: linear-gradient(135deg, #4caf50, #45a049);
+  background: linear-gradient(
+    135deg,
+    var(--primary-green),
+    var(--primary-green-hover)
+  );
 }
 
 .dashboard-card--success .dashboard-card__icon {
-  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  background: linear-gradient(135deg, var(--primary-green), var(--success));
 }
 
 .dashboard-card--info .dashboard-card__icon {
-  background: linear-gradient(135deg, #3498db, #74b9ff);
+  background: linear-gradient(135deg, var(--info), #74b9ff);
 }
 
 .dashboard-card--warning .dashboard-card__icon {
-  background: linear-gradient(135deg, #f39c12, #fdcb6e);
+  background: linear-gradient(135deg, var(--warning), #fdcb6e);
 }
 
 .dashboard-card--danger .dashboard-card__icon {
-  background: linear-gradient(135deg, #e74c3c, #fd79a8);
+  background: linear-gradient(135deg, var(--danger), #fd79a8);
 }
 
 .dashboard-card--accent .dashboard-card__icon {
@@ -89,29 +96,30 @@
   border-radius: 20px;
   font-size: 0.8rem;
   font-weight: 600;
-  color: white;
+  color: var(--white);
+  transition: var(--transition);
 }
 
 .trend--positive {
-  background: #27ae60;
+  background: var(--success);
 }
 
 .trend--negative {
-  background: #e74c3c;
+  background: var(--danger);
 }
 
 .trend--urgent {
-  background: #f39c12;
+  background: var(--warning);
   animation: pulse 2s infinite;
 }
 
 .trend--critical {
-  background: #e74c3c;
+  background: var(--danger);
   animation: pulse 1s infinite;
 }
 
 .trend--neutral {
-  background: #7f8c8d;
+  background: var(--secondary);
 }
 
 @keyframes pulse {

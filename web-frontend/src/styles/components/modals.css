@@ -1,27 +1,49 @@
 /* ==============================
    MODAL COMPONENTS - COMMON STYLES
 ============================== */
+
+@import "../common/screen.css";
+
 .modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  backdrop-filter: blur(4px);
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .modal-content {
-  background: white;
+  background: var(--white);
   border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-medium);
   max-width: 500px;
   width: 90%;
   max-height: 80vh;
   overflow-y: auto;
+  transform: scale(0.95);
+  animation: modalSlideIn 0.3s ease forwards;
+}
+
+@keyframes modalSlideIn {
+  to {
+    transform: scale(1);
+  }
 }
 
 .modal-header {
@@ -29,12 +51,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e9ecef;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .modal-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--dark);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -43,21 +65,19 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: #6c757d;
+  color: var(--secondary);
   cursor: pointer;
   padding: 0;
   width: 30px;
   height: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: 50%;
+  transition: var(--transition);
 }
 
 .close-btn:hover {
-  background: #f8f9fa;
-  color: #495057;
+  background: var(--light);
+  color: var(--danger);
+  transform: rotate(90deg);
 }
 
 .modal-body {
