@@ -1,6 +1,4 @@
-import React from "react";
-
-const EditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
+const AddEditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
   if (!isOpen) return null;
 
   const isEditMode = !!student;
@@ -13,10 +11,10 @@ const EditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
       email: formData.get("email"),
       phone: formData.get("phone"),
       status: formData.get("status"),
+      rollNo: formData.get("rollNo"),
     };
 
     if (!isEditMode) {
-      studentData.rollNo = formData.get("rollNo");
       studentData.password = formData.get("password");
     }
 
@@ -34,28 +32,17 @@ const EditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
         </div>
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
-            {isEditMode && (
-              <div className="form-group">
-                <label>Roll Number:</label>
-                <input
-                  type="text"
-                  value={student.rollNo}
-                  disabled
-                  className="readonly"
-                />
-              </div>
-            )}
-            {!isEditMode && (
-              <div className="form-group">
-                <label>Roll Number:</label>
-                <input
-                  type="text"
-                  name="rollNo"
-                  required
-                  placeholder="Enter roll number"
-                />
-              </div>
-            )}
+            <div className="form-group">
+              <label>Roll Number:</label>
+              <input
+                type="text"
+                name="rollNo"
+                defaultValue={student?.rollNo || ""}
+                required
+                placeholder="Enter roll number"
+              />
+            </div>
+
             <div className="form-group">
               <label>Name:</label>
               <input
@@ -119,4 +106,4 @@ const EditStudentModal = ({ student, isOpen, onClose, onUpdate }) => {
   );
 };
 
-export default EditStudentModal;
+export default AddEditStudentModal;

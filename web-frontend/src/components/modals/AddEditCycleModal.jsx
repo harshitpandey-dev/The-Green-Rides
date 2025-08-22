@@ -1,16 +1,13 @@
-import React from "react";
-
-const EditCycleModal = ({ cycle, isOpen, onClose, onUpdate }) => {
+const AddEditCycleModal = ({ cycle, isOpen, onClose, onUpdate }) => {
   if (!isOpen || !cycle) return null;
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const cycleData = {
-      cycleId: formData.get("cycleId"),
+      cycleNumber: formData.get("cycleNumber"),
       location: formData.get("location"),
       status: formData.get("status"),
-      condition: formData.get("condition"),
     };
     onUpdate(cycleData);
   };
@@ -27,11 +24,11 @@ const EditCycleModal = ({ cycle, isOpen, onClose, onUpdate }) => {
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Cycle ID:</label>
+              <label>Cycle number:</label>
               <input
                 type="text"
-                name="cycleId"
-                defaultValue={cycle.cycleId || cycle.id}
+                name="cycleNumber"
+                defaultValue={cycle?.cycleNumber}
                 required
               />
             </div>
@@ -40,26 +37,17 @@ const EditCycleModal = ({ cycle, isOpen, onClose, onUpdate }) => {
               <input
                 type="text"
                 name="location"
-                defaultValue={cycle.location}
+                defaultValue={cycle?.location}
                 required
               />
             </div>
             <div className="form-group">
               <label>Status:</label>
-              <select name="status" defaultValue={cycle.status}>
+              <select name="status" defaultValue={cycle?.status}>
                 <option value="available">Available</option>
                 <option value="rented">Rented</option>
                 <option value="maintenance">Maintenance</option>
                 <option value="out-of-service">Out of Service</option>
-              </select>
-            </div>
-            <div className="form-group">
-              <label>Condition:</label>
-              <select name="condition" defaultValue={cycle.condition}>
-                <option value="excellent">Excellent</option>
-                <option value="good">Good</option>
-                <option value="fair">Fair</option>
-                <option value="poor">Poor</option>
               </select>
             </div>
             <div className="form-actions">
@@ -77,4 +65,4 @@ const EditCycleModal = ({ cycle, isOpen, onClose, onUpdate }) => {
   );
 };
 
-export default EditCycleModal;
+export default AddEditCycleModal;
