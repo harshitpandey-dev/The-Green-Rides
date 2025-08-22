@@ -1,50 +1,22 @@
 import React, { useState } from "react";
 import { useUser } from "../../contexts/authContext";
-import UpdatePassword from "../../components/Profile/UpdatePassword";
+import ChangePasswordModal from "../../components/modals/ChangePasswordModal";
+import UpdateProfileModal from "../../components/modals/UpdateProfileModal";
 import {
   FaUser,
   FaEnvelope,
   FaIdCard,
   FaKey,
   FaEdit,
-  FaSave,
-  FaTimes,
+  FaShieldAlt,
+  FaUserCog,
 } from "react-icons/fa";
-import "../../styles/screens/userProfile.css";
+import "./UserProfile.css";
 
 const UserProfile = () => {
   const { currentUser } = useUser();
-  const [showChangePassword, setShowChangePassword] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState({
-    name: currentUser?.name || "",
-    email: currentUser?.email || "",
-  });
-
-  const handleEditToggle = () => {
-    if (isEditing) {
-      // Reset to original values when canceling
-      setEditedUser({
-        name: currentUser?.name || "",
-        email: currentUser?.email || "",
-      });
-    }
-    setIsEditing(!isEditing);
-  };
-
-  const handleSaveChanges = () => {
-    // Here you would typically make an API call to update the user
-    console.log("Saving changes:", editedUser);
-    setIsEditing(false);
-    // Show success message
-  };
-
-  const handleInputChange = (field, value) => {
-    setEditedUser((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+  const [showChangePasswordModal, setShowChangePasswordModal] = useState(false);
+  const [showUpdateProfileModal, setShowUpdateProfileModal] = useState(false);
 
   const getRoleDisplayName = (role) => {
     switch (role) {
@@ -52,12 +24,12 @@ const UserProfile = () => {
         return "Super Administrator";
       case "finance_admin":
         return "Finance Administrator";
-      case "student":
-        return "Student";
       case "guard":
         return "Security Guard";
+      case "student":
+        return "Student";
       default:
-        return role?.charAt(0).toUpperCase() + role?.slice(1);
+        return "User";
     }
   };
 
@@ -66,202 +38,160 @@ const UserProfile = () => {
       case "super_admin":
         return "#e74c3c";
       case "finance_admin":
+        return "#f39c12";
+      case "guard":
         return "#3498db";
       case "student":
         return "#27ae60";
-      case "guard":
-        return "#f39c12";
       default:
-        return "#6c757d";
+        return "#95a5a6";
     }
+  };
+
+  const handleProfileUpdateSuccess = (updatedData) => {
+    // Here you would update the user context with new data
+    console.log("Profile updated:", updatedData);
   };
 
   return (
     <div className="profile-container">
-      <div className="page-header">
-        <h1 className="page-title">
-          <FaUser />
-          Profile Management
-        </h1>
-        <p className="page-subtitle">
-          Manage your account information and settings
-        </p>
+      {/* Profile Header Card */}
+      <div className="profile-header-card">
+        <div className="profile-header">
+          <div className="profile-avatar">
+            <FaUser />
+          </div>
+          <div className="profile-info">
+            <h1>{currentUser?.name}</h1>
+            <p>{currentUser?.email}</p>
+          </div>
+          <div className="profile-actions">
+            <button
+              className="profile-btn profile-btn-primary"
+              onClick={() => setShowUpdateProfileModal(true)}
+            >
+              <FaEdit /> Edit Profile
+            </button>
+            <button
+              className="profile-btn profile-btn-secondary"
+              onClick={() => setShowChangePasswordModal(true)}
+            >
+              <FaKey /> Change Password
+            </button>
+          </div>
+        </div>
       </div>
 
-      <div className="page-content">
-        <div className="profile-grid">
-          {/* Profile Card */}
-          <div className="profile-card">
-            <div className="profile-header">
-              <div className="profile-avatar">
+      {/* Profile Sections */}
+      <div className="profile-sections">
+        {/* Personal Information */}
+        <div className="profile-section">
+          <div className="section-header">
+            <h2>
+              <FaUserCog />
+              Personal Information
+            </h2>
+          </div>
+          <div className="section-content">
+            <div className="detail-group">
+              <div className="detail-label">
                 <FaUser />
+                Full Name
               </div>
-              <div className="profile-info">
-                <h2>{currentUser?.name}</h2>
+              <div className="detail-value">{currentUser?.name}</div>
+            </div>
+
+            <div className="detail-group">
+              <div className="detail-label">
+                <FaEnvelope />
+                Email Address
+              </div>
+              <div className="detail-value">{currentUser?.email}</div>
+            </div>
+
+            {currentUser?.rollNo && (
+              <div className="detail-group">
+                <div className="detail-label">
+                  <FaIdCard />
+                  Roll Number
+                </div>
+                <div className="detail-value">{currentUser?.rollNo}</div>
+              </div>
+            )}
+
+            <div className="detail-group">
+              <div className="detail-label">
+                <FaShieldAlt />
+                User Role
+              </div>
+              <div className="detail-value">
                 <span
-                  className="role-badge"
+                  className="role-chip"
                   style={{ backgroundColor: getRoleColor(currentUser?.role) }}
                 >
                   {getRoleDisplayName(currentUser?.role)}
                 </span>
               </div>
-              <div className="profile-actions">
-                {!isEditing ? (
-                  <button className="btn-primary" onClick={handleEditToggle}>
-                    <FaEdit /> Edit Profile
-                  </button>
-                ) : (
-                  <div className="edit-actions">
-                    <button className="btn-success" onClick={handleSaveChanges}>
-                      <FaSave /> Save
-                    </button>
-                    <button
-                      className="btn-secondary"
-                      onClick={handleEditToggle}
-                    >
-                      <FaTimes /> Cancel
-                    </button>
-                  </div>
-                )}
+            </div>
+          </div>
+        </div>
+
+        {/* Account Security */}
+        <div className="profile-section">
+          <div className="section-header">
+            <h2>
+              <FaKey />
+              Account Security
+            </h2>
+          </div>
+          <div className="section-content">
+            <div className="security-item">
+              <div className="security-info">
+                <h4>Password</h4>
+                <p>Keep your account secure with a strong password</p>
               </div>
+              <button
+                className="profile-btn profile-btn-primary"
+                onClick={() => setShowChangePasswordModal(true)}
+              >
+                <FaKey /> Change Password
+              </button>
             </div>
 
-            <div className="profile-details">
-              <div className="detail-group">
-                <label>
-                  <FaUser className="detail-icon" />
-                  Full Name
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    value={editedUser.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    className="form-input"
-                  />
-                ) : (
-                  <div className="detail-value">{currentUser?.name}</div>
-                )}
+            <div className="security-item">
+              <div className="security-info">
+                <h4>Account Status</h4>
+                <p>Your account is currently active and verified</p>
               </div>
+              <span className="status-chip status-active">Active</span>
+            </div>
 
-              <div className="detail-group">
-                <label>
-                  <FaEnvelope className="detail-icon" />
-                  Email Address
-                </label>
-                {isEditing ? (
-                  <input
-                    type="email"
-                    value={editedUser.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    className="form-input"
-                  />
-                ) : (
-                  <div className="detail-value">{currentUser?.email}</div>
-                )}
+            <div className="security-item">
+              <div className="security-info">
+                <h4>Last Login</h4>
+                <p>Monitor your account access</p>
               </div>
-
-              {currentUser?.rollNo && (
-                <div className="detail-group">
-                  <label>
-                    <FaIdCard className="detail-icon" />
-                    Roll Number
-                  </label>
-                  <div className="detail-value">{currentUser?.rollNo}</div>
-                </div>
-              )}
-
-              <div className="detail-group">
-                <label>
-                  <FaIdCard className="detail-icon" />
-                  User Role
-                </label>
-                <div className="detail-value">
-                  <span
-                    className="role-chip"
-                    style={{ backgroundColor: getRoleColor(currentUser?.role) }}
-                  >
-                    {getRoleDisplayName(currentUser?.role)}
-                  </span>
-                </div>
+              <div style={{ color: "#6c757d", fontSize: "0.9rem" }}>
+                Today at {new Date().toLocaleTimeString()}
               </div>
             </div>
           </div>
-
-          {/* Security Card */}
-          <div className="security-card">
-            <div className="card-header">
-              <h3>
-                <FaKey />
-                Security Settings
-              </h3>
-            </div>
-
-            <div className="card-content">
-              <div className="security-item">
-                <div className="security-info">
-                  <h4>Password</h4>
-                  <p>Keep your account secure with a strong password</p>
-                </div>
-                <button
-                  className={`btn-outline ${
-                    showChangePassword ? "btn-danger" : "btn-primary"
-                  }`}
-                  onClick={() => setShowChangePassword(!showChangePassword)}
-                >
-                  {showChangePassword ? (
-                    <>
-                      <FaTimes /> Cancel
-                    </>
-                  ) : (
-                    <>
-                      <FaKey /> Change Password
-                    </>
-                  )}
-                </button>
-              </div>
-
-              {showChangePassword && (
-                <div className="password-form-container">
-                  <UpdatePassword currentUser={currentUser} />
-                </div>
-              )}
-
-              <div className="security-item">
-                <div className="security-info">
-                  <h4>Account Status</h4>
-                  <p>Your account is active and in good standing</p>
-                </div>
-                <div className="status-indicator active">Active</div>
-              </div>
-            </div>
-          </div>
-
-          {/* Statistics Card (for admins) */}
-          {(currentUser?.role === "super_admin" ||
-            currentUser?.role === "finance_admin") && (
-            <div className="stats-card">
-              <div className="card-header">
-                <h3>Account Statistics</h3>
-              </div>
-              <div className="card-content">
-                <div className="stat-item">
-                  <div className="stat-label">Last Login</div>
-                  <div className="stat-value">Today, 2:30 PM</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-label">Account Created</div>
-                  <div className="stat-value">Jan 15, 2024</div>
-                </div>
-                <div className="stat-item">
-                  <div className="stat-label">Total Sessions</div>
-                  <div className="stat-value">247</div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
+
+      {/* Modals */}
+      <ChangePasswordModal
+        isOpen={showChangePasswordModal}
+        onClose={() => setShowChangePasswordModal(false)}
+        currentUser={currentUser}
+      />
+
+      <UpdateProfileModal
+        isOpen={showUpdateProfileModal}
+        onClose={() => setShowUpdateProfileModal(false)}
+        currentUser={currentUser}
+        onUpdateSuccess={handleProfileUpdateSuccess}
+      />
     </div>
   );
 };
