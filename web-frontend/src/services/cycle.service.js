@@ -10,7 +10,7 @@ export const cycleService = {
   },
 
   // ADD CYCLE
-  addCycle: async (props) => {
+  createCycle: async (props) => {
     return await apiUtils.post("/cycles", props);
   },
 
@@ -18,5 +18,9 @@ export const cycleService = {
   deleteCycle: async (cycleId) => {
     await apiUtils.delete(`/cycles/${cycleId}`);
     return "Cycle Deleted";
+  },
+
+  updateCycleStatus: async (cycleId, status) => {
+    return await apiUtils.put(`/cycles/${cycleId}/status`, { status });
   },
 };

@@ -11,7 +11,8 @@ const AddEditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
       email: formData.get("email"),
       phone: formData.get("phone"),
       status: formData.get("status"),
-      shift: formData.get("shift"),
+      guardShift: formData.get("guardShift"),
+      location: formData.get("location"),
     };
 
     if (!isEditMode) {
@@ -69,9 +70,17 @@ const AddEditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
 
             <div className="form-group">
               <label>Shift:</label>
-              <select name="shift" defaultValue={guard?.shift}>
+              <select name="guardShift" defaultValue={guard?.guardShift}>
                 <option value="morning">Morning</option>
                 <option value="evening">Evening</option>
+              </select>
+            </div>
+
+            <div className="form-group">
+              <label>Which campus:</label>
+              <select name="location" defaultValue={guard?.guardShift}>
+                <option value="east_campus">East Campus</option>
+                <option value="west_campus">West Campus</option>
               </select>
             </div>
             <div className="form-group">
@@ -83,7 +92,7 @@ const AddEditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
             </div>
             <div className="form-actions">
               <button type="submit" className="btn-primary">
-                Update Guard
+                {isEditMode ? "Update" : "Add"} Guard
               </button>
               <button type="button" className="btn-secondary" onClick={onClose}>
                 Cancel

@@ -149,6 +149,12 @@ const FinanceAdminsScreen = () => {
       render: (value) => <span className="email">{value || "N/A"}</span>,
     },
     {
+      key: "phone",
+      header: "phone",
+      sortable: true,
+      render: (value) => <span className="phone">{value || "N/A"}</span>,
+    },
+    {
       key: "status",
       header: "Status",
       sortable: true,
@@ -162,7 +168,7 @@ const FinanceAdminsScreen = () => {
     },
     {
       key: "createdAt",
-      header: "Created Date",
+      header: "Join Date",
       sortable: true,
       render: (value) => (value ? new Date(value).toLocaleDateString() : "N/A"),
     },

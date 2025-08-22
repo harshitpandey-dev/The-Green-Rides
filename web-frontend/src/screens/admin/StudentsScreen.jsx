@@ -115,6 +115,18 @@ const StudentsScreen = () => {
       ),
     },
     {
+      key: "createdAt",
+      header: "Join Date",
+      sortable: true,
+      render: (value) => (value ? new Date(value).toLocaleDateString() : "N/A"),
+    },
+    {
+      key: "createdBy",
+      header: "Added by",
+      sortable: true,
+      render: (value) => (value ? value : "N/A"),
+    },
+    {
       key: "actions",
       header: "Actions",
       render: (_, student) => (
