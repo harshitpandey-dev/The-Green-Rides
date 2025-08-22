@@ -66,13 +66,6 @@ const Sidebar = () => {
       label: "Dashboard",
       exact: true,
     },
-    {
-      path: "/finance-admin/transactions",
-      icon: FaFileInvoiceDollar,
-      label: "Transactions",
-    },
-    { path: "/finance-admin/reports", icon: FaChartLine, label: "Reports" },
-    { path: "/finance-admin/settings", icon: FaCog, label: "Settings" },
   ];
 
   const menuItems = isSuperAdmin ? superAdminItems : financeAdminItems;
