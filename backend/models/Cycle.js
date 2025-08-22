@@ -27,6 +27,7 @@ const cycleSchema = new mongoose.Schema({
     enum: ["low_rating", "high_usage", "manual", "damage"],
   },
   lastMaintenanceAt: { type: Date },
+  total_maintenanceCount: { type: Number, default: 0 },
 
   // Metadata
   addedBy: {

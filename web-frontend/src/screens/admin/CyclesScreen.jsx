@@ -63,7 +63,7 @@ const CyclesScreen = () => {
   const columns = [
     {
       key: "cycleNumber",
-      header: "Cycle ID",
+      header: "Cycle number",
       sortable: true,
       render: (value) => <span className="entity-id">{value}</span>,
     },
@@ -90,6 +90,30 @@ const CyclesScreen = () => {
       render: (value) => (
         <span className="count-badge rental-count">{value || 0}</span>
       ),
+    },
+    {
+      key: "currentRental",
+      header: "Currently rented to",
+      sortable: true,
+      render: (value) => (value ? value : "N/A"),
+    },
+    {
+      key: "averageRating",
+      header: "Rating",
+      sortable: true,
+      render: (value) => (value ? value : "N/A"),
+    },
+    {
+      key: "total_maintenanceCount",
+      header: "Total Maintenances",
+      sortable: true,
+      render: (value) => (value ? value : "N/A"),
+    },
+    {
+      key: "createdAt",
+      header: "Join Date",
+      sortable: true,
+      render: (value) => (value ? new Date(value).toLocaleDateString() : "N/A"),
     },
     {
       key: "actions",
@@ -149,7 +173,7 @@ const CyclesScreen = () => {
 
   const handleMaintenanceToggle = async (cycle) => {
     const newStatus =
-      cycle.status === "maintenance" ? "available" : "maintenance";
+      cycle.status === "under_maintenance" ? "available" : "under_maintenance";
     try {
       await cycleService.updateCycleStatus(cycle._id || cycle.id, newStatus);
       setCycles((prev) =>
@@ -301,7 +325,7 @@ const CyclesScreen = () => {
         <div className="stat-card suspended">
           <h3>Maintenance</h3>
           <p className="stat-number">
-            {cycles.filter((c) => c.status === "maintenance").length}
+            {cycles.filter((c) => c.status === "under_maintenance").length}
           </p>
         </div>
       </div>

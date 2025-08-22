@@ -76,12 +76,22 @@ const GuardsScreen = () => {
       sortable: false,
     },
     {
-      key: "shift",
+      key: "guardShift",
       header: "Shift",
       sortable: true,
       render: (value) => (
-        <span className={`shift-badge shift-${value?.toLowerCase()}`}>
-          {value}
+        <span className={`guardShift-badge guardShift-${value?.toLowerCase()}`}>
+          {value.charAt(0).toUpperCase() + value.slice(1)}
+        </span>
+      ),
+    },
+    {
+      key: "location",
+      header: "campus",
+      sortable: true,
+      render: (value) => (
+        <span className={`guardShift-badge guardShift-${value?.toLowerCase()}`}>
+          {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
     },
@@ -94,6 +104,12 @@ const GuardsScreen = () => {
           {value.charAt(0).toUpperCase() + value.slice(1)}
         </span>
       ),
+    },
+    {
+      key: "createdAt",
+      header: "Join Date",
+      sortable: true,
+      render: (value) => (value ? new Date(value).toLocaleDateString() : "N/A"),
     },
     {
       key: "actions",
@@ -201,7 +217,7 @@ const GuardsScreen = () => {
         guard.name,
         guard.email,
         guard.phone,
-        guard.shift,
+        guard.guardShift,
         guard.cycles_assigned,
         guard.status,
         new Date(guard.joinDate).toLocaleDateString(),
@@ -288,12 +304,12 @@ const GuardsScreen = () => {
             {guards.filter((g) => g.status === "active").length}
           </p>
         </div>
-        <div className="stat-card suspended">
+        {/* <div className="stat-card suspended">
           <h3>On Duty</h3>
           <p className="stat-number">
-            {guards.filter((g) => g.shift && g.status === "active").length}
+            {guards.filter((g) => g.guardShift && g.status === "active").length}
           </p>
-        </div>
+        </div> */}
         <div className="stat-card suspended">
           <h3>Disabled Guards</h3>
           <p className="stat-number">

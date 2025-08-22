@@ -11,7 +11,9 @@ exports.getAllCycles = async (req, res) => {
 
 exports.createCycle = async (req, res) => {
   try {
-    const cycle = await cycleService.createCycle(req.body);
+    const addedBy = req.user.userId;
+
+    const cycle = await cycleService.addCycle(req.body, addedBy);
     res.status(201).json(cycle);
   } catch (err) {
     res.status(500).json({ message: err.message });

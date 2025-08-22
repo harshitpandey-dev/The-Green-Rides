@@ -17,6 +17,23 @@ exports.getCycles = async ({ location, status, needsMaintenance } = {}) => {
   return cycles;
 };
 
+exports.addCycle = async ({ cycleNumber, location, status }, addedBy) => {
+  const existingCycle = await Cycle.findOne({ cycleNumber });
+  if (existingCycle) {
+    throw new Error("Cycle number already exists");
+  }
+
+  const cycle = new Cycle({
+    cycleNumber,
+    location,
+    status,
+    addedBy,
+  });
+
+  await cycle.save();
+  return await Cycle.findById(cycle._id).populate("addedBy", "name role");
+};
+
 // Get available cycles for specific location
 exports.getAvailableCycles = async ({ location }) => {
   const cycles = await Cycle.find({
@@ -35,12 +52,6 @@ exports.getAllCycles = async () => {
   return await this.getCycles();
 };
 
-exports.createCycle = async (data) => {
-  const cycle = new Cycle(data);
-  await cycle.save();
-  return cycle;
-};
-
 exports.updateCycle = async (id, data) => {
   const cycle = await Cycle.findByIdAndUpdate(id, data, { new: true });
   if (!cycle) throw new Error("Cycle not found");
@@ -57,24 +68,6 @@ exports.getCycleByCycleId = async (cycleId) => {
   const cycle = await Cycle.findOne({ cycleId });
   if (!cycle) throw new Error("Cycle not found");
   return cycle;
-};
-
-// Add new cycle (Admin only)
-exports.addCycle = async ({ cycleNumber, location, addedBy }) => {
-  const existingCycle = await Cycle.findOne({ cycleNumber });
-  if (existingCycle) {
-    throw new Error("Cycle number already exists");
-  }
-
-  const cycle = new Cycle({
-    cycleNumber,
-    cycleId: cycleNumber, // For backward compatibility
-    location,
-    addedBy,
-  });
-
-  await cycle.save();
-  return await Cycle.findById(cycle._id).populate("addedBy", "name role");
 };
 
 // Get cycle statistics
