@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useUser } from "../../contexts/authContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import {
   FaTachometerAlt,
   FaUsers,
@@ -23,6 +24,7 @@ import "../../styles/components/sidebar.css";
 
 const Sidebar = () => {
   const { currentUser, logout } = useUser();
+  const { confirmLogout } = useConfirmationDialog();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
@@ -70,8 +72,14 @@ const Sidebar = () => {
 
   const menuItems = isSuperAdmin ? superAdminItems : financeAdminItems;
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    try {
+      await confirmLogout(() => {
+        logout();
+      });
+    } catch (error) {
+      // User cancelled logout
+    }
   };
 
   const toggleCollapse = () => {

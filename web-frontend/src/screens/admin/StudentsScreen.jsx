@@ -10,11 +10,15 @@ import {
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import AddEditStudentModal from "../../components/modals/AddEditStudentModal";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import { userService } from "../../services/user.service";
 import "../../styles/screens/studentsScreen.css";
 import "../../styles/components/modals.css";
 
 const StudentsScreen = () => {
+  const { showSuccess, showError } = useToast();
+  const { confirmDelete, confirmStatusChange } = useConfirmationDialog();
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +40,7 @@ const StudentsScreen = () => {
       setFilteredStudents(studentsData);
     } catch (error) {
       console.error("Error fetching students:", error);
+      showError("Failed to load students. Please refresh the page.");
       setStudents([]);
       setFilteredStudents([]);
     } finally {
@@ -172,40 +177,49 @@ const StudentsScreen = () => {
   };
 
   const handleDeleteStudent = async (student) => {
-    if (
-      window.confirm(`Are you sure you want to delete student ${student.name}?`)
-    ) {
-      try {
+    try {
+      await confirmDelete(student.name, async () => {
         await userService.deleteUser(student._id || student.id);
         fetchStudents();
-      } catch (error) {
-        console.error("Error deleting student:", error);
-        alert("Failed to delete student. Please try again.");
-      }
+        showSuccess(`Student "${student.name}" has been deleted successfully.`);
+      });
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      showError("Failed to delete student. Please try again.");
     }
   };
 
   const handleToggleStatus = async (student) => {
     const newStatus = student.status === "active" ? "disabled" : "active";
+    const statusText = newStatus === "active" ? "activate" : "disable";
+
     try {
-      await userService.updateUserStatus(student._id || student.id, newStatus);
-      setStudents((prev) =>
-        prev.map((g) =>
-          (g._id || g.id) === (student._id || student.id)
-            ? { ...g, status: newStatus }
-            : g
-        )
-      );
-      setFilteredStudents((prev) =>
-        prev.map((g) =>
-          (g._id || g.id) === (student._id || student.id)
-            ? { ...g, status: newStatus }
-            : g
-        )
-      );
+      await confirmStatusChange(student.name, statusText, async () => {
+        await userService.updateUserStatus(
+          student._id || student.id,
+          newStatus
+        );
+        setStudents((prev) =>
+          prev.map((g) =>
+            (g._id || g.id) === (student._id || student.id)
+              ? { ...g, status: newStatus }
+              : g
+          )
+        );
+        setFilteredStudents((prev) =>
+          prev.map((g) =>
+            (g._id || g.id) === (student._id || student.id)
+              ? { ...g, status: newStatus }
+              : g
+          )
+        );
+        showSuccess(
+          `Student "${student.name}" has been ${statusText}d successfully.`
+        );
+      });
     } catch (error) {
       console.error("Error updating student status:", error);
-      alert("Failed to update student status. Please try again.");
+      showError("Failed to update student status. Please try again.");
     }
   };
 
@@ -214,19 +228,25 @@ const StudentsScreen = () => {
       if (selectedStudent) {
         // Update existing student
         await userService.updateUser(selectedStudent._id, studentData);
+        showSuccess(
+          `Student "${studentData.name}" has been updated successfully.`
+        );
       } else {
         // Create new student
         await userService.createUser({
           ...studentData,
           role: "student",
         });
+        showSuccess(
+          `Student "${studentData.name}" has been created successfully.`
+        );
       }
       setShowAddEditModal(false);
       setSelectedStudent(null);
       fetchStudents();
     } catch (error) {
       console.error("Error saving student:", error);
-      alert("Failed to save student. Please try again.");
+      showError("Failed to save student. Please try again.");
     }
   };
 

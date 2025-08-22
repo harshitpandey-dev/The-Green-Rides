@@ -2,11 +2,11 @@ import React, { useState, useRef } from "react";
 import { FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 import Modal from "./Modal";
 import { changePassword } from "../../services/auth.service";
+import { useToast } from "../../contexts/ToastContext";
 
 const ChangePasswordModal = ({ isOpen, onClose, currentUser }) => {
+  const { showSuccess, showError } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [showPasswords, setShowPasswords] = useState({
     current: false,
     new: false,
@@ -26,30 +26,28 @@ const ChangePasswordModal = ({ isOpen, onClose, currentUser }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError("");
-    setSuccess("");
 
     const currentPassword = currentPasswordRef.current.value;
     const newPassword = newPasswordRef.current.value;
     const confirmPassword = confirmPasswordRef.current.value;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("Please fill in all fields");
+      showError("Please fill in all fields");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("New passwords do not match");
+      showError("New passwords do not match");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("New password must be at least 6 characters long");
+      showError("New password must be at least 6 characters long");
       return;
     }
 
     if (currentPassword === newPassword) {
-      setError("New password must be different from current password");
+      showError("New password must be different from current password");
       return;
     }
 
@@ -63,21 +61,19 @@ const ChangePasswordModal = ({ isOpen, onClose, currentUser }) => {
       });
 
       if (response.success) {
-        setSuccess("Password changed successfully!");
+        showSuccess("Password changed successfully!");
         setTimeout(() => {
           onClose();
           // Reset form
           currentPasswordRef.current.value = "";
           newPasswordRef.current.value = "";
           confirmPasswordRef.current.value = "";
-          setSuccess("");
-          setError("");
-        }, 2000);
+        }, 1500);
       } else {
-        setError(response.message || "Failed to change password");
+        showError(response.message || "Failed to change password");
       }
     } catch (error) {
-      setError("Network error. Please try again later.");
+      showError("Network error. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -86,8 +82,6 @@ const ChangePasswordModal = ({ isOpen, onClose, currentUser }) => {
   const handleClose = () => {
     if (!isLoading) {
       onClose();
-      setError("");
-      setSuccess("");
       if (currentPasswordRef.current) currentPasswordRef.current.value = "";
       if (newPasswordRef.current) newPasswordRef.current.value = "";
       if (confirmPasswordRef.current) confirmPasswordRef.current.value = "";
@@ -101,36 +95,6 @@ const ChangePasswordModal = ({ isOpen, onClose, currentUser }) => {
       title="Change Password"
       size="small"
     >
-      {error && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            background: "#f8d7da",
-            color: "#721c24",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            border: "1px solid #f5c6cb",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            background: "#d4edda",
-            color: "#155724",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            border: "1px solid #c3e6cb",
-          }}
-        >
-          {success}
-        </div>
-      )}
-
       <form className="modal-form" onSubmit={handleSubmit}>
         <div className="modal-form-group">
           <label className="modal-form-label">

@@ -3,36 +3,36 @@ import { FaSearch, FaMoneyBillWave, FaUser } from "react-icons/fa";
 import { AuthContext } from "../../contexts/authContext";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import "../../styles/common/screen.css";
 import "../../styles/screens/financeAdminScreen.css";
 
 const FinanceAdminScreen = () => {
   const { currentUser } = useContext(AuthContext);
+  const { showSuccess, showError } = useToast();
+  const { confirmAction } = useConfirmationDialog();
   const [rollNumber, setRollNumber] = useState("");
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(false);
   const [clearing, setClearing] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
 
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!rollNumber.trim()) {
-      setError("Please enter a roll number");
+      showError("Please enter a roll number");
       return;
     }
 
     try {
       setLoading(true);
-      setError("");
-      setMessage("");
 
       const studentData = await userService.getStudentByRollNumber(
         rollNumber.trim()
       );
       setStudent(studentData);
     } catch (err) {
-      setError(err.message || "Student not found");
+      showError(err.message || "Student not found");
       setStudent(null);
     } finally {
       setLoading(false);
@@ -42,29 +42,34 @@ const FinanceAdminScreen = () => {
   const handleClearFine = async () => {
     if (!student || clearing) return;
 
-    try {
-      setClearing(true);
-      setError("");
+    const confirmed = await confirmAction(
+      "Clear Student Fine",
+      `Are you sure you want to clear the fine of ₹${student.fine} for ${student.name} (${student.rollNumber})?`,
+      "warning"
+    );
 
-      const result = await userService.clearStudentFine(student._id);
+    if (confirmed) {
+      try {
+        setClearing(true);
 
-      // Update local student data
-      setStudent((prev) => ({ ...prev, fine: 0 }));
-      setMessage(
-        `Fine cleared successfully! ₹${result.student.previousFine} has been cleared for ${result.student.name}`
-      );
-    } catch (err) {
-      setError(err.message || "Failed to clear fine");
-    } finally {
-      setClearing(false);
+        const result = await userService.clearStudentFine(student._id);
+
+        // Update local student data
+        setStudent((prev) => ({ ...prev, fine: 0 }));
+        showSuccess(
+          `Fine cleared successfully! ₹${result.student.previousFine} has been cleared for ${result.student.name}`
+        );
+      } catch (err) {
+        showError(err.message || "Failed to clear fine");
+      } finally {
+        setClearing(false);
+      }
     }
   };
 
   const resetSearch = () => {
     setRollNumber("");
     setStudent(null);
-    setMessage("");
-    setError("");
   };
 
   if (loading) {
@@ -126,18 +131,6 @@ const FinanceAdminScreen = () => {
                   </div>
                 </div>
               </form>
-
-              {error && (
-                <div className="alert alert-error">
-                  <p>{error}</p>
-                </div>
-              )}
-
-              {message && (
-                <div className="alert alert-success">
-                  <p>{message}</p>
-                </div>
-              )}
             </div>
           </div>
         </div>
@@ -237,7 +230,7 @@ const FinanceAdminScreen = () => {
           </div>
         )}
 
-        {!student && !error && !rollNumber && (
+        {!student && !rollNumber && (
           <div className="content-section">
             <div className="empty-state">
               <FaSearch className="empty-icon" />
