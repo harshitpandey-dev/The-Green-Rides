@@ -297,6 +297,109 @@
   }
 }
 
+/* ==============================
+   CONFIRMATION MODAL STYLES
+============================== */
+
+.confirmation-modal {
+  max-width: 450px;
+  width: 90%;
+}
+
+.confirmation-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 2rem 1rem 2rem;
+  border-bottom: none;
+}
+
+.confirmation-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  transition: var(--transition);
+}
+
+.confirmation-icon--warning {
+  color: var(--warning);
+}
+
+.confirmation-icon--danger {
+  color: var(--danger);
+}
+
+.confirmation-icon--info {
+  color: var(--info);
+}
+
+.confirmation-icon--success {
+  color: var(--success);
+}
+
+.confirmation-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--dark);
+}
+
+.confirmation-body {
+  padding: 0 2rem 1.5rem 2rem;
+  text-align: center;
+}
+
+.confirmation-message {
+  margin: 0;
+  color: var(--secondary);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid var(--border-light);
+  justify-content: flex-end;
+}
+
+.confirmation-cancel {
+  min-width: 100px;
+}
+
+.confirmation-confirm {
+  min-width: 120px;
+  position: relative;
+}
+
+.confirmation-confirm--danger {
+  background: var(--danger);
+}
+
+.confirmation-confirm--danger:hover {
+  background: #c0392b;
+}
+
+.btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+/* Modal Size Variations */
+.modal-small {
+  max-width: 400px;
+}
+
+.modal-large {
+  max-width: 800px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .modal-content {

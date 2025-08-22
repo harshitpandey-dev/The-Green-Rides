@@ -12,9 +12,13 @@ import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DataTable from "../../components/common/DataTable";
 import AddEditFinanceAdminModal from "../../components/modals/AddEditFinanceAdminModal";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import "../../styles/screens/financeAdminsScreen.css";
 
 const FinanceAdminsScreen = () => {
+  const { showSuccess, showError } = useToast();
+  const { confirmDelete, confirmStatusChange } = useConfirmationDialog();
   const [financeAdmins, setFinanceAdmins] = useState([]);
   const [filteredAdmins, setFilteredAdmins] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -49,7 +53,7 @@ const FinanceAdminsScreen = () => {
       setFinanceAdmins(data || []);
       setFilteredAdmins(data || []);
     } catch (err) {
-      setError("Failed to load finance admins");
+      showError("Failed to load finance admins");
       console.error("Error fetching finance admins:", err);
     } finally {
       setLoading(false);
@@ -57,37 +61,46 @@ const FinanceAdminsScreen = () => {
   };
 
   const handleDeleteAdmin = async (admin) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete finance admin "${admin.name}"?`
-      )
-    ) {
+    const confirmed = await confirmDelete(
+      "Delete Finance Admin",
+      `Are you sure you want to delete finance admin "${admin.name}"? This action cannot be undone.`
+    );
+
+    if (confirmed) {
       try {
         await userService.deleteUser(admin._id);
         setFinanceAdmins((prev) => prev.filter((a) => a._id !== admin._id));
-        setMessage(`Finance admin "${admin.name}" deleted successfully!`);
-        setTimeout(() => setMessage(""), 5000);
+        showSuccess(`Finance admin "${admin.name}" deleted successfully`);
       } catch (err) {
-        setError(`Failed to delete finance admin: ${err.message}`);
-        setTimeout(() => setError(""), 5000);
+        console.error("Error deleting finance admin:", err);
+        showError(`Failed to delete finance admin: ${err.message}`);
       }
     }
   };
 
   const handleUpdateStatus = async (admin, newStatus) => {
-    try {
-      const updatedAdmin = await userService.updateUserStatus(
-        admin._id,
-        newStatus
-      );
-      setFinanceAdmins((prev) =>
-        prev.map((a) =>
-          a._id === admin._id ? { ...a, status: updatedAdmin?.status } : a
-        )
-      );
-    } catch (err) {
-      setError(`Failed to update status: ${err.message}`);
-      setTimeout(() => setError(""), 5000);
+    const action = newStatus === "active" ? "enable" : "disable";
+    const confirmed = await confirmStatusChange(
+      "Change Admin Status",
+      `Are you sure you want to ${action} finance admin "${admin.name}"?`
+    );
+
+    if (confirmed) {
+      try {
+        const updatedAdmin = await userService.updateUserStatus(
+          admin._id,
+          newStatus
+        );
+        setFinanceAdmins((prev) =>
+          prev.map((a) =>
+            a._id === admin._id ? { ...a, status: updatedAdmin?.status } : a
+          )
+        );
+        showSuccess(`Finance admin ${action}d successfully`);
+      } catch (err) {
+        console.error("Error updating status:", err);
+        showError(`Failed to update status: ${err.message}`);
+      }
     }
   };
 
@@ -97,19 +110,26 @@ const FinanceAdminsScreen = () => {
   };
 
   const handleAddEditSuccess = async (updatedAdmin) => {
-    if (selectedFinanceAdmin) {
-      // Update existing student
-      await userService.updateUser(selectedFinanceAdmin._id, updatedAdmin);
-    } else {
-      // Create new student
-      await userService.createUser({
-        ...updatedAdmin,
-        role: "finance_admin",
-      });
+    try {
+      if (selectedFinanceAdmin) {
+        // Update existing finance admin
+        await userService.updateUser(selectedFinanceAdmin._id, updatedAdmin);
+        showSuccess("Finance admin updated successfully");
+      } else {
+        // Create new finance admin
+        await userService.createUser({
+          ...updatedAdmin,
+          role: "finance_admin",
+        });
+        showSuccess("New finance admin added successfully");
+      }
+      setShowAddEditModal(false);
+      setSelectedFinanceAdmin(null);
+      fetchFinanceAdmins();
+    } catch (error) {
+      console.error("Error saving finance admin:", error);
+      showError("Failed to save finance admin. Please try again.");
     }
-    setShowAddEditModal(false);
-    setSelectedFinanceAdmin(null);
-    fetchFinanceAdmins();
   };
 
   const exportFinanceAdmins = () => {

@@ -11,11 +11,15 @@ import {
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import AddEditCycleModal from "../../components/modals/AddEditCycleModal";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import { cycleService } from "../../services/cycle.service";
 import "../../styles/screens/cyclesScreen.css";
 import "../../styles/components/modals.css";
 
 const CyclesScreen = () => {
+  const { showSuccess, showError } = useToast();
+  const { confirmDelete, confirmStatusChange } = useConfirmationDialog();
   const [cycles, setCycles] = useState([]);
   const [filteredCycles, setFilteredCycles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -37,6 +41,7 @@ const CyclesScreen = () => {
       setFilteredCycles(cyclesData);
     } catch (error) {
       console.error("Error fetching cycles:", error);
+      showError("Failed to load cycles data. Please try again.");
       setCycles([]);
       setFilteredCycles([]);
     } finally {
@@ -156,17 +161,19 @@ const CyclesScreen = () => {
   };
 
   const handleDeleteCycle = async (cycle) => {
-    if (
-      window.confirm(
-        `Are you sure you want to delete cycle ${cycle.cycleNumber}?`
-      )
-    ) {
+    const confirmed = await confirmDelete(
+      "Delete Cycle",
+      `Are you sure you want to delete cycle ${cycle.cycleNumber}? This action cannot be undone.`
+    );
+
+    if (confirmed) {
       try {
         await cycleService.deleteCycle(cycle._id || cycle.id);
+        showSuccess(`Cycle ${cycle.cycleNumber} deleted successfully`);
         fetchCycles();
       } catch (error) {
         console.error("Error deleting cycle:", error);
-        alert("Failed to delete cycle. Please try again.");
+        showError("Failed to delete cycle. Please try again.");
       }
     }
   };
@@ -174,25 +181,38 @@ const CyclesScreen = () => {
   const handleMaintenanceToggle = async (cycle) => {
     const newStatus =
       cycle.status === "under_maintenance" ? "available" : "under_maintenance";
-    try {
-      await cycleService.updateCycleStatus(cycle._id || cycle.id, newStatus);
-      setCycles((prev) =>
-        prev.map((c) =>
-          (c._id || c.id) === (cycle._id || cycle.id)
-            ? { ...c, status: newStatus }
-            : c
-        )
-      );
-      setFilteredCycles((prev) =>
-        prev.map((c) =>
-          (c._id || c.id) === (cycle._id || cycle.id)
-            ? { ...c, status: newStatus }
-            : c
-        )
-      );
-    } catch (error) {
-      console.error("Error updating cycle status:", error);
-      alert("Failed to update cycle status. Please try again.");
+
+    const action =
+      newStatus === "under_maintenance"
+        ? "mark for maintenance"
+        : "mark as available";
+    const confirmed = await confirmStatusChange(
+      "Change Cycle Status",
+      `Are you sure you want to ${action} cycle ${cycle.cycleNumber}?`
+    );
+
+    if (confirmed) {
+      try {
+        await cycleService.updateCycleStatus(cycle._id || cycle.id, newStatus);
+        setCycles((prev) =>
+          prev.map((c) =>
+            (c._id || c.id) === (cycle._id || cycle.id)
+              ? { ...c, status: newStatus }
+              : c
+          )
+        );
+        setFilteredCycles((prev) =>
+          prev.map((c) =>
+            (c._id || c.id) === (cycle._id || cycle.id)
+              ? { ...c, status: newStatus }
+              : c
+          )
+        );
+        showSuccess(`Cycle ${cycle.cycleNumber} status updated successfully`);
+      } catch (error) {
+        console.error("Error updating cycle status:", error);
+        showError("Failed to update cycle status. Please try again.");
+      }
     }
   };
 
@@ -201,16 +221,18 @@ const CyclesScreen = () => {
       if (selectedCycle) {
         // Update existing cycle
         await cycleService.updateCycle(selectedCycle._id, cycleData);
+        showSuccess("Cycle updated successfully");
       } else {
         // Create new cycle
         await cycleService.createCycle(cycleData);
+        showSuccess("New cycle added successfully");
       }
       setShowAddEditModal(false);
       setSelectingCycle(null);
       fetchCycles();
     } catch (error) {
       console.error("Error saving cycle:", error);
-      alert("Failed to save cycle. Please try again.");
+      showError("Failed to save cycle. Please try again.");
     }
   };
 

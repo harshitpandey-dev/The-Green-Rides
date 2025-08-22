@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { FaUser, FaEnvelope } from "react-icons/fa";
 import Modal from "./Modal";
+import { useToast } from "../../contexts/ToastContext";
 
 const UpdateProfileModal = ({
   isOpen,
@@ -8,28 +9,25 @@ const UpdateProfileModal = ({
   currentUser,
   onUpdateSuccess,
 }) => {
+  const { showSuccess, showError } = useToast();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const nameRef = useRef();
   const emailRef = useRef();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    setError("");
-    setSuccess("");
 
     const newName = nameRef.current.value.trim();
     const newEmail = emailRef.current.value.trim();
 
     if (!newName || !newEmail) {
-      setError("Please fill in all fields");
+      showError("Please fill in all fields");
       return;
     }
 
     if (newName === currentUser?.name && newEmail === currentUser?.email) {
-      setError("No changes detected");
+      showError("No changes detected");
       return;
     }
 
@@ -40,7 +38,7 @@ const UpdateProfileModal = ({
       // For now, I'll simulate the API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      setSuccess("Profile updated successfully!");
+      showSuccess("Profile updated successfully!");
 
       // Call the success callback if provided
       if (onUpdateSuccess) {
@@ -49,11 +47,9 @@ const UpdateProfileModal = ({
 
       setTimeout(() => {
         onClose();
-        setSuccess("");
-        setError("");
-      }, 2000);
+      }, 1500);
     } catch (error) {
-      setError("Failed to update profile. Please try again.");
+      showError("Failed to update profile. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -62,8 +58,6 @@ const UpdateProfileModal = ({
   const handleClose = () => {
     if (!isLoading) {
       onClose();
-      setError("");
-      setSuccess("");
       // Reset form to original values
       if (nameRef.current) nameRef.current.value = currentUser?.name || "";
       if (emailRef.current) emailRef.current.value = currentUser?.email || "";
@@ -77,36 +71,6 @@ const UpdateProfileModal = ({
       title="Update Profile"
       size="small"
     >
-      {error && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            background: "#f8d7da",
-            color: "#721c24",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            border: "1px solid #f5c6cb",
-          }}
-        >
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div
-          style={{
-            padding: "0.75rem 1rem",
-            background: "#d4edda",
-            color: "#155724",
-            borderRadius: "8px",
-            marginBottom: "1rem",
-            border: "1px solid #c3e6cb",
-          }}
-        >
-          {success}
-        </div>
-      )}
-
       <form className="modal-form" onSubmit={handleSubmit}>
         <div className="modal-form-group">
           <label className="modal-form-label">

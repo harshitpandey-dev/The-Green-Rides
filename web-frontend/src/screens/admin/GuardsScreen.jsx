@@ -10,11 +10,15 @@ import {
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import AddEditGuardModal from "../../components/modals/AddEditGuardModal";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
 import { userService } from "../../services/user.service";
 import "../../styles/screens/guardsScreen.css";
 import "../../styles/components/modals.css";
 
 const GuardsScreen = () => {
+  const { showSuccess, showError } = useToast();
+  const { confirmDelete, confirmStatusChange } = useConfirmationDialog();
   const [guards, setGuards] = useState([]);
   const [filteredGuards, setFilteredGuards] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +40,7 @@ const GuardsScreen = () => {
       setFilteredGuards(guardsData);
     } catch (error) {
       console.error("Error fetching guards:", error);
+      showError("Failed to load guards. Please refresh the page.");
       setGuards([]);
       setFilteredGuards([]);
     } finally {
@@ -152,40 +157,46 @@ const GuardsScreen = () => {
   };
 
   const handleDeleteGuard = async (guard) => {
-    if (
-      window.confirm(`Are you sure you want to delete guard ${guard.name}?`)
-    ) {
-      try {
+    try {
+      await confirmDelete(guard.name, async () => {
         await userService.deleteUser(guard._id || guard.id);
         fetchGuards();
-      } catch (error) {
-        console.error("Error deleting guard:", error);
-        alert("Failed to delete guard. Please try again.");
-      }
+        showSuccess(`Guard "${guard.name}" has been deleted successfully.`);
+      });
+    } catch (error) {
+      console.error("Error deleting guard:", error);
+      showError("Failed to delete guard. Please try again.");
     }
   };
 
   const handleToggleStatus = async (guard) => {
     const newStatus = guard.status === "active" ? "disabled" : "active";
+    const statusText = newStatus === "active" ? "activate" : "disable";
+
     try {
-      await userService.updateUserStatus(guard._id || guard.id, newStatus);
-      setGuards((prev) =>
-        prev.map((g) =>
-          (g._id || g.id) === (guard._id || guard.id)
-            ? { ...g, status: newStatus }
-            : g
-        )
-      );
-      setFilteredGuards((prev) =>
-        prev.map((g) =>
-          (g._id || g.id) === (guard._id || guard.id)
-            ? { ...g, status: newStatus }
-            : g
-        )
-      );
+      await confirmStatusChange(guard.name, statusText, async () => {
+        await userService.updateUserStatus(guard._id || guard.id, newStatus);
+        setGuards((prev) =>
+          prev.map((g) =>
+            (g._id || g.id) === (guard._id || guard.id)
+              ? { ...g, status: newStatus }
+              : g
+          )
+        );
+        setFilteredGuards((prev) =>
+          prev.map((g) =>
+            (g._id || g.id) === (guard._id || guard.id)
+              ? { ...g, status: newStatus }
+              : g
+          )
+        );
+        showSuccess(
+          `Guard "${guard.name}" has been ${statusText}d successfully.`
+        );
+      });
     } catch (error) {
       console.error("Error updating guard status:", error);
-      alert("Failed to update guard status. Please try again.");
+      showError("Failed to update guard status. Please try again.");
     }
   };
 
@@ -193,20 +204,25 @@ const GuardsScreen = () => {
     try {
       if (selectedGuard) {
         // Update existing guard
-        await userService.updateUser(selectedGuard._id, guardData);
+        await userService.updateUser(
+          selectedGuard._id || selectedGuard.id,
+          guardData
+        );
+        showSuccess(`Guard "${guardData.name}" has been updated successfully.`);
       } else {
         // Create new guard
         await userService.createUser({
           ...guardData,
           role: "guard",
         });
+        showSuccess(`Guard "${guardData.name}" has been created successfully.`);
       }
       setShowAddEditModal(false);
       setSelectedGuard(null);
       fetchGuards();
     } catch (error) {
       console.error("Error saving guard:", error);
-      alert("Failed to save guard. Please try again.");
+      showError("Failed to save guard. Please try again.");
     }
   };
 
