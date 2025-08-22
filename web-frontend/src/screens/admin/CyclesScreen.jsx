@@ -10,7 +10,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
-import EditCycleModal from "../../components/modals/EditCycleModal";
+import AddEditCycleModal from "../../components/modals/AddEditCycleModal";
 import { cycleService } from "../../services/cycle.service";
 import "../../styles/screens/cyclesScreen.css";
 import "../../styles/components/modals.css";
@@ -327,7 +327,7 @@ const CyclesScreen = () => {
         />
       </div>
 
-      <EditCycleModal
+      <AddEditCycleModal
         cycle={editingCycle}
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}

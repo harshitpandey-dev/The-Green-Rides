@@ -9,7 +9,7 @@ import {
   FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
-import EditStudentModal from "../../components/modals/EditStudentModal";
+import AddEditStudentModal from "../../components/modals/AddEditStudentModal";
 import { userService } from "../../services/user.service";
 import "../../styles/screens/studentsScreen.css";
 import "../../styles/components/modals.css";
@@ -348,7 +348,7 @@ const StudentsScreen = () => {
         />
       </div>
 
-      <EditStudentModal
+      <AddEditStudentModal
         student={editingStudent}
         isOpen={showEditModal}
         onClose={() => {
