@@ -15,10 +15,10 @@ import {
 import logo from "../../assets/gogreen.png";
 import "../../styles/screens/auth.css";
 
-const ModernLogin = () => {
+const Login = () => {
   const history = useHistory();
   const authCtx = useUser();
-  
+
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,13 +63,13 @@ const ModernLogin = () => {
         password: enteredPassword,
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response.success) {
+        const data = response.data;
         setSuccess("Login successful! Redirecting...");
-        
+
         // Set user context
         authCtx.login(data.user, data.token);
-        
+
         // Redirect based on user role
         setTimeout(() => {
           if (data.user.role === "super_admin") {
@@ -81,8 +81,9 @@ const ModernLogin = () => {
           }
         }, 1000);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Login failed. Please check your credentials.");
+        setError(
+          response.message || "Login failed. Please check your credentials."
+        );
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -101,8 +102,8 @@ const ModernLogin = () => {
             <img src={logo} alt="Green Rides" className="brand-logo" />
             <h1 className="brand-title">Green Rides</h1>
             <p className="brand-subtitle">
-              Sustainable campus transportation solution. 
-              Join us in making your campus greener, one ride at a time.
+              Sustainable campus transportation solution. Join us in making your
+              campus greener, one ride at a time.
             </p>
           </div>
         </div>
@@ -131,7 +132,7 @@ const ModernLogin = () => {
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                <FaEnvelope style={{ marginRight: '8px' }} />
+                <FaEnvelope style={{ marginRight: "8px" }} />
                 Email Address
               </label>
               <input
@@ -146,7 +147,7 @@ const ModernLogin = () => {
 
             <div className="form-group">
               <label htmlFor="password" className="form-label">
-                <FaLock style={{ marginRight: '8px' }} />
+                <FaLock style={{ marginRight: "8px" }} />
                 Password
               </label>
               <div className="password-input-group">
@@ -171,7 +172,10 @@ const ModernLogin = () => {
 
             <div className="recaptcha-container">
               <ReCAPTCHA
-                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                sitekey={
+                  import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+                  "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                }
                 onChange={onChange}
                 theme="light"
               />
@@ -179,17 +183,17 @@ const ModernLogin = () => {
 
             <button
               type="submit"
-              className={`auth-submit ${isLoading ? 'loading' : ''}`}
+              className={`auth-submit ${isLoading ? "loading" : ""}`}
               disabled={isLoading || !isVerified}
             >
               {isLoading && <div className="loading-spinner"></div>}
-              {isLoading ? 'Signing In...' : 'Sign In'}
+              {isLoading ? "Signing In..." : "Sign In"}
             </button>
           </form>
 
           <div className="auth-links">
             <p>
-              Don't have an account?{' '}
+              Don't have an account?{" "}
               <Link to="/signup" className="auth-link">
                 Sign up here
               </Link>
@@ -201,4 +205,4 @@ const ModernLogin = () => {
   );
 };
 
-export default ModernLogin;
+export default Login;

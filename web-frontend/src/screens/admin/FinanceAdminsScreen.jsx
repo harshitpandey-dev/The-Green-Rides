@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { FaUserShield, FaPlus, FaEdit, FaTrash, FaSearch, FaFilter, FaDownload } from "react-icons/fa";
+import {
+  FaUserShield,
+  FaPlus,
+  FaEdit,
+  FaTrash,
+  FaSearch,
+  FaFilter,
+  FaDownload,
+} from "react-icons/fa";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DataTable from "../../components/common/DataTable";
@@ -227,7 +235,7 @@ const FinanceAdminsScreen = () => {
           </p>
         </div>
         <div className="header-actions">
-          <button 
+          <button
             className="primary-btn"
             onClick={() => setShowCreateModal(true)}
           >

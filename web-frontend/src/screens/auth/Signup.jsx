@@ -17,10 +17,9 @@ import {
 import logo from "../../assets/gogreen.png";
 import "../../styles/screens/auth.css";
 
-const ModernSignup = () => {
+const Signup = () => {
   const history = useHistory();
-  const authCtx = useUser();
-  
+
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -63,7 +62,13 @@ const ModernSignup = () => {
     const enteredPassword = passwordInputRef.current.value;
     const enteredConfirmPassword = confirmPasswordInputRef.current.value;
 
-    if (!enteredName || !enteredEmail || !enteredRollNo || !enteredPassword || !enteredConfirmPassword) {
+    if (
+      !enteredName ||
+      !enteredEmail ||
+      !enteredRollNo ||
+      !enteredPassword ||
+      !enteredConfirmPassword
+    ) {
       setError("Please fill in all fields");
       return;
     }
@@ -86,19 +91,18 @@ const ModernSignup = () => {
         email: enteredEmail,
         rollNo: enteredRollNo,
         password: enteredPassword,
-        role: "student" // Default role
+        role: "student", // Default role
       });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response.success) {
+        const data = response.data;
         setSuccess("Account created successfully! Redirecting to login...");
-        
+
         setTimeout(() => {
           history.replace("/login");
         }, 2000);
       } else {
-        const errorData = await response.json();
-        setError(errorData.message || "Registration failed. Please try again.");
+        setError(response.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Registration error:", error);
@@ -117,8 +121,8 @@ const ModernSignup = () => {
             <img src={logo} alt="Green Rides" className="brand-logo" />
             <h1 className="brand-title">Green Rides</h1>
             <p className="brand-subtitle">
-              Join the green revolution on your campus. 
-              Register now to start using sustainable transportation.
+              Join the green revolution on your campus. Register now to start
+              using sustainable transportation.
             </p>
           </div>
         </div>
@@ -147,7 +151,7 @@ const ModernSignup = () => {
           <form onSubmit={handleSubmit} className="auth-form">
             <div className="form-group">
               <label htmlFor="name" className="form-label">
-                <FaUser style={{ marginRight: '8px' }} />
+                <FaUser style={{ marginRight: "8px" }} />
                 Full Name
               </label>
               <input
@@ -162,7 +166,7 @@ const ModernSignup = () => {
 
             <div className="form-group">
               <label htmlFor="email" className="form-label">
-                <FaEnvelope style={{ marginRight: '8px' }} />
+                <FaEnvelope style={{ marginRight: "8px" }} />
                 Email Address
               </label>
               <input
@@ -177,7 +181,7 @@ const ModernSignup = () => {
 
             <div className="form-group">
               <label htmlFor="rollNo" className="form-label">
-                <FaIdCard style={{ marginRight: '8px' }} />
+                <FaIdCard style={{ marginRight: "8px" }} />
                 Roll Number
               </label>
               <input
@@ -192,7 +196,7 @@ const ModernSignup = () => {
 
             <div className="form-group">
               <label htmlFor="password" className="form-label">
-                <FaLock style={{ marginRight: '8px' }} />
+                <FaLock style={{ marginRight: "8px" }} />
                 Password
               </label>
               <div className="password-input-group">
@@ -217,7 +221,7 @@ const ModernSignup = () => {
 
             <div className="form-group">
               <label htmlFor="confirmPassword" className="form-label">
-                <FaLock style={{ marginRight: '8px' }} />
+                <FaLock style={{ marginRight: "8px" }} />
                 Confirm Password
               </label>
               <div className="password-input-group">
@@ -233,7 +237,9 @@ const ModernSignup = () => {
                   type="button"
                   className="password-toggle"
                   onClick={toggleShowConfirmPassword}
-                  aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+                  aria-label={
+                    showConfirmPassword ? "Hide password" : "Show password"
+                  }
                 >
                   {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
                 </button>
@@ -242,7 +248,10 @@ const ModernSignup = () => {
 
             <div className="recaptcha-container">
               <ReCAPTCHA
-                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"}
+                sitekey={
+                  import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+                  "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                }
                 onChange={onChange}
                 theme="light"
               />
@@ -250,17 +259,17 @@ const ModernSignup = () => {
 
             <button
               type="submit"
-              className={`auth-submit ${isLoading ? 'loading' : ''}`}
+              className={`auth-submit ${isLoading ? "loading" : ""}`}
               disabled={isLoading || !isVerified}
             >
               {isLoading && <div className="loading-spinner"></div>}
-              {isLoading ? 'Creating Account...' : 'Create Account'}
+              {isLoading ? "Creating Account..." : "Create Account"}
             </button>
           </form>
 
           <div className="auth-links">
             <p>
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link to="/login" className="auth-link">
                 Sign in here
               </Link>
@@ -272,4 +281,4 @@ const ModernSignup = () => {
   );
 };
 
-export default ModernSignup;
+export default Signup;
