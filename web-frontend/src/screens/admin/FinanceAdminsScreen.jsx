@@ -20,10 +20,8 @@ const FinanceAdminsScreen = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState(null);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const [showAddEditModal, setShowAddEditModal] = useState(false);
+  const [selectedFinanceAdmin, setSelectedFinanceAdmin] = useState(null);
 
   useEffect(() => {
     fetchFinanceAdmins();
@@ -58,12 +56,6 @@ const FinanceAdminsScreen = () => {
     }
   };
 
-  const handleCreateSuccess = (newAdmin) => {
-    setFinanceAdmins((prev) => [...prev, newAdmin]);
-    setMessage(`Finance admin "${newAdmin.name}" created successfully!`);
-    setTimeout(() => setMessage(""), 5000);
-  };
-
   const handleDeleteAdmin = async (admin) => {
     if (
       window.confirm(
@@ -93,8 +85,6 @@ const FinanceAdminsScreen = () => {
           a._id === admin._id ? { ...a, status: updatedAdmin?.status } : a
         )
       );
-      setMessage(`Finance admin status updated successfully!`);
-      setTimeout(() => setMessage(""), 5000);
     } catch (err) {
       setError(`Failed to update status: ${err.message}`);
       setTimeout(() => setError(""), 5000);
@@ -102,20 +92,24 @@ const FinanceAdminsScreen = () => {
   };
 
   const handleEditAdmin = (admin) => {
-    setEditingAdmin(admin);
-    setShowCreateModal(true);
+    setSelectedFinanceAdmin(admin);
+    setShowAddEditModal(true);
   };
 
-  const handleEditSuccess = (updatedAdmin) => {
-    setFinanceAdmins((prev) =>
-      prev.map((admin) =>
-        admin._id === updatedAdmin._id ? { ...admin, ...updatedAdmin } : admin
-      )
-    );
-    setMessage(`Finance admin "${updatedAdmin.name}" updated successfully!`);
-    setShowCreateModal(false);
-    setEditingAdmin(null);
-    setTimeout(() => setMessage(""), 5000);
+  const handleAddEditSuccess = async (updatedAdmin) => {
+    if (selectedFinanceAdmin) {
+      // Update existing student
+      await userService.updateUser(selectedFinanceAdmin._id, updatedAdmin);
+    } else {
+      // Create new student
+      await userService.createUser({
+        ...updatedAdmin,
+        role: "finance_admin",
+      });
+    }
+    setShowAddEditModal(false);
+    setSelectedFinanceAdmin(null);
+    fetchFinanceAdmins();
   };
 
   const exportFinanceAdmins = () => {
@@ -171,14 +165,6 @@ const FinanceAdminsScreen = () => {
       header: "Created Date",
       sortable: true,
       render: (value) => (value ? new Date(value).toLocaleDateString() : "N/A"),
-    },
-    {
-      key: "createdBy",
-      header: "Created By",
-      sortable: false,
-      render: (value, admin) => (
-        <span className="created-by">{admin.createdBy?.name || "System"}</span>
-      ),
     },
     {
       key: "actions",
@@ -237,7 +223,7 @@ const FinanceAdminsScreen = () => {
         <div className="header-actions">
           <button
             className="primary-btn"
-            onClick={() => setShowCreateModal(true)}
+            onClick={() => setShowAddEditModal(true)}
           >
             <FaPlus /> Add Finance Admin
           </button>
@@ -246,9 +232,6 @@ const FinanceAdminsScreen = () => {
           </button>
         </div>
       </div>
-
-      {message && <div className="success-message">{message}</div>}
-      {error && <div className="error-message">{error}</div>}
 
       <div className="filters-section">
         <div className="search-box">
@@ -308,14 +291,13 @@ const FinanceAdminsScreen = () => {
       </div>
 
       <AddEditFinanceAdminModal
-        isOpen={showCreateModal}
+        isOpen={showAddEditModal}
         onClose={() => {
-          setShowCreateModal(false);
-          setEditingAdmin(null);
+          setShowAddEditModal(false);
+          setSelectedFinanceAdmin(null);
         }}
-        onSuccess={editingAdmin ? handleEditSuccess : handleCreateSuccess}
-        editMode={!!editingAdmin}
-        adminData={editingAdmin}
+        onUpdate={handleAddEditSuccess}
+        financeAdmin={selectedFinanceAdmin}
       />
     </div>
   );

@@ -1,6 +1,4 @@
-import React from "react";
-
-const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
+const AddEditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
   if (!isOpen) return null;
 
   const isEditMode = !!guard;
@@ -13,7 +11,13 @@ const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
       email: formData.get("email"),
       phone: formData.get("phone"),
       status: formData.get("status"),
+      shift: formData.get("shift"),
     };
+
+    if (!isEditMode) {
+      guardData.password = formData.get("password");
+    }
+
     onUpdate(guardData);
   };
 
@@ -21,7 +25,7 @@ const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h3>Edit Guard</h3>
+          <h3>{isEditMode ? "Edit" : "Add"} Guard</h3>
           <button className="close-btn" onClick={onClose}>
             ×
           </button>
@@ -29,20 +33,11 @@ const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
         <div className="modal-body">
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Guard ID:</label>
-              <input
-                type="text"
-                value={guard.guardId || guard.id}
-                disabled
-                className="readonly"
-              />
-            </div>
-            <div className="form-group">
               <label>Name:</label>
               <input
                 type="text"
                 name="name"
-                defaultValue={guard.name}
+                defaultValue={guard?.name}
                 required
               />
             </div>
@@ -51,17 +46,37 @@ const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
               <input
                 type="email"
                 name="email"
-                defaultValue={guard.email}
+                defaultValue={guard?.email}
                 required
               />
             </div>
+            {!isEditMode && (
+              <div className="form-group">
+                <label>Password:</label>
+                <input
+                  type="password"
+                  name="password"
+                  required
+                  placeholder="Enter password"
+                  minLength={6}
+                />
+              </div>
+            )}
             <div className="form-group">
               <label>Phone:</label>
-              <input type="tel" name="phone" defaultValue={guard.phone} />
+              <input type="tel" name="phone" defaultValue={guard?.phone} />
+            </div>
+
+            <div className="form-group">
+              <label>Shift:</label>
+              <select name="shift" defaultValue={guard?.shift}>
+                <option value="morning">Morning</option>
+                <option value="evening">Evening</option>
+              </select>
             </div>
             <div className="form-group">
               <label>Status:</label>
-              <select name="status" defaultValue={guard.status}>
+              <select name="status" defaultValue={guard?.status}>
                 <option value="active">Active</option>
                 <option value="disabled">Disabled</option>
               </select>
@@ -81,4 +96,4 @@ const EditGuardModal = ({ guard, isOpen, onClose, onUpdate }) => {
   );
 };
 
-export default EditGuardModal;
+export default AddEditGuardModal;

@@ -19,8 +19,8 @@ const StudentsScreen = () => {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingStudent, setEditingStudent] = useState(null);
+  const [showAddEditModal, setShowAddEditModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load students data from API
@@ -155,8 +155,8 @@ const StudentsScreen = () => {
   ];
 
   const handleEditStudent = (student) => {
-    setEditingStudent(student);
-    setShowEditModal(true);
+    setSelectedStudent(student);
+    setShowAddEditModal(true);
   };
 
   const handleDeleteStudent = async (student) => {
@@ -199,9 +199,9 @@ const StudentsScreen = () => {
 
   const handleUpdateStudent = async (studentData) => {
     try {
-      if (editingStudent) {
+      if (selectedStudent) {
         // Update existing student
-        await userService.updateUser(editingStudent._id, studentData);
+        await userService.updateUser(selectedStudent._id, studentData);
       } else {
         // Create new student
         await userService.createUser({
@@ -209,8 +209,8 @@ const StudentsScreen = () => {
           role: "student",
         });
       }
-      setShowEditModal(false);
-      setEditingStudent(null);
+      setShowAddEditModal(false);
+      setSelectedStudent(null);
       fetchStudents();
     } catch (error) {
       console.error("Error saving student:", error);
@@ -277,7 +277,7 @@ const StudentsScreen = () => {
         <div className="header-actions">
           <button
             className="primary-btn"
-            onClick={() => setShowEditModal(true)}
+            onClick={() => setShowAddEditModal(true)}
           >
             <FaPlus /> Add Student
           </button>
@@ -349,11 +349,11 @@ const StudentsScreen = () => {
       </div>
 
       <AddEditStudentModal
-        student={editingStudent}
-        isOpen={showEditModal}
+        student={selectedStudent}
+        isOpen={showAddEditModal}
         onClose={() => {
-          setShowEditModal(false);
-          setEditingStudent(null);
+          setShowAddEditModal(false);
+          setSelectedStudent(null);
         }}
         onUpdate={handleUpdateStudent}
       />

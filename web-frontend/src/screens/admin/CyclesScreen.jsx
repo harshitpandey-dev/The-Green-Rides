@@ -20,8 +20,8 @@ const CyclesScreen = () => {
   const [filteredCycles, setFilteredCycles] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingCycle, setEditingCycle] = useState(null);
+  const [showAddEditModal, setShowAddEditModal] = useState(false);
+  const [selectedCycle, setSelectingCycle] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load cycles data from API
@@ -92,16 +92,6 @@ const CyclesScreen = () => {
       ),
     },
     {
-      key: "condition",
-      header: "Condition",
-      sortable: true,
-      render: (value) => (
-        <span className={`condition-badge condition-${value}`}>
-          {value ? value.charAt(0).toUpperCase() + value.slice(1) : "Unknown"}
-        </span>
-      ),
-    },
-    {
       key: "actions",
       header: "Actions",
       render: (_, cycle) => (
@@ -137,8 +127,8 @@ const CyclesScreen = () => {
   ];
 
   const handleEditCycle = (cycle) => {
-    setEditingCycle(cycle);
-    setShowEditModal(true);
+    setSelectingCycle(cycle);
+    setShowAddEditModal(true);
   };
 
   const handleDeleteCycle = async (cycle) => {
@@ -184,15 +174,15 @@ const CyclesScreen = () => {
 
   const handleUpdateCycle = async (cycleData) => {
     try {
-      if (editingCycle) {
+      if (selectedCycle) {
         // Update existing cycle
-        await cycleService.updateCycle(editingCycle._id, cycleData);
+        await cycleService.updateCycle(selectedCycle._id, cycleData);
       } else {
         // Create new cycle
         await cycleService.createCycle(cycleData);
       }
-      setShowEditModal(false);
-      setEditingCycle(null);
+      setShowAddEditModal(false);
+      setSelectingCycle(null);
       fetchCycles();
     } catch (error) {
       console.error("Error saving cycle:", error);
@@ -255,7 +245,7 @@ const CyclesScreen = () => {
         <div className="header-actions">
           <button
             className="primary-btn"
-            onClick={() => setShowEditModal(true)}
+            onClick={() => setShowAddEditModal(true)}
           >
             <FaPlus /> Add Cycle
           </button>
@@ -328,9 +318,9 @@ const CyclesScreen = () => {
       </div>
 
       <AddEditCycleModal
-        cycle={editingCycle}
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
+        cycle={selectedCycle}
+        isOpen={showAddEditModal}
+        onClose={() => setShowAddEditModal(false)}
         onUpdate={handleUpdateCycle}
       />
     </div>

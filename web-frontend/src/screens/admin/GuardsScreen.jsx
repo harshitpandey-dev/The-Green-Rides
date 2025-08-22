@@ -19,8 +19,8 @@ const GuardsScreen = () => {
   const [filteredGuards, setFilteredGuards] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editingGuard, setEditingGuard] = useState(null);
+  const [showAddEditModal, setShowAddEditModal] = useState(false);
+  const [selectedGuard, setSelectedGuard] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Load guards data from API
@@ -86,14 +86,6 @@ const GuardsScreen = () => {
       ),
     },
     {
-      key: "cycles_assigned",
-      header: "Cycles",
-      sortable: true,
-      render: (value) => (
-        <span className="count-badge cycle-count">{value}</span>
-      ),
-    },
-    {
       key: "status",
       header: "Status",
       sortable: true,
@@ -139,8 +131,8 @@ const GuardsScreen = () => {
   ];
 
   const handleEditGuard = (guard) => {
-    setEditingGuard(guard);
-    setShowEditModal(true);
+    setSelectedGuard(guard);
+    setShowAddEditModal(true);
   };
 
   const handleDeleteGuard = async (guard) => {
@@ -183,9 +175,9 @@ const GuardsScreen = () => {
 
   const handleUpdateGuard = async (guardData) => {
     try {
-      if (editingGuard) {
+      if (selectedGuard) {
         // Update existing guard
-        await userService.updateUser(editingGuard._id, guardData);
+        await userService.updateUser(selectedGuard._id, guardData);
       } else {
         // Create new guard
         await userService.createUser({
@@ -193,8 +185,8 @@ const GuardsScreen = () => {
           role: "guard",
         });
       }
-      setShowEditModal(false);
-      setEditingGuard(null);
+      setShowAddEditModal(false);
+      setSelectedGuard(null);
       fetchGuards();
     } catch (error) {
       console.error("Error saving guard:", error);
@@ -251,7 +243,7 @@ const GuardsScreen = () => {
         <div className="header-actions">
           <button
             className="primary-btn"
-            onClick={() => setShowEditModal(true)}
+            onClick={() => setShowAddEditModal(true)}
           >
             <FaPlus /> Add Guard
           </button>
@@ -322,9 +314,9 @@ const GuardsScreen = () => {
       </div>
 
       <AddEditGuardModal
-        guard={editingGuard}
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
+        guard={selectedGuard}
+        isOpen={showAddEditModal}
+        onClose={() => setShowAddEditModal(false)}
         onUpdate={handleUpdateGuard}
       />
     </div>
