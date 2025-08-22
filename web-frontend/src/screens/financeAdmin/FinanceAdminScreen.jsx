@@ -3,6 +3,7 @@ import { FaSearch, FaMoneyBillWave, FaUser } from "react-icons/fa";
 import { AuthContext } from "../../contexts/authContext";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
+import "../../styles/common/screen.css";
 import "../../styles/screens/financeAdminScreen.css";
 
 const FinanceAdminScreen = () => {
@@ -71,35 +72,35 @@ const FinanceAdminScreen = () => {
   }
 
   return (
-    <div className="dashboard-container">
+    <div className="screen-container">
       {/* Page Header */}
-      <div className="page-header">
+      <div className="screen-header">
         <div className="header-content">
-          <h1 className="page-title">
-            <FaMoneyBillWave className="page-icon" />
+          <h1>
+            <FaMoneyBillWave className="header-icon" />
             Finance Administration
           </h1>
-          <p className="page-subtitle">
+          <p className="header-subtitle">
             Search students by roll number and manage their fines
           </p>
         </div>
         <div className="header-actions">
-          <div className="admin-info">
+          <div className="user-info">
             <span>Welcome, {currentUser?.name}</span>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="dashboard-content">
+      <div className="screen-content">
         {/* Search Section */}
-        <div className="section">
+        <div className="content-section">
           <div className="card">
             <div className="card-header">
-              <h2 className="card-title">Student Fine Management</h2>
+              <h2>Student Fine Management</h2>
             </div>
             <div className="card-body">
-              <form onSubmit={handleSearch} className="search-form">
+              <form onSubmit={handleSearch} className="form">
                 <div className="form-group">
                   <label htmlFor="rollNumber" className="form-label">
                     Student Roll Number
@@ -127,7 +128,7 @@ const FinanceAdminScreen = () => {
               </form>
 
               {error && (
-                <div className="alert alert-danger">
+                <div className="alert alert-error">
                   <p>{error}</p>
                 </div>
               )}
@@ -143,10 +144,10 @@ const FinanceAdminScreen = () => {
 
         {/* Student Details */}
         {student && (
-          <div className="section">
+          <div className="content-section">
             <div className="card">
               <div className="card-header">
-                <h3 className="card-title">
+                <h3>
                   <FaUser />
                   Student Details
                 </h3>
@@ -175,7 +176,7 @@ const FinanceAdminScreen = () => {
                   </div>
                   <div className="info-item">
                     <label>Status:</label>
-                    <span className={`badge badge-${student.status}`}>
+                    <span className={`status-badge status-${student.status}`}>
                       {student.status}
                     </span>
                   </div>
@@ -185,7 +186,7 @@ const FinanceAdminScreen = () => {
                   </div>
                 </div>
 
-                <div className="fine-section mt-4">
+                <div className="fine-section">
                   <div className="fine-info">
                     <div className="fine-amount">
                       <label>Current Fine Amount:</label>
@@ -199,10 +200,10 @@ const FinanceAdminScreen = () => {
                     </div>
 
                     {student.fine > 0 && (
-                      <div className="fine-actions mt-3">
+                      <div className="fine-actions">
                         <button
                           onClick={handleClearFine}
-                          className="btn btn-success"
+                          className="btn btn-danger"
                           disabled={clearing}
                         >
                           {clearing ? (
@@ -217,7 +218,7 @@ const FinanceAdminScreen = () => {
                             </>
                           )}
                         </button>
-                        <p className="help-text mt-2">
+                        <p className="help-text">
                           Only clear the fine after the student has physically
                           submitted the payment.
                         </p>
@@ -225,7 +226,7 @@ const FinanceAdminScreen = () => {
                     )}
 
                     {student.fine === 0 && (
-                      <div className="alert alert-success mt-3">
+                      <div className="alert alert-success">
                         <p>✅ This student has no outstanding fines.</p>
                       </div>
                     )}
@@ -237,7 +238,7 @@ const FinanceAdminScreen = () => {
         )}
 
         {!student && !error && !rollNumber && (
-          <div className="section">
+          <div className="content-section">
             <div className="empty-state">
               <FaSearch className="empty-icon" />
               <h3>Search for Students</h3>
