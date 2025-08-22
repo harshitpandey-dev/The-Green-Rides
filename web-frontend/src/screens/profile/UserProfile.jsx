@@ -11,7 +11,7 @@ import {
   FaShieldAlt,
   FaUserCog,
 } from "react-icons/fa";
-import "./UserProfile.css";
+import "../../styles/screens/userProfile.css";
 
 const UserProfile = () => {
   const { currentUser } = useUser();

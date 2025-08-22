@@ -25,7 +25,6 @@ export const RouteConfig = ({ loggedIn, user }) => {
   const ProfilePage = React.lazy(() =>
     import("../screens/profile/UserProfile")
   );
-  const LoginPage = React.lazy(() => import("../screens/auth/Login"));
 
   const ProtectedRoute = ({ condition, redirectTo, children, ...rest }) => (
     <Route
