@@ -1,6 +1,6 @@
 import React from "react";
 import { FaExclamationTriangle, FaInfoCircle, FaTimes } from "react-icons/fa";
-import "./SystemAlerts.css";
+import "../../styles/components/systemAlerts.css";
 
 const SystemAlerts = ({ alerts = [], onDismiss }) => {
   if (!alerts.length) return null;

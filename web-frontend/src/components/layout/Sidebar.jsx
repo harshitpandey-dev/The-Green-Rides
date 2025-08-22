@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useUser } from "../../contexts/authContext";
 import {
@@ -19,12 +19,29 @@ import {
   FaChevronRight,
 } from "react-icons/fa";
 import logo from "../../assets/gogreen.png";
-import "./Sidebar.css";
+import "../../styles/components/sidebar.css";
 
 const Sidebar = () => {
   const { currentUser, logout } = useUser();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+  // Update body class when sidebar is collapsed
+  useEffect(() => {
+    // Always add sidebar-present class when component mounts
+    document.body.classList.add('sidebar-present');
+    
+    if (isCollapsed) {
+      document.body.classList.add('sidebar-collapsed');
+    } else {
+      document.body.classList.remove('sidebar-collapsed');
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      document.body.classList.remove('sidebar-collapsed', 'sidebar-present');
+    };
+  }, [isCollapsed]);
 
   const userRole = currentUser?.role;
   const isSuperAdmin = userRole === "super_admin";

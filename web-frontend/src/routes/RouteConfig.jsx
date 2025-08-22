@@ -1,6 +1,8 @@
 import React, { Suspense, Fragment } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Signup from "../screens/auth/Signup";
+import ModernLogin from "../screens/auth/Login";
+import ModernSignup from "../screens/auth/Signup";
 import DashboardScreen from "../screens/admin/DashboardScreen";
 import StudentsScreen from "../screens/admin/StudentsScreen";
 import GuardsScreen from "../screens/admin/GuardsScreen";
@@ -46,7 +48,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                       ? "/admin"
                       : "/finance-admin"
                     : "/access-denied"
-                  : "/auth"
+                  : "/login"
               }
             />
           </Route>
@@ -75,18 +77,24 @@ export const RouteConfig = ({ loggedIn, user }) => {
             )}
           </Route>
 
-          <ProtectedRoute path="/signup" condition={!loggedIn} redirectTo="/">
-            <Signup />
+          {/* Auth Routes */}
+          <ProtectedRoute path="/login" condition={!loggedIn} redirectTo="/">
+            <ModernLogin />
           </ProtectedRoute>
 
-          <ProtectedRoute path="/auth" condition={!loggedIn} redirectTo="/">
-            <LoginPage />
+          <ProtectedRoute path="/signup" condition={!loggedIn} redirectTo="/">
+            <ModernSignup />
+          </ProtectedRoute>
+
+          {/* Legacy auth route - redirect to login */}
+          <ProtectedRoute path="/login" condition={!loggedIn} redirectTo="/">
+            <ModernLogin />
           </ProtectedRoute>
 
           <ProtectedRoute
             path="/profile"
             condition={loggedIn && hasWebAccess}
-            redirectTo={loggedIn ? "/access-denied" : "/auth"}
+            redirectTo={loggedIn ? "/access-denied" : "/login"}
           >
             <ProfilePage />
           </ProtectedRoute>
@@ -103,7 +111,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/finance-admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <DashboardScreen />
@@ -119,7 +127,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/finance-admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <StudentsScreen />
@@ -135,7 +143,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/finance-admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <GuardsScreen />
@@ -151,7 +159,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/finance-admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <CyclesScreen />
@@ -167,7 +175,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/finance-admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <FinanceAdminsScreen />
@@ -184,7 +192,7 @@ export const RouteConfig = ({ loggedIn, user }) => {
                     ? "/admin"
                     : "/access-denied"
                   : "/access-denied"
-                : "/auth"
+                : "/login"
             }
           >
             <FinanceAdminScreen />

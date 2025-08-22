@@ -7,6 +7,7 @@ import {
   FaFilter,
   FaDownload,
   FaBicycle,
+  FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import EditCycleModal from "../../components/modals/EditCycleModal";
@@ -183,13 +184,19 @@ const CyclesScreen = () => {
 
   const handleUpdateCycle = async (cycleData) => {
     try {
-      await cycleService.updateCycle(editingCycle._id, cycleData);
+      if (editingCycle) {
+        // Update existing cycle
+        await cycleService.updateCycle(editingCycle._id, cycleData);
+      } else {
+        // Create new cycle
+        await cycleService.createCycle(cycleData);
+      }
       setShowEditModal(false);
       setEditingCycle(null);
       fetchCycles();
     } catch (error) {
-      console.error("Error updating cycle:", error);
-      alert("Failed to update cycle. Please try again.");
+      console.error("Error saving cycle:", error);
+      alert("Failed to save cycle. Please try again.");
     }
   };
 
@@ -234,94 +241,98 @@ const CyclesScreen = () => {
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
-        <div className="screen-container">
-          <div className="screen-header">
-            <div className="header-content">
-              <h2>
-                <FaBicycle />
-                Cycles Management
-              </h2>
-              <p>Manage bicycle inventory, status, and maintenance</p>
-            </div>
-            <div className="header-actions">
-              <button className="export-btn" onClick={exportCycles}>
-                <FaDownload /> Export CSV
-              </button>
-            </div>
-          </div>
-
-          <div className="filters-section">
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by cycle ID or location..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="status-filter">
-              <FaFilter className="filter-icon" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="available">Available</option>
-                <option value="rented">Rented</option>
-                <option value="maintenance">Maintenance</option>
-                <option value="out-of-service">Out of Service</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="stats-container">
-            <div className="stat-card total">
-              <h3>Total Cycles</h3>
-              <p className="stat-number">{cycles.length}</p>
-            </div>
-            <div className="stat-card active">
-              <h3>Available</h3>
-              <p className="stat-number">
-                {cycles.filter((c) => c.status === "available").length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>Rented</h3>
-              <p className="stat-number">
-                {cycles.filter((c) => c.status === "rented").length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>Maintenance</h3>
-              <p className="stat-number">
-                {cycles.filter((c) => c.status === "maintenance").length}
-              </p>
-            </div>
-          </div>
-
-          <div className="table-container">
-            <DataTable
-              data={filteredCycles}
-              columns={columns}
-              searchable={false}
-              sortable={true}
-              paginated={true}
-              pageSize={10}
-            />
-          </div>
-
-          <EditCycleModal
-            cycle={editingCycle}
-            isOpen={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdate={handleUpdateCycle}
-          />
+    <div className="screen-container">
+      <div className="screen-header">
+        <div className="header-content">
+          <h1>
+            <FaBicycle className="header-icon" />
+            Cycles Management
+          </h1>
+          <p className="header-subtitle">
+            Manage bicycle inventory, status, and maintenance
+          </p>
+        </div>
+        <div className="header-actions">
+          <button
+            className="primary-btn"
+            onClick={() => setShowEditModal(true)}
+          >
+            <FaPlus /> Add Cycle
+          </button>
+          <button className="secondary-btn" onClick={exportCycles}>
+            <FaDownload /> Export CSV
+          </button>
         </div>
       </div>
+
+      <div className="filters-section">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by cycle ID or location..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="status-filter">
+          <FaFilter className="filter-icon" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="available">Available</option>
+            <option value="rented">Rented</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="out-of-service">Out of Service</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="stats-container">
+        <div className="stat-card total">
+          <h3>Total Cycles</h3>
+          <p className="stat-number">{cycles.length}</p>
+        </div>
+        <div className="stat-card active">
+          <h3>Available</h3>
+          <p className="stat-number">
+            {cycles.filter((c) => c.status === "available").length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>Rented</h3>
+          <p className="stat-number">
+            {cycles.filter((c) => c.status === "rented").length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>Maintenance</h3>
+          <p className="stat-number">
+            {cycles.filter((c) => c.status === "maintenance").length}
+          </p>
+        </div>
+      </div>
+
+      <div className="table-container">
+        <DataTable
+          data={filteredCycles}
+          columns={columns}
+          searchable={false}
+          sortable={true}
+          paginated={true}
+          pageSize={10}
+        />
+      </div>
+
+      <EditCycleModal
+        cycle={editingCycle}
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onUpdate={handleUpdateCycle}
+      />
     </div>
   );
 };

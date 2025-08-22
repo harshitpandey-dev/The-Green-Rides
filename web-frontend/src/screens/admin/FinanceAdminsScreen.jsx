@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { FaUserShield, FaPlus, FaEdit, FaTrash } from "react-icons/fa";
+import { FaUserShield, FaPlus, FaEdit, FaTrash, FaSearch, FaFilter, FaDownload } from "react-icons/fa";
 import { userService } from "../../services/user.service";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import DataTable from "../../components/common/DataTable";
@@ -8,6 +8,9 @@ import "../../styles/screens/financeAdminsScreen.css";
 
 const FinanceAdminsScreen = () => {
   const [financeAdmins, setFinanceAdmins] = useState([]);
+  const [filteredAdmins, setFilteredAdmins] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterStatus, setFilterStatus] = useState("all");
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingAdmin, setEditingAdmin] = useState(null);
@@ -18,11 +21,27 @@ const FinanceAdminsScreen = () => {
     fetchFinanceAdmins();
   }, []);
 
+  // Search and filter logic
+  useEffect(() => {
+    let filtered = financeAdmins.filter(
+      (admin) =>
+        (admin.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (admin.email || "").toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    if (filterStatus !== "all") {
+      filtered = filtered.filter((admin) => admin.status === filterStatus);
+    }
+
+    setFilteredAdmins(filtered);
+  }, [financeAdmins, searchTerm, filterStatus]);
+
   const fetchFinanceAdmins = async () => {
     try {
       setLoading(true);
       const data = await userService.getAllUsersByRole("finance_admin");
       setFinanceAdmins(data || []);
+      setFilteredAdmins(data || []);
     } catch (err) {
       setError("Failed to load finance admins");
       console.error("Error fetching finance admins:", err);
@@ -89,6 +108,29 @@ const FinanceAdminsScreen = () => {
     setShowCreateModal(false);
     setEditingAdmin(null);
     setTimeout(() => setMessage(""), 5000);
+  };
+
+  const exportFinanceAdmins = () => {
+    const csvContent = [
+      ["Name", "Email", "Status", "Created Date", "Created By"],
+      ...filteredAdmins.map((admin) => [
+        admin.name,
+        admin.email,
+        admin.status,
+        new Date(admin.createdAt).toLocaleDateString(),
+        admin.createdBy?.name || "System",
+      ]),
+    ]
+      .map((row) => row.join(","))
+      .join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "finance-admins.csv";
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   const columns = [
@@ -184,17 +226,45 @@ const FinanceAdminsScreen = () => {
             Manage finance admin accounts and permissions
           </p>
         </div>
-        <button
-          className="primary-btn"
-          onClick={() => setShowCreateModal(true)}
-        >
-          <FaPlus />
-          Add Finance Admin
-        </button>
+        <div className="header-actions">
+          <button 
+            className="primary-btn"
+            onClick={() => setShowCreateModal(true)}
+          >
+            <FaPlus /> Add Finance Admin
+          </button>
+          <button className="secondary-btn" onClick={exportFinanceAdmins}>
+            <FaDownload /> Export CSV
+          </button>
+        </div>
       </div>
 
       {message && <div className="success-message">{message}</div>}
       {error && <div className="error-message">{error}</div>}
+
+      <div className="filters-section">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="status-filter">
+          <FaFilter className="filter-icon" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+      </div>
 
       <div className="stats-grid">
         <div className="stat-card total">
@@ -220,9 +290,9 @@ const FinanceAdminsScreen = () => {
 
       <div className="table-section">
         <DataTable
-          data={financeAdmins}
+          data={filteredAdmins}
           columns={columns}
-          searchable={true}
+          searchable={false}
           sortable={true}
           paginated={true}
           pageSize={10}

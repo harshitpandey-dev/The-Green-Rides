@@ -1,7 +1,7 @@
 import React from "react";
 import { useUser } from "../../contexts/authContext";
 import Sidebar from "./Sidebar";
-import "./AppLayout.css";
+import "../../styles/components/appLayout.css";
 
 const AppLayout = ({ children }) => {
   const { isLoggedIn, currentUser } = useUser();

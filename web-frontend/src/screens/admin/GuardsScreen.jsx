@@ -6,6 +6,7 @@ import {
   FaFilter,
   FaDownload,
   FaUserShield,
+  FaPlus,
 } from "react-icons/fa";
 import DataTable from "../../components/common/DataTable";
 import EditGuardModal from "../../components/modals/EditGuardModal";
@@ -182,13 +183,22 @@ const GuardsScreen = () => {
 
   const handleUpdateGuard = async (guardData) => {
     try {
-      await userService.updateUser(editingGuard._id, guardData);
+      if (editingGuard) {
+        // Update existing guard
+        await userService.updateUser(editingGuard._id, guardData);
+      } else {
+        // Create new guard
+        await userService.createUser({
+          ...guardData,
+          role: "guard",
+        });
+      }
       setShowEditModal(false);
       setEditingGuard(null);
       fetchGuards();
     } catch (error) {
-      console.error("Error updating guard:", error);
-      alert("Failed to update guard. Please try again.");
+      console.error("Error saving guard:", error);
+      alert("Failed to save guard. Please try again.");
     }
   };
 
@@ -227,92 +237,96 @@ const GuardsScreen = () => {
   }
 
   return (
-    <div className="dashboard-container">
-      <div className="dashboard-content">
-        <div className="screen-container">
-          <div className="screen-header">
-            <div className="header-content">
-              <h2>
-                <FaUserShield />
-                Guards Management
-              </h2>
-              <p>Manage security guard accounts and assignments</p>
-            </div>
-            <div className="header-actions">
-              <button className="export-btn" onClick={exportGuards}>
-                <FaDownload /> Export CSV
-              </button>
-            </div>
-          </div>
-
-          <div className="filters-section">
-            <div className="search-box">
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
-
-            <div className="status-filter">
-              <FaFilter className="filter-icon" />
-              <select
-                value={filterStatus}
-                onChange={(e) => setFilterStatus(e.target.value)}
-              >
-                <option value="all">All Status</option>
-                <option value="active">Active</option>
-                <option value="disabled">Disabled</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="stats-container">
-            <div className="stat-card total">
-              <h3>Total Guards</h3>
-              <p className="stat-number">{guards.length}</p>
-            </div>
-            <div className="stat-card active">
-              <h3>Active Guards</h3>
-              <p className="stat-number">
-                {guards.filter((g) => g.status === "active").length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>On Duty</h3>
-              <p className="stat-number">
-                {guards.filter((g) => g.shift && g.status === "active").length}
-              </p>
-            </div>
-            <div className="stat-card suspended">
-              <h3>Disabled Guards</h3>
-              <p className="stat-number">
-                {guards.filter((g) => g.status === "disabled").length}
-              </p>
-            </div>
-          </div>
-
-          <div className="table-container">
-            <DataTable
-              data={filteredGuards}
-              columns={columns}
-              searchable={false}
-              sortable={true}
-              paginated={true}
-              pageSize={10}
-            />
-          </div>
-
-          <EditGuardModal
-            guard={editingGuard}
-            isOpen={showEditModal}
-            onClose={() => setShowEditModal(false)}
-            onUpdate={handleUpdateGuard}
-          />
+    <div className="screen-container">
+      <div className="screen-header">
+        <div className="header-content">
+          <h1>
+            <FaUserShield className="header-icon" />
+            Guards Management
+          </h1>
+          <p className="header-subtitle">
+            Manage security guard accounts and assignments
+          </p>
+        </div>
+        <div className="header-actions">
+          <button
+            className="primary-btn"
+            onClick={() => setShowEditModal(true)}
+          >
+            <FaPlus /> Add Guard
+          </button>
+          <button className="secondary-btn" onClick={exportGuards}>
+            <FaDownload /> Export CSV
+          </button>
         </div>
       </div>
+
+      <div className="filters-section">
+        <div className="search-box">
+          <FaSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search by name or email..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
+        <div className="status-filter">
+          <FaFilter className="filter-icon" />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="stats-container">
+        <div className="stat-card total">
+          <h3>Total Guards</h3>
+          <p className="stat-number">{guards.length}</p>
+        </div>
+        <div className="stat-card active">
+          <h3>Active Guards</h3>
+          <p className="stat-number">
+            {guards.filter((g) => g.status === "active").length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>On Duty</h3>
+          <p className="stat-number">
+            {guards.filter((g) => g.shift && g.status === "active").length}
+          </p>
+        </div>
+        <div className="stat-card suspended">
+          <h3>Disabled Guards</h3>
+          <p className="stat-number">
+            {guards.filter((g) => g.status === "disabled").length}
+          </p>
+        </div>
+      </div>
+
+      <div className="table-container">
+        <DataTable
+          data={filteredGuards}
+          columns={columns}
+          searchable={false}
+          sortable={true}
+          paginated={true}
+          pageSize={10}
+        />
+      </div>
+
+      <EditGuardModal
+        guard={editingGuard}
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onUpdate={handleUpdateGuard}
+      />
     </div>
   );
 };

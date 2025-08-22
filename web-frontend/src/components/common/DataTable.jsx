@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { FaSort, FaSortUp, FaSortDown } from "react-icons/fa";
 import LoadingSpinner from "./LoadingSpinner";
-import "./DataTable.css";
+import "../../styles/components/dataTable.css";
 
 const DataTable = ({
   data = [],
