@@ -1,9 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, Share } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { captureRef } from 'react-native-view-shot';
-import * as MediaLibrary from 'expo-media-library';
 
 import Button from '../../components/common/Button';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
@@ -41,21 +40,21 @@ const GenerateReceiptScreen = ({ navigation, route }) => {
       (actualReturn - expectedReturn) / (1000 * 60),
     );
 
-    if (overdueMinutes <= 15) {
+    if (overdueMinutes <= 0) {
       return {
         overdueMinutes: 0,
-        gracePeriod: overdueMinutes,
+        gracePeriod: 0,
         fineableMinutes: 0,
-        ratePerMinute: 5,
+        ratePerMinute: 1,
         totalFine: 0,
       };
     }
 
     return {
       overdueMinutes,
-      gracePeriod: 15,
-      fineableMinutes: overdueMinutes - 15,
-      ratePerMinute: 5,
+      gracePeriod: 0,
+      fineableMinutes: overdueMinutes,
+      ratePerMinute: 1,
       totalFine: rental.fine,
     };
   };
@@ -71,33 +70,22 @@ const GenerateReceiptScreen = ({ navigation, route }) => {
     try {
       setIsGenerating(true);
 
-      // Request media library permissions
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-      if (status !== 'granted') {
-        Alert.alert(
-          'Permission Required',
-          'Please grant photo library permission to save receipt',
-        );
-        return;
-      }
-
       // Capture the receipt as image
       const uri = await captureRef(receiptRef, {
         format: 'png',
         quality: 1,
       });
 
-      // Save to device
-      const asset = await MediaLibrary.createAssetAsync(uri);
-      await MediaLibrary.createAlbumAsync('Green Rides Receipts', asset, false);
+      // Share the receipt
+      await Share.share({
+        url: uri,
+        title: 'Green Rides Receipt',
+        message: `Receipt for rental #${rental._id}`,
+      });
 
       Alert.alert(
-        'Receipt Saved!',
-        'Receipt has been saved to your photo library. You can now submit this for fine payment.',
-        [
-          { text: 'Share Receipt', onPress: handleShareReceipt },
-          { text: 'OK' },
-        ],
+        'Receipt Generated!',
+        'Receipt has been generated. You can now share or save it.',
       );
     } catch (error) {
       console.error('Receipt generation error:', error);

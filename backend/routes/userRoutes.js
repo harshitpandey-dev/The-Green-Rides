@@ -7,6 +7,12 @@ const router = express.Router();
 
 // Public/basic endpoints
 router.get("/me", auth, userController.getCurrentUser);
+router.patch(
+  "/profile",
+  auth,
+  roleCheck(["student"]),
+  userController.updateStudentProfile
+);
 router.post("/", userController.addUser);
 
 router.get("/", auth, roleCheck(["super_admin"]), userController.getAllUsers);
@@ -21,9 +27,26 @@ router.get(
 router.get(
   "/rollno/:rollNumber",
   auth,
-  roleCheck(["super_admin", "finance_admin"]),
+  roleCheck(["super_admin", "finance_admin", "guard"]),
   userController.getUserByRollNumber
 );
+
+// Guard-specific routes
+router.get(
+  "/guard/:guardId/dashboard",
+  auth,
+  roleCheck(["guard", "super_admin"]),
+  userController.getGuardDashboard
+);
+
+router.patch(
+  "/guard/profile",
+  auth,
+  roleCheck(["guard"]),
+  userController.updateGuardProfile
+);
+
+router.patch("/password", auth, userController.changePassword);
 
 router.get(
   "/statistics",

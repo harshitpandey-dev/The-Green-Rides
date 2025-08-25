@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useSelector } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import { getRentalHistory } from '../../services/rent.service';
 import LoadingSpinner from '../../components/common/LoadingSpinner';

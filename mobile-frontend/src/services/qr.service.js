@@ -1,61 +1,70 @@
 import { apiCall } from '../utils/api.util';
 
-// QR Token Services
-export const createRentalQR = async rentalData => {
+// GUARD: Create rental QR for student
+export async function createRentalQR(qrData) {
   try {
-    const response = await apiCall(
-      'POST',
-      '/api/qr/rental/generate',
-      rentalData,
-    );
+    const response = await apiCall('POST', '/api/qr/rental/create', qrData);
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to generate rental QR',
+      error.response?.data?.message || 'Failed to create rental QR',
     );
   }
-};
+}
 
-export const processRentalQR = async token => {
+// STUDENT: Scan rental QR from guard
+export async function scanRentalQR(token) {
   try {
-    const response = await apiCall('POST', '/api/qr/rental/process', { token });
+    const response = await apiCall('POST', '/api/qr/rental/scan', { token });
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to process rental QR',
+      error.response?.data?.message || 'Failed to scan rental QR',
     );
   }
-};
+}
 
-export const generateReturnQR = async rentalId => {
+// STUDENT: Create return QR for guard
+export async function createReturnQR() {
   try {
-    const response = await apiCall('POST', '/api/qr/return/generate', {
-      rentalId,
+    const response = await apiCall('POST', '/api/qr/return/create');
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to create return QR',
+    );
+  }
+}
+
+// GUARD: Scan return QR from student
+export async function scanReturnQR(token, location) {
+  try {
+    const response = await apiCall('POST', '/api/qr/return/scan', {
+      token,
+      location,
     });
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to generate return QR',
+      error.response?.data?.message || 'Failed to scan return QR',
     );
   }
-};
+}
 
-export const processReturnQR = async token => {
+// GUARD: Get active rentals
+export async function getActiveRentals(location) {
   try {
-    const response = await apiCall('POST', '/api/qr/return/process', { token });
+    const params = location ? `?location=${location}` : '';
+    const response = await apiCall('GET', `/api/qr/active-rentals${params}`);
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to process return QR',
+      error.response?.data?.message || 'Failed to fetch active rentals',
     );
   }
-};
+}
 
-export const validateQRToken = async token => {
-  try {
-    const response = await apiCall('POST', '/api/qr/validate', { token });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response?.data?.message || 'Invalid QR token');
-  }
-};
+// GUARD: Process return QR (alias for scanReturnQR)
+export async function processReturnQR(token, location) {
+  return scanReturnQR(token, location);
+}

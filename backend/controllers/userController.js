@@ -38,6 +38,20 @@ exports.getAllUsersByRole = async (req, res) => {
   }
 };
 
+// Student profile update (limited fields only)
+exports.updateStudentProfile = async (req, res) => {
+  try {
+    const { phone, profilePicture } = req.body;
+    const user = await userService.updateStudentProfile(req.user.userId, {
+      phone,
+      profilePicture,
+    });
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
 exports.getUserById = async (req, res) => {
   try {
     const user = await userService.getUserById(req.params.id);
@@ -105,5 +119,50 @@ exports.getUserStatistics = async (req, res) => {
     res.json(statistics);
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+// Guard-specific methods
+exports.getGuardDashboard = async (req, res) => {
+  try {
+    const { guardId } = req.params;
+    // Check if the guard is requesting their own dashboard or if admin
+    if (req.user.role !== "super_admin" && req.user.userId !== guardId) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const dashboardData = await userService.getGuardDashboard(guardId);
+    res.json(dashboardData);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+exports.updateGuardProfile = async (req, res) => {
+  try {
+    const { name, phone, email, profileImage } = req.body;
+    const user = await userService.updateGuardProfile(req.user.userId, {
+      name,
+      phone,
+      email,
+      profileImage,
+    });
+    res.json(user);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const result = await userService.changePassword(
+      req.user.userId,
+      currentPassword,
+      newPassword
+    );
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
   }
 };

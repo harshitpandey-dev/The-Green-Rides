@@ -1,25 +1,35 @@
 import { apiCall } from '../utils/api.util';
 
 // GET ALL CYCLES
-export async function getAllCycles() {
+export async function getAllCycles(params) {
   try {
-    const response = await apiCall('GET', '/api/cycles');
+    const query = new URLSearchParams(params).toString();
+    const response = await apiCall(
+      'GET',
+      `/api/cycles${query ? '?' + query : ''}`,
+    );
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to fetch cycles');
   }
 }
 
-// GET CYCLES BY LOCATION
-export async function getCyclesByLocation(location) {
+// GET AVAILABLE CYCLES BY LOCATION (for guards)
+export async function getAvailableCycles(location) {
   try {
-    const response = await apiCall('GET', `/api/cycles/location/${location}`);
+    const params = location ? `?location=${location}` : '';
+    const response = await apiCall('GET', `/api/cycles/available${params}`);
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to fetch cycles by location',
+      error.response?.data?.message || 'Failed to fetch available cycles',
     );
   }
+}
+
+// GET CYCLES BY LOCATION (legacy)
+export async function getCyclesByLocation(location) {
+  return getAllCycles({ location, status: 'available' });
 }
 
 // ADD CYCLE (Admin only)
@@ -102,6 +112,54 @@ export async function updateMaintenanceStatus(cycleId, status) {
   } catch (error) {
     throw new Error(
       error.response?.data?.message || 'Failed to update maintenance status',
+    );
+  }
+}
+
+// UPDATE CYCLE STATUS
+export async function updateCycleStatus(cycleId, status) {
+  try {
+    const response = await apiCall('PUT', `/api/cycles/${cycleId}/status`, {
+      status,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to update cycle status',
+    );
+  }
+}
+
+// UPDATE CYCLE LOCATION
+export async function updateCycleLocation(cycleId, location) {
+  try {
+    const response = await apiCall('PUT', `/api/cycles/${cycleId}`, {
+      location,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to update cycle location',
+    );
+  }
+}
+
+// MARK CYCLE FOR MAINTENANCE
+export async function markForMaintenance(cycleId, reason) {
+  try {
+    const response = await apiCall(
+      'PUT',
+      `/api/cycles/${cycleId}/maintenance`,
+      {
+        needsMaintenance: true,
+        maintenanceReason: reason,
+        status: 'under_maintenance',
+      },
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to mark cycle for maintenance',
     );
   }
 }
