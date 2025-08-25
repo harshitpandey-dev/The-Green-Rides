@@ -153,6 +153,26 @@ exports.clearStudentFine = async (studentId, clearedBy) => {
   };
 };
 
+// Student profile update (limited fields)
+exports.updateStudentProfile = async (studentId, { phone, profilePicture }) => {
+  const student = await User.findById(studentId);
+  if (!student || student.role !== "student") {
+    throw new Error("Student not found");
+  }
+
+  // Only allow updating specific fields
+  const updates = {};
+  if (phone !== undefined) updates.phone = phone;
+  if (profilePicture !== undefined) updates.profilePicture = profilePicture;
+
+  Object.assign(student, updates);
+  await student.save();
+
+  return await User.findById(studentId).select(
+    "-password -resetPasswordOTP -emailVerificationToken"
+  );
+};
+
 exports.getUserById = async (userId) => {
   const user = await User.findById(userId)
     .select("-password -resetPasswordOTP -emailVerificationToken")
@@ -253,4 +273,101 @@ exports.getUsersStatistics = async () => {
     cycles,
     rentals,
   };
+};
+
+// Guard-specific methods
+exports.getGuardDashboard = async (guardId) => {
+  const guard = await User.findById(guardId);
+  if (!guard || guard.role !== "guard") {
+    throw new Error("Guard not found");
+  }
+
+  // Get rentals processed by this guard
+  const totalRentals = await Rental.countDocuments({ processedBy: guardId });
+
+  // Get current active rentals in guard's location
+  const currentActiveRentals = await Rental.countDocuments({
+    "cycle.location": guard.location,
+    status: "active",
+  });
+
+  // Calculate total hours managed (sum of all rental durations by this guard)
+  const managedRentals = await Rental.find({ processedBy: guardId })
+    .select("startTime endTime plannedEndTime")
+    .exec();
+
+  let totalHoursManaged = 0;
+  managedRentals.forEach((rental) => {
+    if (rental.endTime) {
+      const duration =
+        (new Date(rental.endTime) - new Date(rental.startTime)) /
+        (1000 * 60 * 60);
+      totalHoursManaged += duration;
+    } else if (rental.plannedEndTime) {
+      const now = new Date();
+      const elapsed = (now - new Date(rental.startTime)) / (1000 * 60 * 60);
+      totalHoursManaged += elapsed;
+    }
+  });
+
+  // Calculate days on duty (days since guard was created)
+  const daysOnDuty = Math.floor(
+    (new Date() - new Date(guard.createdAt)) / (1000 * 60 * 60 * 24)
+  );
+
+  return {
+    totalRentals,
+    currentActiveRentals,
+    totalHoursManaged: Math.round(totalHoursManaged * 100) / 100, // Round to 2 decimal places
+    daysOnDuty,
+    guardInfo: {
+      name: guard.name,
+      location: guard.location,
+      email: guard.email,
+      phone: guard.phone,
+    },
+  };
+};
+
+exports.updateGuardProfile = async (guardId, updateData) => {
+  const guard = await User.findById(guardId);
+  if (!guard || guard.role !== "guard") {
+    throw new Error("Guard not found");
+  }
+
+  // Only allow certain fields to be updated
+  const allowedFields = ["name", "phone", "email", "profileImage"];
+  const filteredData = {};
+
+  allowedFields.forEach((field) => {
+    if (updateData[field] !== undefined) {
+      filteredData[field] = updateData[field];
+    }
+  });
+
+  Object.assign(guard, filteredData);
+  await guard.save();
+
+  return await User.findById(guardId).select(
+    "-password -resetPasswordOTP -emailVerificationToken"
+  );
+};
+
+exports.changePassword = async (userId, currentPassword, newPassword) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  // Verify current password
+  const isCurrentPasswordValid = await user.comparePassword(currentPassword);
+  if (!isCurrentPasswordValid) {
+    throw new Error("Current password is incorrect");
+  }
+
+  // Update password
+  user.password = newPassword;
+  await user.save();
+
+  return { message: "Password changed successfully" };
 };

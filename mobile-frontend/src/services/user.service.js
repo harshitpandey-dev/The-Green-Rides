@@ -1,9 +1,9 @@
 import { apiCall } from '../utils/api.util';
 
-// GET USER PROFILE
-export async function getUserProfile() {
+// GET CURRENT USER PROFILE
+export async function getCurrentUser() {
   try {
-    const response = await apiCall('GET', '/api/users/profile');
+    const response = await apiCall('GET', '/api/users/me');
     return response.data;
   } catch (error) {
     throw new Error(
@@ -12,10 +12,10 @@ export async function getUserProfile() {
   }
 }
 
-// UPDATE USER PROFILE
-export async function updateUserProfile(profileData) {
+// UPDATE STUDENT PROFILE (limited fields)
+export async function updateStudentProfile(profileData) {
   try {
-    const response = await apiCall('PUT', '/api/users/profile', profileData);
+    const response = await apiCall('PATCH', '/api/users/profile', profileData);
     return response.data;
   } catch (error) {
     throw new Error(
@@ -24,28 +24,60 @@ export async function updateUserProfile(profileData) {
   }
 }
 
-// SEARCH STUDENTS (for guards)
-export async function searchStudents(query) {
+// SEARCH STUDENTS BY ROLL NUMBER (for guards)
+export async function getStudentByRollNumber(rollNumber) {
+  try {
+    const response = await apiCall('GET', `/api/users/rollno/${rollNumber}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || 'Student not found');
+  }
+}
+
+// GET GUARD DASHBOARD DATA
+export async function getGuardDashboard(guardId) {
   try {
     const response = await apiCall(
       'GET',
-      `/api/users/students/search?q=${encodeURIComponent(query)}`,
+      `/api/users/guard/${guardId}/dashboard`,
     );
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to search students',
+      error.response?.data?.message || 'Failed to fetch dashboard data',
     );
   }
 }
 
-// CREATE USER (Admin only)
-export async function createUser(userData) {
+// UPDATE GUARD PROFILE
+export async function updateGuardProfile(guardId, profileData) {
   try {
-    const response = await apiCall('POST', '/api/auth/register', userData);
+    const response = await apiCall(
+      'PATCH',
+      '/api/users/guard/profile',
+      profileData,
+    );
     return response.data;
   } catch (error) {
-    throw new Error(error.response?.data?.message || 'Failed to create user');
+    throw new Error(
+      error.response?.data?.message || 'Failed to update profile',
+    );
+  }
+}
+
+// CHANGE PASSWORD
+export async function changePassword(passwordData) {
+  try {
+    const response = await apiCall(
+      'PATCH',
+      '/api/users/password',
+      passwordData,
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to change password',
+    );
   }
 }
 

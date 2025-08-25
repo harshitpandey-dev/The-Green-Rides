@@ -62,6 +62,7 @@ mobile-frontend/android/app/build/
 mobile-frontend/android/build/
 mobile-frontend/android/gradle/
 mobile-frontend/android/.gradle/
+mobile-frontend/android/.kotlin/
 mobile-frontend/android/local.properties
 mobile-frontend/android/app/src/main/res/values/generated.xml
 mobile-frontend/android/app/.cxx/

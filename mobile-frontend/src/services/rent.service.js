@@ -3,7 +3,7 @@ import { apiCall } from '../utils/api.util';
 // GET ACTIVE RENTAL
 export async function getActiveRental() {
   try {
-    const response = await apiCall('GET', '/api/rentals/active');
+    const response = await apiCall('GET', '/api/rentals/getByUser');
     return response.data;
   } catch (error) {
     if (error.response?.status === 404) {
@@ -16,9 +16,32 @@ export async function getActiveRental() {
 }
 
 // GET RENTAL HISTORY
-export async function getRentalHistory() {
+export async function getRentalHistory(filtersOrPage = 1, limit = 10) {
   try {
-    const response = await apiCall('GET', '/api/rentals/history');
+    let queryString = '';
+
+    // Handle both old API (page, limit) and new API (filters object)
+    if (typeof filtersOrPage === 'object' && filtersOrPage !== null) {
+      // New API with filters object
+      const queryParams = new URLSearchParams();
+
+      if (filtersOrPage.location)
+        queryParams.append('location', filtersOrPage.location);
+      if (filtersOrPage.status)
+        queryParams.append('status', filtersOrPage.status);
+      if (filtersOrPage.page) queryParams.append('page', filtersOrPage.page);
+      if (filtersOrPage.limit) queryParams.append('limit', filtersOrPage.limit);
+
+      queryString = queryParams.toString();
+    } else {
+      // Old API with page and limit parameters
+      queryString = `page=${filtersOrPage}&limit=${limit}`;
+    }
+
+    const response = await apiCall(
+      'GET',
+      `/api/rentals/history${queryString ? '?' + queryString : ''}`,
+    );
     return response.data;
   } catch (error) {
     throw new Error(
@@ -27,38 +50,26 @@ export async function getRentalHistory() {
   }
 }
 
-// GET ALL RENTALS (Admin/Finance only)
-export async function getAllRentals() {
+// GET STUDENT STATS
+export async function getStudentStats() {
   try {
-    const response = await apiCall('GET', '/api/rentals');
+    const response = await apiCall('GET', '/api/rentals/stats');
     return response.data;
   } catch (error) {
     throw new Error(
-      error.response?.data?.message || 'Failed to fetch all rentals',
+      error.response?.data?.message || 'Failed to fetch student stats',
     );
   }
 }
 
-// GET RENTAL BY ID
-export async function getRentalById(rentalId) {
+// ADD RATING TO COMPLETED RENTAL
+export async function addRating(rentalId, rating, comment) {
   try {
-    const response = await apiCall('GET', `/api/rentals/${rentalId}`);
-    return response.data;
-  } catch (error) {
-    throw new Error(
-      error.response?.data?.message || 'Failed to fetch rental details',
-    );
-  }
-}
-
-// SUBMIT CYCLE RATING
-export async function submitCycleRating(cycleId, ratingData) {
-  try {
-    const response = await apiCall(
-      'POST',
-      `/api/cycles/${cycleId}/rating`,
-      ratingData,
-    );
+    const response = await apiCall('POST', '/api/rentals/rating', {
+      rentalId,
+      rating,
+      comment,
+    });
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to submit rating');
@@ -130,5 +141,20 @@ export async function waiveFine(userId, amount) {
     return response.data;
   } catch (error) {
     throw new Error(error.response?.data?.message || 'Failed to waive fine');
+  }
+}
+
+// GUARD-SPECIFIC METHODS
+
+// GET ACTIVE RENTALS BY LOCATION (for guards)
+export async function getActiveRentals(location) {
+  try {
+    const params = location ? `?location=${location}` : '';
+    const response = await apiCall('GET', `/api/rentals/active${params}`);
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || 'Failed to fetch active rentals',
+    );
   }
 }

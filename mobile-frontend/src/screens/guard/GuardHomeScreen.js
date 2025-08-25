@@ -9,140 +9,256 @@ import {
   Alert,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-import {
-  getCyclesByLocation,
-  getCyclesForMaintenance,
-} from '../../services/cycle.service';
-import { getOverdueRentals } from '../../services/rent.service';
-import { refreshUserProfile } from '../../redux/slices/authSlice';
+import { getGuardStats } from '../../services/user.service';
+import { getAvailableCycles } from '../../services/cycle.service';
+import { getActiveRentals } from '../../services/rent.service';
+import { setUser } from '../../redux/slices/authSlice';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const GuardHomeScreen = ({ navigation }) => {
   const { user } = useSelector(state => state.auth);
   const dispatch = useDispatch();
 
-  const [stats, setStats] = useState({
-    availableCycles: 0,
-    rentedCycles: 0,
-    maintenanceCycles: 0,
-    overdueRentals: 0,
-  });
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [availableCycles, setAvailableCycles] = useState([]);
+  const [activeRentals, setActiveRentals] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState('east_campus');
 
   useEffect(() => {
-    fetchDashboardData();
-    dispatch(refreshUserProfile());
-  }, [dispatch]);
-
-  const fetchDashboardData = async () => {
-    try {
-      setIsLoading(true);
-      const location = user?.location || 'east_campus';
-
-      // Fetch parallel data
-      const [cycles, maintenanceCycles, overdueRentals] = await Promise.all([
-        getCyclesByLocation(location).catch(() => []),
-        getCyclesForMaintenance().catch(() => []),
-        getOverdueRentals().catch(() => []),
-      ]);
-
-      const availableCycles = cycles.filter(c => c.isAvailable).length;
-      const rentedCycles = cycles.filter(
-        c => !c.isAvailable && !c.isUnderMaintenance,
-      ).length;
-
-      setStats({
-        availableCycles,
-        rentedCycles,
-        maintenanceCycles: maintenanceCycles.length,
-        overdueRentals: overdueRentals.length,
-      });
-
-      // Generate recent activity from overdue rentals
-      const activity = overdueRentals.slice(0, 5).map(rental => ({
-        id: rental._id,
-        type: 'overdue',
-        message: `${rental.user.name} - Cycle ${rental.cycle.cycleNumber} overdue`,
-        time: rental.expectedReturnTime,
-        priority: 'high',
-      }));
-
-      setRecentActivity(activity);
-    } catch (error) {
-      console.error('Dashboard fetch error:', error);
-      Alert.alert('Error', 'Failed to load dashboard data');
-    } finally {
-      setIsLoading(false);
-      setRefreshing(false);
+    loadData();
+    // Get guard's location
+    if (user?.location) {
+      setCurrentLocation(user.location);
     }
+  }, [user]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const loadData = async () => {
+    setIsLoading(true);
+    await Promise.all([
+      fetchGuardStats(),
+      fetchAvailableCycles(),
+      fetchActiveRentals(),
+    ]);
+    setIsLoading(false);
   };
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    fetchDashboardData();
+    await loadData();
+    setRefreshing(false);
   };
 
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return 'Good Morning';
-    if (hour < 17) return 'Good Afternoon';
-    return 'Good Evening';
-  };
-
-  const handleQuickAction = action => {
-    switch (action) {
-      case 'rent':
-        navigation.navigate('RentCycle');
-        break;
-      case 'return':
-        navigation.navigate('Returns');
-        break;
-      case 'maintenance':
-        // Navigate to maintenance screen if implemented
-        Alert.alert('Maintenance', 'Maintenance management coming soon!');
-        break;
-      case 'overdue':
-        navigation.navigate('Returns'); // Can filter for overdue
-        break;
-      default:
-        break;
+  const fetchGuardStats = async () => {
+    try {
+      const guardStats = await getGuardStats();
+      setStats(guardStats);
+      dispatch(setUser({ ...user, ...guardStats }));
+    } catch (error) {
+      console.error('Failed to fetch guard stats:', error);
     }
   };
 
-  const formatTimeAgo = dateString => {
+  const fetchAvailableCycles = async () => {
+    try {
+      const cycles = await getAvailableCycles(currentLocation);
+      setAvailableCycles(cycles);
+    } catch (error) {
+      console.error('Failed to fetch available cycles:', error);
+      Alert.alert('Error', 'Failed to load available cycles');
+    }
+  };
+
+  const fetchActiveRentals = async () => {
+    try {
+      const rentals = await getActiveRentals(currentLocation);
+      setActiveRentals(rentals);
+    } catch (error) {
+      console.error('Failed to fetch active rentals:', error);
+    }
+  };
+
+  const formatDuration = minutes => {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+    return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
+  };
+
+  const getOverdueRentals = () => {
     const now = new Date();
-    const date = new Date(dateString);
-    const diffMinutes = Math.floor((now - date) / (1000 * 60));
-
-    if (diffMinutes < 60) {
-      return `${diffMinutes}m ago`;
-    }
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) {
-      return `${diffHours}h ago`;
-    }
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
+    return activeRentals.filter(rental => {
+      const plannedEndTime = new Date(rental.plannedEndTime);
+      return now > plannedEndTime;
+    });
   };
 
-  const getPriorityColor = priority => {
-    switch (priority) {
-      case 'high':
-        return '#f44336';
-      case 'medium':
-        return '#ff6b35';
-      case 'low':
-        return '#4CAF50';
-      default:
-        return '#666';
-    }
+  const renderQuickActions = () => (
+    <View style={styles.quickActionsContainer}>
+      <Text style={styles.sectionTitle}>Quick Actions</Text>
+
+      <View style={styles.actionGrid}>
+        <TouchableOpacity
+          style={[styles.actionCard, styles.rentAction]}
+          onPress={() => navigation.navigate('CreateRental')}
+        >
+          <Ionicons name="add-circle" size={32} color="white" />
+          <Text style={styles.actionTitle}>Create Rental</Text>
+          <Text style={styles.actionSubtitle}>Generate QR Code</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionCard, styles.returnAction]}
+          onPress={() => navigation.navigate('AcceptReturn')}
+        >
+          <Ionicons name="qr-code-outline" size={32} color="white" />
+          <Text style={styles.actionTitle}>Accept Return</Text>
+          <Text style={styles.actionSubtitle}>Scan QR Code</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.actionGrid}>
+        <TouchableOpacity
+          style={[styles.actionCard, styles.listAction]}
+          onPress={() => navigation.navigate('Rentals')}
+        >
+          <Ionicons name="list" size={32} color="white" />
+          <Text style={styles.actionTitle}>View Rentals</Text>
+          <Text style={styles.actionSubtitle}>Active & History</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.actionCard, styles.cycleAction]}
+          onPress={() => navigation.navigate('Cycles')}
+        >
+          <Ionicons name="bicycle" size={32} color="white" />
+          <Text style={styles.actionTitle}>Manage Cycles</Text>
+          <Text style={styles.actionSubtitle}>Check Status</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  const renderStats = () => (
+    <View style={styles.statsContainer}>
+      <Text style={styles.sectionTitle}>Today's Overview</Text>
+
+      <View style={styles.statsGrid}>
+        <View style={styles.statCard}>
+          <Text style={styles.statValue}>{stats?.todayRentals || 0}</Text>
+          <Text style={styles.statLabel}>Rentals Today</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={styles.statValue}>{stats?.todayReturns || 0}</Text>
+          <Text style={styles.statLabel}>Returns Today</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={[styles.statValue, styles.availableValue]}>
+            {availableCycles.length}
+          </Text>
+          <Text style={styles.statLabel}>Available</Text>
+        </View>
+        <View style={styles.statCard}>
+          <Text style={[styles.statValue, styles.activeValue]}>
+            {activeRentals.length}
+          </Text>
+          <Text style={styles.statLabel}>Active</Text>
+        </View>
+      </View>
+    </View>
+  );
+
+  const renderActiveRentals = () => {
+    const overdueRentals = getOverdueRentals();
+
+    return (
+      <View style={styles.rentalsContainer}>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Active Rentals</Text>
+          {overdueRentals.length > 0 && (
+            <View style={styles.overduebadge}>
+              <Text style={styles.overdueText}>
+                {overdueRentals.length} overdue
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {activeRentals.length === 0 ? (
+          <View style={styles.emptyState}>
+            <Ionicons name="bicycle-outline" size={48} color="#ccc" />
+            <Text style={styles.emptyText}>No active rentals</Text>
+          </View>
+        ) : (
+          <ScrollView
+            style={styles.rentalsList}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+          >
+            {activeRentals.slice(0, 5).map(rental => {
+              const now = new Date();
+              const plannedEndTime = new Date(rental.plannedEndTime);
+              const isOverdue = now > plannedEndTime;
+              const timeRemaining = Math.ceil(
+                (plannedEndTime - now) / (1000 * 60),
+              );
+
+              return (
+                <View
+                  key={rental._id}
+                  style={[styles.rentalCard, isOverdue && styles.overdueCard]}
+                >
+                  <Text style={styles.cycleNumber}>
+                    #{rental.cycle.cycleNumber}
+                  </Text>
+                  <Text style={styles.studentName}>
+                    {rental.student.name.split(' ')[0]}
+                  </Text>
+                  <Text style={styles.studentRoll}>
+                    {rental.student.rollNo}
+                  </Text>
+                  <Text
+                    style={[styles.timeStatus, isOverdue && styles.overdueTime]}
+                  >
+                    {isOverdue
+                      ? `${formatDuration(Math.abs(timeRemaining))} overdue`
+                      : `${formatDuration(timeRemaining)} left`}
+                  </Text>
+                </View>
+              );
+            })}
+            {activeRentals.length > 5 && (
+              <TouchableOpacity
+                style={styles.seeMoreCard}
+                onPress={() => navigation.navigate('Rentals')}
+              >
+                <Ionicons name="chevron-forward" size={24} color="#4CAF50" />
+                <Text style={styles.seeMoreText}>See All</Text>
+              </TouchableOpacity>
+            )}
+          </ScrollView>
+        )}
+      </View>
+    );
   };
 
-  if (isLoading && stats.availableCycles === 0) {
+  const renderLocationInfo = () => (
+    <View style={styles.locationContainer}>
+      <Ionicons name="location" size={20} color="#4CAF50" />
+      <Text style={styles.locationText}>
+        {currentLocation
+          .replace('_', ' ')
+          .replace(/\b\w/g, l => l.toUpperCase())}
+      </Text>
+      <View style={styles.locationBadge}>
+        <Text style={styles.locationBadgeText}>Your Station</Text>
+      </View>
+    </View>
+  );
+
+  if (isLoading) {
     return <LoadingSpinner message="Loading dashboard..." />;
   }
 
@@ -155,144 +271,29 @@ const GuardHomeScreen = ({ navigation }) => {
     >
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.greetingSection}>
-          <Text style={styles.greeting}>
-            {getGreeting()}, {user?.name?.split(' ')[0] || 'Guard'}!
+        <View>
+          <Text style={styles.headerTitle}>
+            Hello, {user?.name?.split(' ')[0]}!
           </Text>
-          <Text style={styles.location}>
-            📍{' '}
-            {user?.location?.replace('_', ' ').toUpperCase() ||
-              'Campus Location'}
-          </Text>
+          <Text style={styles.headerSubtitle}>Guard Portal</Text>
         </View>
-        <View style={styles.shiftBadge}>
-          <Text style={styles.shiftText}>ON DUTY</Text>
-        </View>
+        <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
+          <Ionicons name="person-circle-outline" size={32} color="white" />
+        </TouchableOpacity>
       </View>
 
-      {/* Statistics Cards */}
-      <View style={styles.statsContainer}>
-        <Text style={styles.sectionTitle}>Cycle Overview</Text>
-        <View style={styles.statsGrid}>
-          <TouchableOpacity
-            style={[styles.statCard, { backgroundColor: '#E8F5E8' }]}
-            onPress={() => handleQuickAction('rent')}
-          >
-            <Ionicons name="bicycle" size={32} color="#4CAF50" />
-            <Text style={styles.statNumber}>{stats.availableCycles}</Text>
-            <Text style={styles.statLabel}>Available</Text>
-          </TouchableOpacity>
+      <View style={styles.content}>
+        {/* Location Info */}
+        {renderLocationInfo()}
 
-          <TouchableOpacity
-            style={[styles.statCard, { backgroundColor: '#FFF3E0' }]}
-            onPress={() => handleQuickAction('return')}
-          >
-            <Ionicons name="time" size={32} color="#ff6b35" />
-            <Text style={styles.statNumber}>{stats.rentedCycles}</Text>
-            <Text style={styles.statLabel}>Rented Out</Text>
-          </TouchableOpacity>
-        </View>
+        {/* Quick Actions */}
+        {renderQuickActions()}
 
-        <View style={styles.statsGrid}>
-          <TouchableOpacity
-            style={[styles.statCard, { backgroundColor: '#FFEBEE' }]}
-            onPress={() => handleQuickAction('maintenance')}
-          >
-            <Ionicons name="build" size={32} color="#f44336" />
-            <Text style={styles.statNumber}>{stats.maintenanceCycles}</Text>
-            <Text style={styles.statLabel}>Maintenance</Text>
-          </TouchableOpacity>
+        {/* Statistics */}
+        {renderStats()}
 
-          <TouchableOpacity
-            style={[styles.statCard, { backgroundColor: '#FCE4EC' }]}
-            onPress={() => handleQuickAction('overdue')}
-          >
-            <Ionicons name="warning" size={32} color="#E91E63" />
-            <Text style={styles.statNumber}>{stats.overdueRentals}</Text>
-            <Text style={styles.statLabel}>Overdue</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Quick Actions */}
-      <View style={styles.quickActions}>
-        <Text style={styles.sectionTitle}>Quick Actions</Text>
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#4CAF50' }]}
-            onPress={() => navigation.navigate('RentCycle')}
-          >
-            <Ionicons name="qr-code" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Rent Cycle</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.actionButton, { backgroundColor: '#ff6b35' }]}
-            onPress={() => navigation.navigate('Returns')}
-          >
-            <Ionicons name="return-down-back" size={24} color="white" />
-            <Text style={styles.actionButtonText}>Process Return</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Recent Activity */}
-      <View style={styles.activitySection}>
-        <Text style={styles.sectionTitle}>Recent Alerts</Text>
-        {recentActivity.length > 0 ? (
-          <View style={styles.activityList}>
-            {recentActivity.map(activity => (
-              <View key={activity.id} style={styles.activityItem}>
-                <View style={styles.activityIcon}>
-                  <Ionicons
-                    name={
-                      activity.type === 'overdue'
-                        ? 'warning'
-                        : 'information-circle'
-                    }
-                    size={20}
-                    color={getPriorityColor(activity.priority)}
-                  />
-                </View>
-                <View style={styles.activityContent}>
-                  <Text style={styles.activityMessage}>{activity.message}</Text>
-                  <Text style={styles.activityTime}>
-                    {formatTimeAgo(activity.time)}
-                  </Text>
-                </View>
-                <View
-                  style={[
-                    styles.priorityDot,
-                    { backgroundColor: getPriorityColor(activity.priority) },
-                  ]}
-                />
-              </View>
-            ))}
-          </View>
-        ) : (
-          <View style={styles.emptyActivity}>
-            <Ionicons name="checkmark-circle" size={48} color="#4CAF50" />
-            <Text style={styles.emptyActivityText}>
-              All good! No alerts at the moment
-            </Text>
-          </View>
-        )}
-      </View>
-
-      {/* Help Section */}
-      <View style={styles.helpSection}>
-        <Text style={styles.sectionTitle}>Need Help?</Text>
-        <View style={styles.helpCard}>
-          <Ionicons name="help-circle" size={24} color="#4CAF50" />
-          <View style={styles.helpContent}>
-            <Text style={styles.helpTitle}>Guard Guidelines</Text>
-            <Text style={styles.helpText}>
-              • Check student ID before generating QR codes{'\n'}• Verify cycle
-              condition before rental{'\n'}• Report damaged cycles immediately
-              {'\n'}• Contact admin for emergencies
-            </Text>
-          </View>
-        </View>
+        {/* Active Rentals */}
+        {renderActiveRentals()}
       </View>
     </ScrollView>
   );
@@ -305,186 +306,237 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: '#4CAF50',
-    padding: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
   },
-  greetingSection: {
+  headerTitle: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 14,
+  },
+  content: {
+    padding: 20,
+  },
+  locationContainer: {
+    backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  locationText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginLeft: 8,
     flex: 1,
   },
-  greeting: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: 'white',
-  },
-  location: {
-    fontSize: 14,
-    color: 'white',
-    opacity: 0.9,
-    marginTop: 5,
-  },
-  shiftBadge: {
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  locationBadge: {
+    backgroundColor: '#e8f5e8',
     paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingVertical: 4,
     borderRadius: 12,
   },
-  shiftText: {
-    color: 'white',
+  locationBadgeText: {
+    color: '#4CAF50',
     fontSize: 12,
     fontWeight: 'bold',
   },
-  statsContainer: {
-    padding: 20,
-  },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#333',
-    marginBottom: 15,
+    marginBottom: 16,
+  },
+  quickActionsContainer: {
+    marginBottom: 24,
+  },
+  actionGrid: {
+    flexDirection: 'row',
+    gap: 16,
+  },
+  actionCard: {
+    flex: 1,
+    borderRadius: 16,
+    padding: 20,
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+  },
+  rentAction: {
+    backgroundColor: '#4CAF50',
+  },
+  returnAction: {
+    backgroundColor: '#2196F3',
+  },
+  listAction: {
+    backgroundColor: '#FF9800',
+  },
+  cycleAction: {
+    backgroundColor: '#9C27B0',
+  },
+  actionTitle: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginTop: 12,
+  },
+  actionSubtitle: {
+    color: 'rgba(255,255,255,0.8)',
+    fontSize: 12,
+    marginTop: 4,
+  },
+  statsContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   statsGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 15,
+    flexWrap: 'wrap',
+    gap: 12,
   },
   statCard: {
-    flex: 0.48,
-    padding: 20,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  statNumber: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333',
-    marginVertical: 8,
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  quickActions: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  actionButton: {
-    flex: 0.48,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 15,
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  actionButtonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
-  },
-  activitySection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  activityList: {
-    backgroundColor: 'white',
-    borderRadius: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  activityItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
-  },
-  activityIcon: {
-    marginRight: 15,
-  },
-  activityContent: {
     flex: 1,
+    minWidth: '45%',
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
   },
-  activityMessage: {
-    fontSize: 14,
-    color: '#333',
+  statValue: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#4CAF50',
     marginBottom: 4,
   },
-  activityTime: {
+  availableValue: {
+    color: '#2196F3',
+  },
+  activeValue: {
+    color: '#FF9800',
+  },
+  statLabel: {
     fontSize: 12,
     color: '#666',
-  },
-  priorityDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-  },
-  emptyActivity: {
-    backgroundColor: 'white',
-    padding: 40,
-    borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  emptyActivityText: {
-    fontSize: 16,
-    color: '#666',
-    marginTop: 15,
     textAlign: 'center',
   },
-  helpSection: {
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
-  helpCard: {
+  rentalsContainer: {
     backgroundColor: 'white',
+    borderRadius: 16,
     padding: 20,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 8,
   },
-  helpContent: {
-    flex: 1,
-    marginLeft: 15,
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  helpTitle: {
+  overdueBadge: {
+    backgroundColor: '#ffebee',
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  overdueText: {
+    color: '#f44336',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  emptyState: {
+    alignItems: 'center',
+    padding: 40,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 12,
+  },
+  rentalsList: {
+    flexDirection: 'row',
+  },
+  rentalCard: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    marginRight: 12,
+    minWidth: 120,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  overdueCard: {
+    borderColor: '#f44336',
+    backgroundColor: '#ffebee',
+  },
+  cycleNumber: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#4CAF50',
     marginBottom: 8,
   },
-  helpText: {
+  studentName: {
     fontSize: 14,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 2,
+  },
+  studentRoll: {
+    fontSize: 12,
     color: '#666',
-    lineHeight: 20,
+    marginBottom: 8,
+  },
+  timeStatus: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#4CAF50',
+  },
+  overdueTime: {
+    color: '#f44336',
+  },
+  seeMoreCard: {
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 80,
+    borderWidth: 1,
+    borderColor: '#4CAF50',
+  },
+  seeMoreText: {
+    fontSize: 12,
+    color: '#4CAF50',
+    fontWeight: 'bold',
+    marginTop: 4,
   },
 });
 

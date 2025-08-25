@@ -233,13 +233,11 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         state.refreshToken = action.payload.refreshToken;
         state.isLoggedIn = true;
-        state.isVerified = action.payload.user?.isVerified || false;
+        state.isVerified = true; // Login doesn't require OTP verification
         state.error = null;
-
-        if (!state.isVerified) {
-          state.pendingEmail = action.payload.user?.email;
-          state.registrationStep = 'otp_pending';
-        }
+        // Clear any pending registration state from previous flows
+        state.registrationStep = null;
+        state.pendingEmail = null;
       })
       .addCase(loginAsync.rejected, (state, action) => {
         state.isLoading = false;
@@ -363,12 +361,10 @@ const authSlice = createSlice({
           state.refreshToken = action.payload.refreshToken;
           state.user = action.payload.user;
           state.isLoggedIn = true;
-          state.isVerified = action.payload.user?.isVerified || false;
-
-          if (!state.isVerified) {
-            state.pendingEmail = action.payload.user?.email;
-            state.registrationStep = 'otp_pending';
-          }
+          state.isVerified = true; // Stored users don't need OTP verification
+          // Clear any pending states
+          state.registrationStep = null;
+          state.pendingEmail = null;
         }
       })
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -9,11 +9,12 @@ import {
   Alert,
 } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useFocusEffect } from '@react-navigation/native';
 
 import { getActiveRental } from '../../services/rent.service';
-import { refreshUserProfile } from '../../redux/slices/authSlice';
-import Button from '../../components/common/Button';
+import { getCurrentUser } from '../../services/user.service';
+import { updateUser } from '../../redux/slices/authSlice';
 import LoadingSpinner from '../../components/common/LoadingSpinner';
 
 const StudentHomeScreen = ({ navigation }) => {
@@ -23,44 +24,74 @@ const StudentHomeScreen = ({ navigation }) => {
   const [activeRental, setActiveRental] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [qrCountdown, setQrCountdown] = useState(0);
 
-  useEffect(() => {
-    fetchActiveRental();
-    dispatch(refreshUserProfile());
-  }, [dispatch]);
-
-  const fetchActiveRental = async () => {
+  // Refresh data when screen comes into focus
+  const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
+
+      // Fetch user data
+      const userData = await getCurrentUser();
+      dispatch(updateUser(userData));
+
+      // Fetch active rental
       const rental = await getActiveRental();
       setActiveRental(rental);
+
+      // Fetch student stats - we can add this back if needed
+      // const stats = await getStudentStats();
+      // setStudentStats(stats);
     } catch (error) {
-      console.log('No active rental found');
-      setActiveRental(null);
+      console.log('Error fetching data:', error);
     } finally {
       setIsLoading(false);
       setRefreshing(false);
     }
-  };
+  }, [dispatch]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [fetchData]),
+  );
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  // QR countdown timer
+  useEffect(() => {
+    let interval;
+    if (qrCountdown > 0) {
+      interval = setInterval(() => {
+        setQrCountdown(prev => {
+          if (prev <= 1) {
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [qrCountdown]);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchActiveRental();
-    dispatch(refreshUserProfile());
+    fetchData();
   };
 
   const handleRentCycle = () => {
-    navigation.navigate('StudentQRScanner', { type: 'rental' });
-  };
-
-  const handleReturnCycle = () => {
-    navigation.navigate('StudentQRScanner', { type: 'return' });
-  };
-
-  const handleViewActiveRental = () => {
-    if (activeRental) {
-      navigation.navigate('ActiveRental', { rentalId: activeRental._id });
+    if (user?.fine > 500) {
+      Alert.alert(
+        'Cannot Rent Cycle',
+        `You have an outstanding fine of ₹${user.fine}. Please clear your fines before renting a new cycle.`,
+        [{ text: 'OK' }],
+      );
+      return;
     }
+    // Navigate to ActiveRental screen which handles QR scanning
+    navigation.navigate('ActiveRental');
   };
 
   const getGreeting = () => {
@@ -74,11 +105,12 @@ const StudentHomeScreen = ({ navigation }) => {
     if (!rental) return '#4CAF50';
 
     const now = new Date();
-    const expectedReturn = new Date(rental.expectedReturnTime);
-    const timeDiff = expectedReturn.getTime() - now.getTime();
+    const rentedTime = new Date(rental.rentedAt);
+    const elapsedMinutes = Math.floor((now - rentedTime) / (1000 * 60));
+    const timeLeft = rental.duration - elapsedMinutes;
 
-    if (timeDiff < 0) return '#f44336'; // Overdue
-    if (timeDiff < 30 * 60 * 1000) return '#ff6b35'; // Less than 30 minutes
+    if (timeLeft <= 0) return '#f44336'; // Overdue
+    if (timeLeft <= 15) return '#ff6b35'; // Less than 15 minutes
     return '#4CAF50'; // Good
   };
 
@@ -86,22 +118,34 @@ const StudentHomeScreen = ({ navigation }) => {
     if (!rental) return '';
 
     const now = new Date();
-    const expectedReturn = new Date(rental.expectedReturnTime);
-    const timeDiff = expectedReturn.getTime() - now.getTime();
+    const rentedTime = new Date(rental.rentedAt);
+    const elapsedMinutes = Math.floor((now - rentedTime) / (1000 * 60));
+    const timeLeft = rental.duration - elapsedMinutes;
 
-    if (timeDiff < 0) {
-      const overdueMinutes = Math.floor(Math.abs(timeDiff) / (1000 * 60));
+    if (timeLeft <= 0) {
+      const overdueMinutes = Math.abs(timeLeft);
       return `Overdue by ${overdueMinutes}m`;
     }
 
-    const minutesLeft = Math.floor(timeDiff / (1000 * 60));
-    const hoursLeft = Math.floor(minutesLeft / 60);
-    const remainingMinutes = minutesLeft % 60;
+    const hoursLeft = Math.floor(timeLeft / 60);
+    const minutesLeft = timeLeft % 60;
 
     if (hoursLeft > 0) {
-      return `${hoursLeft}h ${remainingMinutes}m left`;
+      return `${hoursLeft}h ${minutesLeft}m left`;
     }
-    return `${remainingMinutes}m left`;
+    return `${minutesLeft}m left`;
+  };
+
+  const handleViewActiveRental = () => {
+    if (activeRental) {
+      navigation.navigate('ActiveRental', { rental: activeRental });
+    }
+  };
+
+  const handleReturnCycle = () => {
+    if (activeRental) {
+      navigation.navigate('ActiveRental', { rental: activeRental });
+    }
   };
 
   if (isLoading && !activeRental) {
@@ -233,7 +277,7 @@ const StudentHomeScreen = ({ navigation }) => {
             <Text
               style={[
                 styles.statNumber,
-                { color: user?.fine > 0 ? '#f44336' : '#4CAF50' },
+                (user?.fine || 0) > 0 ? styles.fineRed : styles.fineGreen,
               ]}
             >
               ₹{user?.fine || 0}
@@ -453,6 +497,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#333',
     marginTop: 5,
+  },
+  fineRed: {
+    color: '#f44336',
+  },
+  fineGreen: {
+    color: '#4CAF50',
   },
 });
 

@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSelector, useDispatch } from 'react-redux';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 // Import screens
 import LoginScreen from '../screens/auth/LoginScreen';
@@ -12,18 +12,17 @@ import OTPVerificationScreen from '../screens/auth/OTPVerificationScreen';
 import AccessDeniedScreen from '../screens/auth/AccessDeniedScreen';
 
 // Student screens
-import StudentHomeScreen from '../screens/student/StudentHomeScreen';
-import StudentQRScanner from '../components/QrScanner/StudentQRScanner';
-import ActiveRentalScreen from '../screens/rent/ActiveRentalScreen';
+import ActiveRentalScreen from '../screens/student/ActiveRentalScreen';
 import RentalHistoryScreen from '../screens/student/RentalHistoryScreen';
-import ProfileScreen from '../screens/student/ProfileScreen';
-import GenerateReceiptScreen from '../screens/student/GenerateReceiptScreen';
+import StudentProfileScreen from '../screens/student/ProfileScreen';
 
 // Guard screens
 import GuardHomeScreen from '../screens/guard/GuardHomeScreen';
-import GuardRentingScreen from '../components/Guard/GuardRentingScreen';
-import GuardReturnsScreen from '../screens/guard/GuardReturnsScreen';
-import GuardProfileScreen from '../screens/guard/GuardProfileScreen';
+import GuardProfileScreen from '../screens/guard/ProfileScreen';
+import CreateRentalScreen from '../screens/guard/CreateRentalScreen';
+import AcceptReturnScreen from '../screens/guard/AcceptReturnScreen';
+import RentalsScreen from '../screens/guard/RentalsScreen';
+import CycleListScreen from '../screens/guard/CycleListScreen';
 
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { loadTokenFromStorage } from '../redux/slices/authSlice';
@@ -80,8 +79,6 @@ const StudentTabs = () => (
 
         if (route.name === 'Home') {
           iconName = focused ? 'home' : 'home-outline';
-        } else if (route.name === 'QRScan') {
-          iconName = focused ? 'qr-code' : 'qr-code-outline';
         } else if (route.name === 'History') {
           iconName = focused ? 'time' : 'time-outline';
         } else if (route.name === 'Profile') {
@@ -103,16 +100,8 @@ const StudentTabs = () => (
   >
     <Tab.Screen
       name="Home"
-      component={StudentHomeScreen}
-      options={{ title: 'Green Rides' }}
-    />
-    <Tab.Screen
-      name="QRScan"
-      component={StudentQRScanner}
-      options={{
-        title: 'Scan QR',
-        headerShown: false,
-      }}
+      component={require('../screens/student/StudentRentScreen').default}
+      options={{ title: 'Green Rides', headerShown: false }}
     />
     <Tab.Screen
       name="History"
@@ -121,7 +110,7 @@ const StudentTabs = () => (
     />
     <Tab.Screen
       name="Profile"
-      component={ProfileScreen}
+      component={StudentProfileScreen}
       options={{ title: 'Profile' }}
     />
   </Tab.Navigator>
@@ -137,10 +126,10 @@ const GuardTabs = () => (
 
         if (route.name === 'Home') {
           iconName = focused ? 'home' : 'home-outline';
-        } else if (route.name === 'RentCycle') {
+        } else if (route.name === 'Rentals') {
+          iconName = focused ? 'list' : 'list-outline';
+        } else if (route.name === 'Cycles') {
           iconName = focused ? 'bicycle' : 'bicycle-outline';
-        } else if (route.name === 'Returns') {
-          iconName = focused ? 'return-down-back' : 'return-down-back-outline';
         } else if (route.name === 'Profile') {
           iconName = focused ? 'person' : 'person-outline';
         }
@@ -161,17 +150,17 @@ const GuardTabs = () => (
     <Tab.Screen
       name="Home"
       component={GuardHomeScreen}
-      options={{ title: 'Guard Portal' }}
+      options={{ title: 'Guard Portal', headerShown: false }}
     />
     <Tab.Screen
-      name="RentCycle"
-      component={GuardRentingScreen}
-      options={{ title: 'Rent Cycle' }}
+      name="Rentals"
+      component={RentalsScreen}
+      options={{ title: 'Rentals' }}
     />
     <Tab.Screen
-      name="Returns"
-      component={GuardReturnsScreen}
-      options={{ title: 'Returns' }}
+      name="Cycles"
+      component={CycleListScreen}
+      options={{ title: 'Cycles' }}
     />
     <Tab.Screen
       name="Profile"
@@ -201,32 +190,38 @@ const AppStack = ({ userRole }) => (
     />
 
     <Stack.Screen
-      name="StudentQRScanner"
-      component={StudentQRScanner}
-      options={{
-        title: 'Scan QR Code',
-        headerShown: false,
-      }}
-    />
-    <Stack.Screen
       name="ActiveRental"
       component={ActiveRentalScreen}
       options={{ title: 'Active Rental' }}
     />
+
     <Stack.Screen
-      name="GuardRenting"
-      component={GuardRentingScreen}
-      options={{ title: 'Rent to Student' }}
+      name="StudentRentScreen"
+      component={require('../screens/student/StudentRentScreen').default}
+      options={{ headerShown: false }}
+    />
+    <Stack.Screen
+      name="StudentReturnScreen"
+      component={require('../screens/student/StudentReturnScreen').default}
+      options={{ headerShown: false }}
     />
     <Stack.Screen
       name="GenerateReceipt"
-      component={GenerateReceiptScreen}
-      options={{ title: 'Generate Receipt' }}
+      component={require('../screens/student/GenerateReceiptScreen').default}
+      options={{ title: 'Receipt' }}
     />
+
+    {/* New Guard Screens */}
     <Stack.Screen
-      name="RentalHistory"
-      component={RentalHistoryScreen}
-      options={{ title: 'Rental History' }}
+      name="CreateRental"
+      component={CreateRentalScreen}
+      options={{ title: 'Create Rental' }}
+    />
+
+    <Stack.Screen
+      name="AcceptReturn"
+      component={AcceptReturnScreen}
+      options={{ title: 'Accept Return' }}
     />
   </Stack.Navigator>
 );
