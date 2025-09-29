@@ -52,3 +52,99 @@ node_modules/
 
 # dotenv environment variables file
 .env
+
+# ===========================
+# Mobile Frontend (React Native) Specific
+# ===========================
+
+# Android build artifacts
+mobile-frontend/android/app/build/
+mobile-frontend/android/build/
+mobile-frontend/android/gradle/
+mobile-frontend/android/.gradle/
+mobile-frontend/android/.kotlin/
+mobile-frontend/android/local.properties
+mobile-frontend/android/app/src/main/res/values/generated.xml
+mobile-frontend/android/app/.cxx/
+mobile-frontend/android/app/debug.keystore
+
+# iOS build artifacts
+mobile-frontend/ios/build/
+mobile-frontend/ios/DerivedData/
+mobile-frontend/ios/*.xcworkspace/xcuserdata/
+mobile-frontend/ios/*.xcodeproj/xcuserdata/
+mobile-frontend/ios/Pods/
+mobile-frontend/ios/Podfile.lock
+
+# React Native
+mobile-frontend/.expo/
+mobile-frontend/.expo-shared/
+mobile-frontend/dist/
+mobile-frontend/tmp/
+mobile-frontend/temp/
+
+# Metro bundler
+mobile-frontend/.metro-health-check*
+mobile-frontend/metro.config.js.bak
+
+# Testing
+mobile-frontend/coverage/
+mobile-frontend/__tests__/coverage/
+
+# IDE and Editor files
+mobile-frontend/.vscode/
+mobile-frontend/.idea/
+mobile-frontend/*.swp
+mobile-frontend/*.swo
+mobile-frontend/*~
+
+# OS generated files
+mobile-frontend/.DS_Store
+mobile-frontend/.DS_Store?
+mobile-frontend/._*
+mobile-frontend/.Spotlight-V100
+mobile-frontend/.Trashes
+mobile-frontend/ehthumbs.db
+mobile-frontend/Thumbs.db
+
+# React Native specific logs
+mobile-frontend/npm-debug.log*
+mobile-frontend/yarn-debug.log*
+mobile-frontend/yarn-error.log*
+
+# Flipper
+mobile-frontend/.flipper/
+
+# Bundle artifacts
+mobile-frontend/*.jsbundle
+
+# CocoaPods
+mobile-frontend/ios/Podfile.lock
+mobile-frontend/ios/Pods/
+
+# Fastlane
+mobile-frontend/ios/fastlane/report.xml
+mobile-frontend/ios/fastlane/Preview.html
+mobile-frontend/ios/fastlane/screenshots
+mobile-frontend/ios/fastlane/test_output
+mobile-frontend/android/fastlane/report.xml
+mobile-frontend/android/fastlane/Preview.html
+mobile-frontend/android/fastlane/screenshots
+mobile-frontend/android/fastlane/test_output
+
+# Android Studio
+mobile-frontend/android/.project
+mobile-frontend/android/.settings/
+mobile-frontend/android/.classpath
+
+# Gradle Wrapper (keep the wrapper but not the downloaded files)
+!mobile-frontend/android/gradle/wrapper/gradle-wrapper.properties
+!mobile-frontend/android/gradle/wrapper/gradle-wrapper.jar
+mobile-frontend/android/gradle/wrapper/dists/
+
+# Buck
+mobile-frontend/.buckd/
+mobile-frontend/buck-out/
+
+# Watchman
+mobile-frontend/.watchmanconfig

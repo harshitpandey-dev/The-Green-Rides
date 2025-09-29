@@ -1,0 +1,62 @@
+/* ==============================
+   CYCLES SCREEN - SPECIFIC STYLES
+============================== */
+
+/* Import common screen styles */
+@import "../common/screen.css";
+
+/* Cycle-specific badges */
+.condition-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 70px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.condition-excellent {
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--success);
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.condition-good {
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border-color: rgba(52, 152, 219, 0.3);
+}
+
+.condition-fair {
+  background: rgba(243, 156, 18, 0.15);
+  color: var(--warning);
+  border-color: rgba(243, 156, 18, 0.3);
+}
+
+.condition-poor {
+  background: rgba(231, 76, 60, 0.15);
+  color: var(--danger);
+  border-color: rgba(231, 76, 60, 0.3);
+}
+
+.location {
+  color: var(--secondary);
+  font-weight: 500;
+}
+
+.maintenance-btn {
+  background: var(--warning);
+  color: var(--white);
+  transition: var(--transition);
+}
+
+.maintenance-btn:hover {
+  background: #e67e22;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(243, 156, 18, 0.3);
+}

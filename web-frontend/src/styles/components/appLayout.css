@@ -1,0 +1,132 @@
+/* ==============================
+   APP LAYOUT - MODERN SIDEBAR DESIGN (NO NAVBAR)
+============================== */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+}
+
+.app-body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: margin-left 0.3s ease;
+}
+
+.app-main.with-sidebar {
+  margin-left: 280px; /* Default sidebar width */
+}
+
+.app-main.full-width {
+  margin-left: 0;
+}
+
+/* Responsive sidebar adjustments */
+@media (min-width: 1025px) {
+  /* Desktop: Use proper margin for sidebar */
+  body.sidebar-present .app-main.with-sidebar {
+    margin-left: 280px;
+  }
+
+  body.sidebar-collapsed .app-main.with-sidebar {
+    margin-left: 80px;
+  }
+
+  body:not(.sidebar-present) .app-main,
+  .app-main.full-width {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Tablet and below: No margin, sidebar becomes overlay */
+  .app-main.with-sidebar,
+  .app-main.full-width {
+    margin-left: 0;
+  }
+}
+
+.app-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem 2.5rem;
+  background: #f8f9fa;
+  width: 100%;
+  min-height: calc(100vh - 4rem);
+}
+
+/* Content padding adjustments */
+.app-content > * {
+  max-width: none;
+  margin: 0;
+}
+
+/* Remove the old centered container styling for admin screens */
+.admin-screen,
+.finance-admin-screen {
+  min-height: auto;
+  background: transparent;
+  padding: 0;
+  width: 100%;
+}
+
+/* Page headers should be full width */
+.page-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 2rem 0;
+  margin: -2rem -2.5rem 2rem -2.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  width: calc(100% + 5rem);
+}
+
+.page-header .page-header-content {
+  padding: 0 2.5rem;
+}
+
+.page-title {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.page-subtitle {
+  margin: 0.5rem 0 0;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+.page-content {
+  max-width: none;
+  margin: 0;
+  flex: 1;
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .page-header {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-content {
+    padding: 1.5rem 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+}

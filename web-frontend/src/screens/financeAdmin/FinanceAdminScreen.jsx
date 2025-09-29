@@ -1,0 +1,250 @@
+import React, { useState, useContext } from "react";
+import { FaSearch, FaMoneyBillWave, FaUser } from "react-icons/fa";
+import { AuthContext } from "../../contexts/authContext";
+import { userService } from "../../services/user.service";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import { useToast } from "../../contexts/ToastContext";
+import { useConfirmationDialog } from "../../contexts/ConfirmationContext";
+import "../../styles/common/screen.css";
+import "../../styles/screens/financeAdminScreen.css";
+
+const FinanceAdminScreen = () => {
+  const { currentUser } = useContext(AuthContext);
+  const { showSuccess, showError } = useToast();
+  const { confirmAction } = useConfirmationDialog();
+  const [rollNumber, setRollNumber] = useState("");
+  const [student, setStudent] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [clearing, setClearing] = useState(false);
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    if (!rollNumber.trim()) {
+      showError("Please enter a roll number");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const studentData = await userService.getStudentByRollNumber(
+        rollNumber.trim()
+      );
+      setStudent(studentData);
+    } catch (err) {
+      showError(err.message || "Student not found");
+      setStudent(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearFine = async () => {
+    if (!student || clearing) return;
+
+    const confirmed = await confirmAction(
+      "Clear Student Fine",
+      `Are you sure you want to clear the fine of ₹${student.fine} for ${student.name} (${student.rollNumber})?`,
+      "warning"
+    );
+
+    if (confirmed) {
+      try {
+        setClearing(true);
+
+        const result = await userService.clearStudentFine(student._id);
+
+        // Update local student data
+        setStudent((prev) => ({ ...prev, fine: 0 }));
+        showSuccess(
+          `Fine cleared successfully! ₹${result.student.previousFine} has been cleared for ${result.student.name}`
+        );
+      } catch (err) {
+        showError(err.message || "Failed to clear fine");
+      } finally {
+        setClearing(false);
+      }
+    }
+  };
+
+  const resetSearch = () => {
+    setRollNumber("");
+    setStudent(null);
+  };
+
+  if (loading) {
+    return <LoadingSpinner message="Searching for student..." />;
+  }
+
+  return (
+    <div className="screen-container">
+      {/* Page Header */}
+      <div className="screen-header">
+        <div className="header-content">
+          <h1>
+            <FaMoneyBillWave className="header-icon" />
+            Finance Administration
+          </h1>
+          <p className="header-subtitle">
+            Search students by roll number and manage their fines
+          </p>
+        </div>
+        <div className="header-actions">
+          <div className="user-info">
+            <span>Welcome, {currentUser?.name}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="screen-content">
+        {/* Search Section */}
+        <div className="content-section">
+          <div className="card">
+            <div className="card-header">
+              <h2>Student Fine Management</h2>
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSearch} className="form">
+                <div className="form-group">
+                  <label htmlFor="rollNumber" className="form-label">
+                    Student Roll Number
+                  </label>
+                  <div className="input-group">
+                    <input
+                      type="text"
+                      id="rollNumber"
+                      value={rollNumber}
+                      onChange={(e) => setRollNumber(e.target.value)}
+                      placeholder="Enter student roll number (e.g., 2021001)"
+                      className="form-input"
+                      disabled={loading}
+                    />
+                    <button
+                      type="submit"
+                      className="btn btn-primary"
+                      disabled={loading || !rollNumber.trim()}
+                    >
+                      <FaSearch />
+                      Search
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        {/* Student Details */}
+        {student && (
+          <div className="content-section">
+            <div className="card">
+              <div className="card-header">
+                <h3>
+                  <FaUser />
+                  Student Details
+                </h3>
+                <button onClick={resetSearch} className="btn btn-secondary">
+                  New Search
+                </button>
+              </div>
+
+              <div className="card-body">
+                <div className="info-grid">
+                  <div className="info-item">
+                    <label>Roll Number:</label>
+                    <span>{student.rollNo}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>Name:</label>
+                    <span>{student.name}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>Email:</label>
+                    <span>{student.email}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>Phone:</label>
+                    <span>{student.phone || "N/A"}</span>
+                  </div>
+                  <div className="info-item">
+                    <label>Status:</label>
+                    <span className={`status-badge status-${student.status}`}>
+                      {student.status}
+                    </span>
+                  </div>
+                  <div className="info-item">
+                    <label>Total Rentals:</label>
+                    <span>{student.totalTimesRented || 0}</span>
+                  </div>
+                </div>
+
+                <div className="fine-section">
+                  <div className="fine-info">
+                    <div className="fine-amount">
+                      <label>Current Fine Amount:</label>
+                      <span
+                        className={`amount ${
+                          student.fine > 0 ? "has-fine" : "no-fine"
+                        }`}
+                      >
+                        ₹{student.fine || 0}
+                      </span>
+                    </div>
+
+                    {student.fine > 0 && (
+                      <div className="fine-actions">
+                        <button
+                          onClick={handleClearFine}
+                          className="btn btn-danger"
+                          disabled={clearing}
+                        >
+                          {clearing ? (
+                            <>
+                              <LoadingSpinner size="small" />
+                              Clearing...
+                            </>
+                          ) : (
+                            <>
+                              <FaMoneyBillWave />
+                              Clear Fine (₹{student.fine})
+                            </>
+                          )}
+                        </button>
+                        <p className="help-text">
+                          Only clear the fine after the student has physically
+                          submitted the payment.
+                        </p>
+                      </div>
+                    )}
+
+                    {student.fine === 0 && (
+                      <div className="alert alert-success">
+                        <p>✅ This student has no outstanding fines.</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {!student && !rollNumber && (
+          <div className="content-section">
+            <div className="empty-state">
+              <FaSearch className="empty-icon" />
+              <h3>Search for Students</h3>
+              <p>
+                Enter a roll number above to find a student and manage their
+                fines.
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default FinanceAdminScreen;

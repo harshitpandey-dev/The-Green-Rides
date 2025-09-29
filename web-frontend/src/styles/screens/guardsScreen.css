@@ -1,0 +1,55 @@
+/* ==============================
+   GUARDS SCREEN - SPECIFIC STYLES
+============================== */
+
+/* Import common screen styles */
+@import "../common/screen.css";
+
+/* Guard-specific badges */
+.shift-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.85rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 70px;
+  transition: var(--transition);
+  border: 1px solid transparent;
+}
+
+.shift-morning {
+  background: rgba(243, 156, 18, 0.15);
+  color: var(--warning);
+  border-color: rgba(243, 156, 18, 0.3);
+}
+
+.shift-afternoon {
+  background: rgba(46, 204, 113, 0.15);
+  color: var(--success);
+  border-color: rgba(46, 204, 113, 0.3);
+}
+
+.shift-evening {
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border-color: rgba(52, 152, 219, 0.3);
+}
+
+.shift-night {
+  background: rgba(149, 165, 166, 0.15);
+  color: var(--secondary);
+  border-color: rgba(149, 165, 166, 0.3);
+}
+
+.cycle-count {
+  background: rgba(52, 152, 219, 0.15);
+  color: var(--info);
+  border: 1px solid rgba(52, 152, 219, 0.3);
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
